@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dokan AI – Full Next.js Frontend
 Requires Node.js 18.17+.
 
@@ -12,3 +13,6 @@ Requires Node.js 18.17+.
 app/ routes · components/ UI + Store.js (cart, orders, complaints state) · lib/data.js (mock shops/products/constants) · lib/stylist.js (budget-guardrail logic)
 
 All data is mock and held in memory (resets on refresh). Replace lib/data.js and Store.js actions with API calls when the backend is ready.
+=======
+# Dokan-AI
+>>>>>>> f20b6dbea5c576f758132d541db9c03845b1a7ed
