@@ -3,8 +3,8 @@
 All responses are `{ "data": ... }` or `{ "error": { "code", "message" } }`.
 
 **Who is calling:** send `Authorization: Bearer <session.access_token>`. In demo mode only, the header `x-user-id: <user uuid>` still works (it is ignored once a Bearer header is present).
-There is no token check yet, so these endpoints trust that header. Admin endpoints require a user whose `roles` contain `admin`
-(seed user "Test Admin").
+A bad or expired Bearer token returns 401 and never falls back to the demo header. Set `DISABLE_DEV_USER_HEADER=true` on any deployed site to switch the demo header off.
+Admin endpoints require a user whose `roles` contain `admin`.
 
 ## Customer or seller
 
