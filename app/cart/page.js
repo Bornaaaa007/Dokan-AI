@@ -4,8 +4,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { PRODUCTS, shopOf, bdt, DELIVERY } from '../../lib/data';
 import { useStore, itemsTotal } from '../../components/Store';
+import RequireAuth from '../../components/RequireAuth';
 
-export default function Cart() {
+function CartInner() {
   const { cart, remove, place } = useStore(), r = useRouter();
   const [method, setMethod] = useState('bKash'), [addr, setAddr] = useState({ name: '', phone: '', district: 'Dhaka', line: '' }), [pay, setPay] = useState('');
   const groups = {};
@@ -35,5 +36,13 @@ export default function Cart() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function Cart() {
+  return (
+    <RequireAuth>
+      <CartInner />
+    </RequireAuth>
   );
 }

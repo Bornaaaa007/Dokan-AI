@@ -1,20 +1,15 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useStore } from '../../components/Store';
 import { SHOPS } from '../../lib/data';
+import RequireAuth from '../../components/RequireAuth';
 
-export default function Admin() {
-  const router = useRouter(), [ok, setOk] = useState(false);
-useEffect(() => {
-  try { if (sessionStorage.getItem('dokan_admin')) setOk(true); else router.replace('/admin/login'); } catch { router.replace('/admin/login'); }
-}, [router]);
+function AdminInner() {
   const { complaints, setComplaints } = useStore();
   const [tab, setTab] = useState('Dashboard');
   const [ver, setVer] = useState([{ id: 1, name: 'Mim Fashion', doc: 'NID + Facebook page', st: 'Pending' }, { id: 2, name: 'Zara Corner', doc: 'NID (blurry)', st: 'Pending' }]);
   const [dec, setDec] = useState({}), [cfg, setCfg] = useState({ a: 2, b: 3, c: 5 });
   const decide = (id, outcome) => { if (!dec[id]?.trim()) return alert('A written reason is required.'); setComplaints(complaints.map((c) => (c.id === id ? { ...c, status: outcome, reason2: dec[id] } : c))); };
-  if (!ok) return null;
   return (
     <div className="wrap page"><h1>Admin console</h1><p className="sub">Verification, complaints and platform settings.</p>
       <div className="tabs">{['Dashboard', 'Verification', 'Complaints', 'Settings'].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
@@ -26,4 +21,8 @@ useEffect(() => {
       {tab === 'Settings' && <div className="box form"><h3>Commission bands</h3>{[['a', '< 500 BDT'], ['b', '500–999 BDT'], ['c', '1,000+ BDT']].map(([k, l]) => <label key={k}>{l} (%)<input type="number" value={cfg[k]} onChange={(e) => setCfg({ ...cfg, [k]: e.target.value })} /></label>)}<h3>Premium plans</h3><p className="sm">1 month 1,000 · 3 months 2,500 · 6 months 5,000 BDT</p><button className="btn">Save settings</button></div>}
     </div>
   );
+}
+
+export default function Admin() {
+  return <RequireAuth role="admin"><AdminInner /></RequireAuth>;
 }

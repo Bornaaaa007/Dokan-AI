@@ -1,33 +1,67 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { supabase } from '../../lib/supabaseClient';
 
-const phoneOk = (v) => /^01\d{9}$/.test(v);
 const emailOk = (v) => /^\S+@\S+\.\S+$/.test(v);
 
 export default function Login() {
-  const r = useRouter();
-  const [mode, setMode] = useState('login'), [method, setMethod] = useState('phone'), [step, setStep] = useState('form');
-  const [role, setRole] = useState('customer'), [name, setName] = useState(''), [id, setId] = useState(''), [terms, setTerms] = useState(false);
-  const [code, setCode] = useState(['', '', '', '', '', '']), [left, setLeft] = useState(0), [err, setErr] = useState('');
-  const boxes = useRef([]);
+  const router = useRouter();
+  const [mode, setMode] = useState('login'); // 'login' | 'signup'
+  const [role, setRole] = useState('customer');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [show, setShow] = useState(false);
+  const [terms, setTerms] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
 
-  useEffect(() => { if (left <= 0) return; const t = setTimeout(() => setLeft(left - 1), 1000); return () => clearTimeout(t); }, [left]);
+  const isSignup = mode === 'signup';
+  const valid = emailOk(email) && password.length >= 6 && (!isSignup || (name.trim().length > 1 && terms));
+  const reset = (m) => { setMode(m); setError(''); setInfo(''); };
 
-  const valid = (method === 'phone' ? phoneOk(id) : emailOk(id)) && (mode === 'login' || (name.trim() && terms));
-  const send = (e) => { e?.preventDefault(); if (!valid) return; setErr(''); setStep('otp'); setLeft(30); setCode(['', '', '', '', '', '']); setTimeout(() => boxes.current[0]?.focus(), 50); };
-  const type = (i, v) => {
-    if (!/^\d?$/.test(v)) return;
-    const c = [...code]; c[i] = v; setCode(c);
-    if (v && i < 5) boxes.current[i + 1]?.focus();
-  };
-  const key = (i, e) => { if (e.key === 'Backspace' && !code[i] && i > 0) boxes.current[i - 1]?.focus(); };
-  const paste = (e) => { const d = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6); if (!d) return; e.preventDefault(); setCode(d.padEnd(6, ' ').split('').map((x) => x.trim())); boxes.current[Math.min(d.length, 5)]?.focus(); };
-  const verify = (e) => {
+  const go = (r) => { router.push(r === 'admin' ? '/admin' : r === 'seller' ? '/seller' : '/shop'); router.refresh(); };
+
+  const submit = async (e) => {
     e.preventDefault();
-    if (code.join('').length < 6) return setErr('Enter the 6-digit code.');
-    setStep('done'); setTimeout(() => r.push(role === 'seller' ? '/seller' : '/shop'), 1200);
+    if (!valid) return;
+    setError(''); setInfo(''); setBusy(true);
+    try {
+      if (isSignup) {
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name, role } } });
+        if (error) throw error;
+        if (!data.session) {
+          setInfo('Account created. Check your email to confirm, then log in.');
+          setMode('login');
+          return;
+        }
+        go(role);
+      } else {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        go(data.user?.user_metadata?.role || 'customer'); // use the role saved on the account
+      }
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const google = async () => {
+    setError('');
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/shop` } });
+    if (error) setError(error.message);
+  };
+
+  const forgot = async () => {
+    setError(''); setInfo('');
+    if (!emailOk(email)) return setError('Enter your email above first.');
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/login` });
+    if (error) setError(error.message); else setInfo('Password reset link sent. Check your email.');
   };
 
   return (
@@ -44,60 +78,48 @@ export default function Login() {
 
       <main className="auth-main">
         <div className="auth-card">
-          {step === 'form' && (
-            <form onSubmit={send}>
-              <div className="seg" role="tablist">
-                {[['login', 'Log in'], ['signup', 'Sign up']].map(([k, l]) => <button type="button" key={k} className={mode === k ? 'on' : ''} onClick={() => setMode(k)}>{l}</button>)}
+          <form onSubmit={submit}>
+            <div className="seg" role="tablist">
+              {[['login', 'Log in'], ['signup', 'Sign up']].map(([k, l]) => (
+                <button type="button" key={k} className={mode === k ? 'on' : ''} onClick={() => reset(k)}>{l}</button>
+              ))}
+            </div>
+            <h1>{isSignup ? 'Create your account' : 'Welcome back'}</h1>
+            <p className="sub">{isSignup ? 'It takes less than a minute.' : 'Log in to continue.'}</p>
+
+            {isSignup && <>
+              <div className="roles">
+                {[['customer', '🛍️', 'Customer', 'Shop and get styled'], ['seller', '🏪', 'Seller', 'Open your shop']].map(([k, ic, t, d]) => (
+                  <button type="button" key={k} className={role === k ? 'on' : ''} onClick={() => setRole(k)}><span>{ic}</span><b>{t}</b><small>{d}</small></button>
+                ))}
               </div>
-              <h1>{mode === 'login' ? 'Welcome back' : 'Create your account'}</h1>
-              <p className="sub">{mode === 'login' ? 'Log in to continue.' : 'It takes less than a minute.'}</p>
+              <label>Full name<input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" autoComplete="name" /></label>
+            </>}
 
-              {mode === 'signup' && <>
-                <div className="roles">
-                  {[['customer', '🛍️', 'Customer', 'Shop and get styled'], ['seller', '🏪', 'Seller', 'Open your shop']].map(([k, ic, t, d]) => (
-                    <button type="button" key={k} className={role === k ? 'on' : ''} onClick={() => setRole(k)}><span>{ic}</span><b>{t}</b><small>{d}</small></button>
-                  ))}
-                </div>
-                <label>Full name<input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" autoComplete="name" /></label>
-              </>}
-
-              <div className="opts" style={{ marginBottom: 4 }}>
-                {[['phone', 'Phone'], ['email', 'Email']].map(([k, l]) => <button type="button" key={k} className={method === k ? 'on' : ''} onClick={() => { setMethod(k); setId(''); }}>{l}</button>)}
+            <label>Email address<input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" /></label>
+            <label>Password
+              <div className="pfx">
+                <input type={show ? 'text' : 'password'} placeholder="Min 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={isSignup ? 'new-password' : 'current-password'} style={{ paddingLeft: 12 }} />
+                <button type="button" className="link" onClick={() => setShow(!show)} style={{ padding: '0 12px' }}>{show ? 'Hide' : 'Show'}</button>
               </div>
-              <label>{method === 'phone' ? 'Phone number' : 'Email address'}
-                {method === 'phone'
-                  ? <div className="pfx"><span>🇧🇩 +880</span><input inputMode="numeric" maxLength={11} placeholder="01XXXXXXXXX" value={id} onChange={(e) => setId(e.target.value.replace(/\D/g, ''))} /></div>
-                  : <input type="email" placeholder="you@example.com" value={id} onChange={(e) => setId(e.target.value)} autoComplete="email" />}
-              </label>
+            </label>
+            {!isSignup && <button type="button" className="link" style={{ justifySelf: 'end', fontSize: 13 }} onClick={forgot}>Forgot password?</button>}
 
-              {mode === 'signup' && <label className="chk"><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> <span>I agree to the Terms and Privacy Policy.</span></label>}
-              {role === 'seller' && mode === 'signup' && <p className="note">After signup you will verify your business (NID, shop page, payout account) before you can sell.</p>}
+            {isSignup && <label className="chk"><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> <span>I agree to the Terms and Privacy Policy.</span></label>}
+            {isSignup && role === 'seller' && <p className="note">After signup you will verify your business (NID, shop page, payout account) before you can sell.</p>}
 
-              <button className="btn" disabled={!valid} style={{ opacity: valid ? 1 : 0.5 }}>Send code</button>
-              <div className="or"><span>or</span></div>
-              <button type="button" className="btn alt gbtn"><svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2 5-4.4 6.5v5.4h7.1c4.2-3.8 6.5-9.5 6.5-15.9z" /><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.4c-2 1.3-4.5 2.1-7.4 2.1-5.700 0-10.500-3.800-12.200-9H4.500v5.600C8.100 41.100 15.500 46 24 46z" /><path fill="#FBBC05" d="M11.800 28.400c-.4-1.300-.7-2.700-.7-4.400s.3-3 .7-4.400v-5.600H4.500C3 17 2 20.400 2 24s1 7 2.500 10z" /><path fill="#EA4335" d="M24 10.600c3.200 0 6.100 1.100 8.400 3.300l6.300-6.300C34.900 4.100 29.900 2 24 2 15.500 2 8.100 6.900 4.500 14l7.300 5.600c1.700-5.200 6.500-9 12.200-9z" /></svg> Continue with Google</button>
-              <p className="note" style={{ textAlign: 'center' }}>Are you staff? <Link href="/admin/login">Admin login</Link></p>
-            </form>
-          )}
+            {error && <p className="err">{error}</p>}
+            {info && <p style={{ color: 'var(--ok)', margin: 0, fontSize: 14 }}>{info}</p>}
 
-          {step === 'otp' && (
-            <form onSubmit={verify}>
-              <h1>Enter the code</h1>
-              <p className="sub">We sent a 6-digit code to <b>{method === 'phone' ? `+880 ${id}` : id}</b>. <button type="button" className="link" onClick={() => setStep('form')}>Change</button></p>
-              <div className="otp" onPaste={paste}>
-                {code.map((c, i) => <input key={i} ref={(el) => (boxes.current[i] = el)} value={c} inputMode="numeric" maxLength={1} onChange={(e) => type(i, e.target.value)} onKeyDown={(e) => key(i, e)} aria-label={`Digit ${i + 1}`} />)}
-              </div>
-              {err && <p className="err">{err}</p>}
-              <button className="btn">Verify &amp; continue</button>
-              <p className="note" style={{ textAlign: 'center' }}>{left > 0 ? `Resend code in ${left}s` : <button type="button" className="link" onClick={send}>Resend code</button>}</p>
-              <p className="note" style={{ textAlign: 'center' }}>Demo: any 6 digits will work.</p>
-            </form>
-          )}
-
-          {step === 'done' && (
-            <div className="done"><div className="tick">✓</div><h1>You&apos;re in!</h1>
-              <p className="sub">{role === 'seller' ? 'Taking you to your seller hub…' : 'Taking you to the shop…'}</p></div>
-          )}
+            <button className="btn" type="submit" disabled={!valid || busy} style={{ opacity: !valid || busy ? 0.5 : 1 }}>
+              {busy ? 'Please wait…' : isSignup ? 'Create account' : 'Log in'}
+            </button>
+            <div className="or"><span>or</span></div>
+            <button type="button" className="btn alt gbtn" onClick={google}>
+              <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2 5-4.4 6.5v5.4h7.1c4.2-3.8 6.5-9.5 6.5-15.9z" /><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.4c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.6C8.1 41.1 15.5 46 24 46z" /><path fill="#FBBC05" d="M11.8 28.4c-.4-1.3-.7-2.7-.7-4.4s.3-3 .7-4.4v-5.6H4.5C3 17 2 20.4 2 24s1 7 2.5 10z" /><path fill="#EA4335" d="M24 10.6c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.5 2 8.1 6.9 4.5 14l7.3 5.6c1.7-5.2 6.5-9 12.2-9z" /></svg> Continue with Google
+            </button>
+            <p className="note" style={{ textAlign: 'center' }}>Are you staff? <Link href="/admin/login">Admin login</Link></p>
+          </form>
         </div>
       </main>
     </div>
