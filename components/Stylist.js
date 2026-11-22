@@ -100,7 +100,7 @@ export default function Stylist() {
             ))}
           </div>
           <button className="btn" type="submit" disabled={loading}>{loading ? 'Styling…' : 'Build my outfit'}</button>
-          <p className="note">Sandbox demo · no real payments</p>
+        
         </form>
 
         <div className="panel out" aria-live="polite">

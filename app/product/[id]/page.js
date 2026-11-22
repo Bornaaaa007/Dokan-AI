@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { PRODUCTS, COLORS, shopOf, bdt } from '../../../lib/data';
+import { PRODUCTS, shopOf, bdt } from '../../../lib/data';
+import ProductArt from '../../../components/ProductArt';
 import { ProductCard, ShopBadge } from '../../../components/ui';
 import { useStore } from '../../../components/Store';
 
@@ -13,7 +14,7 @@ export default function Product() {
   return (
     <div className="wrap page">
       <div className="two">
-        <div className="sw" style={{ height: 420, borderRadius: 20, background: `linear-gradient(135deg,${COLORS[p.color]},${COLORS[p.color]}88)` }} />
+        <div className="sw big"><ProductArt p={p} /></div>
         <div>
           <span className="chip">{p.gender} · {p.cat} · {p.occasion}</span><h1 style={{ marginTop: 10 }}>{p.name}</h1>
           <div className="price" style={{ fontSize: 34 }}>{bdt(p.price)}</div><p className="sub">{p.desc}</p>

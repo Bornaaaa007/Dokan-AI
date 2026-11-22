@@ -26,7 +26,7 @@ export default function Cart() {
           <div className="f2"><input required placeholder="Full name" value={addr.name} onChange={set('name')} /><input required placeholder="Phone (01XXXXXXXXX)" pattern="01[0-9]{9}" value={addr.phone} onChange={set('phone')} /></div>
           <select value={addr.district} onChange={set('district')}>{['Dhaka', 'Chattogram', 'Comilla', 'Sylhet', 'Rajshahi', 'Khulna'].map((d) => <option key={d}>{d}</option>)}</select>
           <input required placeholder="Upazila, area, house / road" value={addr.line} onChange={set('line')} />
-          <h3>Payment (sandbox)</h3>
+          <h3>Payment</h3>
           <div className="opts">{['bKash', 'Nagad', 'Card', 'COD'].map((m) => <button type="button" key={m} className={method === m ? 'on' : ''} onClick={() => setMethod(m)}>{m === 'COD' ? 'Cash on Delivery' : m}</button>)}</div>
           {method === 'COD' && <p className="sm">For COD you pay the delivery charge ({bdt(n * DELIVERY)}) online first; the item price is paid in cash to the courier.</p>}
           <p className="sm">Funds are held in escrow until you confirm delivery or 48 hours pass.</p>

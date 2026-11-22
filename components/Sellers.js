@@ -1,15 +1,11 @@
 'use client';
 import { useState } from 'react';
-import { bdt } from '../lib/stylist';
 
 const PLANS = [{ m: 1, p: 1000, l: '1 mo' }, { m: 3, p: 2500, l: '3 mo' }, { m: 6, p: 5000, l: '6 mo' }];
-const rate = p => (p < 500 ? 2 : p < 1000 ? 3 : 5);
 
 export default function Sellers() {
   const [plan, setPlan] = useState(PLANS[1]);
-  const [price, setPrice] = useState(1200);
   const save = plan.m * 1000 - plan.p;
-  const p = Number(price) || 0, r = rate(p), fee = Math.round(p * r / 100);
 
   return (
     <section id="sellers" className="sec"><div className="wrap">
@@ -25,10 +21,6 @@ export default function Sellers() {
           <p className="save">{save > 0 ? `Save ${save.toLocaleString()} BDT vs monthly` : 'Pay monthly, cancel anytime'}</p>
           <ul><li>Featured placement</li><li>Full AI analytics &amp; demand gaps</li><li>Higher listing limits</li><li>Priority verification</li></ul>
           <a className="btn" href="#">Go Premium</a></article>
-        <article className="plan calc"><h3>Commission calculator</h3>
-          <label>Item price (BDT)<input type="number" min="0" value={price} onChange={e => setPrice(e.target.value)} /></label>
-          <dl><dt>Commission rate</dt><dd>{r}%</dd><dt>Platform fee</dt><dd>{bdt(fee)}</dd><dt>You receive</dt><dd className="big">{bdt(p - fee)}</dd></dl>
-          <p className="note">&lt;500: 2% · 500–999: 3% · 1,000+: 5%</p></article>
       </div>
       <div className="insights"><h3>What your analytics say</h3><ul>
         <li><b>Demand gap</b> Maroon saris: high search, few listings – good time to restock.</li>

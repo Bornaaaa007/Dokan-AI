@@ -8,7 +8,7 @@ export default function Navbar() {
   const { cart } = useStore();
   return (
     <>
-      <div className="banner">Sandbox mode – no real payments occur</div>
+  
       <header className="nav"><div className="wrap row">
         <Link className="logo" href="/">Dokan<b>AI</b></Link>
         <nav><Link href="/shop">Shop</Link><Link href="/stylist">AI Stylist</Link><Link href="/orders">Orders</Link><Link href="/seller">Seller Hub</Link><Link href="/admin">Admin</Link></nav>
