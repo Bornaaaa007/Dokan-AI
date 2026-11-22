@@ -2,8 +2,9 @@
 import Link from 'next/link';
 import { PRODUCTS, shopOf, bdt, STATUS, DELIVERY } from '../../lib/data';
 import { useStore, itemsTotal } from '../../components/Store';
+import RequireAuth from '../../components/RequireAuth';
 
-export default function Orders() {
+function OrdersInner() {
   const { orders, setStatus } = useStore();
   const mine = orders.filter((o) => o.customer === 'You' || o.customer === 'Tania S.');
   return (
@@ -21,5 +22,13 @@ export default function Orders() {
               <Link className="btn alt sm2" href={`/complaint?order=${o.id}`}>Report a problem</Link></span></div>
         </div>); })}
     </div>
+  );
+}
+
+export default function Orders() {
+  return (
+    <RequireAuth>
+      <OrdersInner />
+    </RequireAuth>
   );
 }

@@ -3,7 +3,9 @@ import { useState } from 'react';
 import { useStore } from '../../components/Store';
 import { SHOPS } from '../../lib/data';
 
-export default function Admin() {
+import RequireAuth from '../../components/RequireAuth';
+
+function AdminInner() {
   const { complaints, setComplaints } = useStore();
   const [tab, setTab] = useState('Dashboard');
   const [ver, setVer] = useState([{ id: 1, name: 'Mim Fashion', doc: 'NID + Facebook page', st: 'Pending' }, { id: 2, name: 'Zara Corner', doc: 'NID (blurry)', st: 'Pending' }]);
@@ -20,4 +22,8 @@ export default function Admin() {
       {tab === 'Settings' && <div className="box form"><h3>Commission bands</h3>{[['a', '< 500 BDT'], ['b', '500–999 BDT'], ['c', '1,000+ BDT']].map(([k, l]) => <label key={k}>{l} (%)<input type="number" value={cfg[k]} onChange={(e) => setCfg({ ...cfg, [k]: e.target.value })} /></label>)}<h3>Premium plans</h3><p className="sm">1 month 1,000 · 3 months 2,500 · 6 months 5,000 BDT</p><button className="btn">Save settings</button></div>}
     </div>
   );
+}
+
+export default function Admin() {
+  return <RequireAuth role="admin"><AdminInner /></RequireAuth>;
 }

@@ -7,7 +7,9 @@ import { DEMO_SHOPS, DEMO_SHOP_KEY } from '../../lib/demoShops';
 const NEXT = { Placed: 'Accepted', Accepted: 'Packed', Packed: 'Shipped' };
 const pct = (r) => (r == null ? '—' : (r * 100).toFixed(1) + '%');
 
-export default function Seller() {
+import RequireAuth from '../../components/RequireAuth';
+
+function SellerInner() {
   const shop = SHOPS[0], { orders, setStatus } = useStore();
   const [tab, setTab] = useState('Overview'), [mine, setMine] = useState(PRODUCTS.filter((p) => p.shop === 1));
   const [f, setF] = useState({ name: '', cat: '', price: '', stock: '' });
@@ -98,4 +100,7 @@ export default function Seller() {
       {tab === 'Shop profile' && <form className="form box wide"><input defaultValue={shop.name} /><input defaultValue="@nusrat.boutique (Facebook)" /><textarea defaultValue={shop.policy} /><p className="sm">Verification: NID ✓ · Social page ✓ · Payout account (bKash) ✓</p><button className="btn" type="button">Save profile</button></form>}
     </div>
   );
+}
+export default function Seller() {
+  return <RequireAuth role="seller"><SellerInner /></RequireAuth>;
 }
