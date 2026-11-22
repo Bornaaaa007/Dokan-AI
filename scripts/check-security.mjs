@@ -1,4 +1,4 @@
-// Proves the database is closed to the public key. Run AFTER scripts/security.sql.
+// Proves the database is closed to the public key. Run AFTER scripts/security.sql and scripts/orders.sql.
 // Usage: node --env-file=.env.local scripts/check-security.mjs
 // Needs NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY (the same two the login page uses).
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -23,9 +23,22 @@ for (const [t, row] of [['badges', { user_id: '00000000-0000-4000-8000-000000000
   const r = await fetch(`${url}/rest/v1/${t}`, { method: 'POST', headers: H, body: JSON.stringify(row) });
   report(!r.ok, `anonymous cannot write to ${t}`, 'HTTP ' + r.status);
 }
-for (const fn of ['place_order', 'cancel_order', 'release_order', 'release_due_orders', 'refund_order']) {
-  const r = await fetch(`${url}/rest/v1/rpc/${fn}`, { method: 'POST', headers: H, body: '{}' });
-  report(!r.ok && r.status !== 200, `anonymous cannot call ${fn}`, 'HTTP ' + r.status);
+
+// The functions take arguments, so each call sends the real parameter names. With empty arguments Supabase
+// answers 404 whether the function exists or not, which proves nothing. Only a permission error counts as locked.
+const ZERO = '00000000-0000-4000-8000-000000000000';
+const rpcCalls = {
+  place_order: { p_customer: ZERO, p_shop: ZERO, p_items: [], p_item_total: 0, p_delivery: 0, p_method: 'sandbox', p_address: {} },
+  cancel_order: { p_order: ZERO },
+  release_order: { p_order: ZERO },
+  release_due_orders: { p_cutoff: '2000-01-01T00:00:00Z' },
+  refund_order: { p_order: ZERO },
+};
+for (const [fn, args] of Object.entries(rpcCalls)) {
+  const r = await fetch(`${url}/rest/v1/rpc/${fn}`, { method: 'POST', headers: H, body: JSON.stringify(args) });
+  const body = await r.text();
+  const locked = r.status === 401 || r.status === 403 || /permission denied/i.test(body);
+  report(locked, `anonymous is blocked from ${fn}`, 'HTTP ' + r.status + (r.status === 404 ? ', function missing: run scripts/orders.sql' : ''));
 }
 console.log(bad ? `\n${bad} check(s) FAILED: run scripts/security.sql (and scripts/orders.sql for the functions).` : '\nAll checks passed.');
 process.exit(bad ? 1 : 0);
