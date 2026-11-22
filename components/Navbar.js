@@ -39,7 +39,7 @@ export default function Navbar() {
           <Link className="ghost" href="/cart">🛒 {cart.reduce((s, i) => s + i.qty, 0)}</Link>
           {!loading && (user ? (
             <>
-              <span className="ghost">{profile?.name ?? user.email}</span>
+             <Link className="ghost" href="/profile">{profile?.name ?? user.email}</Link>
               <button className="btn sm" onClick={handleLogout}>Log out</button>
             </>
           ) : (
