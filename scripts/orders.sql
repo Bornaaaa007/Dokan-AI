@@ -2,6 +2,10 @@
 -- Do NOT re-run schema.sql or seed.sql: they would wipe the demo data.
 
 alter table orders add column if not exists delivery_address jsonb;
+-- Ledger timestamps (PRD PAY-5). Orders paid before this change keep empty values here.
+alter table orders add column if not exists paid_at timestamptz;
+alter table orders add column if not exists released_at timestamptz;
+alter table orders add column if not exists refunded_at timestamptz;
 
 -- 1) Place an order: lock the products, check and lower stock, insert the order. All or nothing.
 create or replace function place_order(
@@ -54,6 +58,7 @@ begin
     end if;
   end loop;
   update orders set status = 'cancelled',
+         refunded_at = case when payment_status = 'held' then now() else refunded_at end,
          payment_status = case when payment_status = 'held' then 'refunded'::payment_status_t else payment_status end
    where id = p_order returning * into o;
   return o;
@@ -62,7 +67,7 @@ end $$;
 -- 3) Release escrow for one delivered order. Skipped while any complaint is open or upheld.
 create or replace function release_order(p_order uuid) returns boolean language plpgsql security definer set search_path = public as $$
 begin
-  update orders set payment_status = 'released'
+  update orders set payment_status = 'released', released_at = now()
    where id = p_order and payment_status = 'held' and status = 'delivered'
      and not exists (select 1 from complaints c where c.order_id = orders.id and c.status in ('submitted', 'responded', 'appealed', 'upheld'));
   return found;
@@ -73,7 +78,7 @@ create or replace function release_due_orders(p_cutoff timestamptz) returns seto
 begin
   return query
     with r as (
-      update orders set payment_status = 'released'
+      update orders set payment_status = 'released', released_at = now()
        where payment_status = 'held' and status = 'delivered' and delivered_at <= p_cutoff
          and not exists (select 1 from complaints c where c.order_id = orders.id and c.status in ('submitted', 'responded', 'appealed', 'upheld'))
       returning id)
@@ -83,7 +88,7 @@ end $$;
 -- 5) Full refund of money still held.
 create or replace function refund_order(p_order uuid) returns boolean language plpgsql security definer set search_path = public as $$
 begin
-  update orders set payment_status = 'refunded' where id = p_order and payment_status = 'held';
+  update orders set payment_status = 'refunded', refunded_at = now() where id = p_order and payment_status = 'held';
   return found;
 end $$;
 
