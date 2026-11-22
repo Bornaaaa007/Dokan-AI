@@ -1,6 +1,7 @@
 'use client';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { PRODUCTS, DELIVERY } from '../lib/data';
+import { loadCatalog } from '../lib/catalog';
 
 const Ctx = createContext(null);
 export const useStore = () => useContext(Ctx);
@@ -8,6 +9,8 @@ const price = (pid) => PRODUCTS.find((p) => p.id === pid).price;
 export const itemsTotal = (items) => items.reduce((s, i) => s + price(i.pid) * i.qty, 0);
 
 export function StoreProvider({ children }) {
+  const [ready, setReady] = useState(false);
+  useEffect(() => { loadCatalog().finally(() => setReady(true)); }, []);   // products come from the database
   const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState([
     { id: 1001, shopId: 1, items: [{ pid: 2, size: 'M', qty: 1 }], method: 'bKash', status: 'Placed', customer: 'Rafi A.', customerId: null },
@@ -34,5 +37,6 @@ export function StoreProvider({ children }) {
     setOrders((o) => [...made, ...o]); setCart([]);
   };
   const setStatus = (id, status) => setOrders((o) => o.map((x) => (x.id === id ? { ...x, status } : x)));
+  if (!ready) return <div className="wrap page"><p className="sub">Loading…</p></div>;
   return <Ctx.Provider value={{ cart, add, remove, place, orders, setStatus, complaints, setComplaints }}>{children}</Ctx.Provider>;
 }

@@ -5,8 +5,8 @@ import { ProductCard } from '../../components/ui';
 
 export default function Shop() {
   const [q, setQ] = useState(''), [g, setG] = useState(''), [t, setT] = useState(''), [max, setMax] = useState(''), [sort, setSort] = useState('feat');
-  let list = PRODUCTS.filter((p) => (!q || (p.name + p.cat + p.color + p.occasion).toLowerCase().includes(q.toLowerCase())) && (!g || p.gender === g) && (!t || p.type === t) && (!max || p.price <= +max));
-  const rank = (p) => (shopOf(p.shop).premium ? 0 : 1) + (shopOf(p.shop).fraud ? 5 : 0);
+  let list = PRODUCTS.filter((p) => (!q || (p.name + p.cat + p.color + p.occasion + (p.tags || []).join(' ')).toLowerCase().includes(q.toLowerCase())) && (!g || p.gender === g || p.unisex) && (!t || p.type === t) && (!max || p.price <= +max));
+  const rank = (p) => (shopOf(p.shop)?.premium ? 0 : 1) + (shopOf(p.shop)?.fraud ? 5 : 0);
   list = [...list].sort((a, b) => (sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : rank(a) - rank(b)));
   return (
     <div className="wrap page"><h1>Shop</h1><p className="sub">Affordable fashion from verified small sellers.</p>
