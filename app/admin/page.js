@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useStore } from '../../components/Store';
 import { SHOPS } from '../../lib/data';
-
 import RequireAuth from '../../components/RequireAuth';
 
 function AdminInner() {
