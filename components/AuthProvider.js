@@ -2,13 +2,14 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
-const Ctx = createContext({ user: null, profile: null, loading: true, signOut: async () => {} });
+const Ctx = createContext({ user: null, profile: null, loading: true, profileLoading: false, signOut: async () => {} });
 export const useAuth = () => useContext(Ctx);
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -21,19 +22,20 @@ export function AuthProvider({ children }) {
 
   // Load the matching row from public.users (its id is what the complaints API calls x-user-id)
   useEffect(() => {
-    if (!session) { setProfile(null); return; }
+    if (!session) { setProfile(null); setProfileLoading(false); return; }
+    setProfileLoading(true);
     supabase
       .from('users')
       .select('id,name,roles')
       .eq('auth_id', session.user.id)
       .maybeSingle()
-      .then(({ data }) => setProfile(data));
+      .then(({ data }) => { setProfile(data ?? null); setProfileLoading(false); });
   }, [session]);
 
   const signOut = async () => { await supabase.auth.signOut(); };
 
   return (
-    <Ctx.Provider value={{ user: session?.user ?? null, profile, loading, signOut }}>
+    <Ctx.Provider value={{ user: session?.user ?? null, profile, loading, profileLoading, signOut }}>
       {children}
     </Ctx.Provider>
   );
