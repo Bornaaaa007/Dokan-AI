@@ -4,17 +4,19 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { PRODUCTS, shopOf, bdt, DELIVERY } from '../../lib/data';
 import { useStore, itemsTotal } from '../../components/Store';
+import { useAuth } from '../../components/AuthProvider';
 import RequireAuth from '../../components/RequireAuth';
 
 function CartInner() {
   const { cart, remove, place } = useStore(), r = useRouter();
+  const { profile } = useAuth();
   const [method, setMethod] = useState('bKash'), [addr, setAddr] = useState({ name: '', phone: '', district: 'Dhaka', line: '' }), [pay, setPay] = useState('');
   const groups = {};
   cart.forEach((i) => { const p = PRODUCTS.find((x) => x.id === i.pid); (groups[p.shop] ||= []).push({ ...i, p }); });
   const n = Object.keys(groups).length, total = itemsTotal(cart) + n * DELIVERY;
   const set = (k) => (e) => setAddr({ ...addr, [k]: e.target.value });
   if (!cart.length) return <div className="wrap page"><h1>Your cart is empty</h1><Link className="btn" href="/shop">Browse products</Link></div>;
-  const go = (e) => { e.preventDefault(); setPay('Processing…'); setTimeout(() => { place(method); r.push('/orders'); }, 900); };
+  const go = (e) => { e.preventDefault(); setPay('Processing…'); setTimeout(() => { place(method, profile); r.push('/orders'); }, 900); };
   return (
     <div className="wrap page"><h1>Cart &amp; checkout</h1><p className="sub">Items from different sellers become separate orders.</p>
       <div className="two">
@@ -41,7 +43,7 @@ function CartInner() {
 
 export default function Cart() {
   return (
-    <RequireAuth>
+    <RequireAuth role="customer">
       <CartInner />
     </RequireAuth>
   );

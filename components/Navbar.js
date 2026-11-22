@@ -11,6 +11,12 @@ export default function Navbar() {
   const { user, profile, loading, signOut } = useAuth();
   const router = useRouter();
 
+  const roles = profile?.roles ?? [];
+  const isSeller = roles.includes('seller');
+  const isAdmin = roles.includes('admin');
+  const isCustomer = roles.includes('customer');
+  const canSeeOrders = !!user && (isSeller || isCustomer);
+
   const handleLogout = async () => {
     await signOut();
     router.push('/');
@@ -21,7 +27,13 @@ export default function Navbar() {
     <>
       <header className="nav"><div className="wrap row">
         <Link className="logo" href="/">Dokan<b>AI</b></Link>
-        <nav><Link href="/shop">Shop</Link><Link href="/stylist">AI Stylist</Link><Link href="/orders">Orders</Link><Link href="/seller">Seller Hub</Link><Link href="/admin">Admin</Link></nav>
+        <nav>
+          <Link href="/shop">Shop</Link>
+          <Link href="/stylist">AI Stylist</Link>
+          {canSeeOrders && <Link href="/orders">Orders</Link>}
+          {isSeller && <Link href="/seller">Seller Hub</Link>}
+          {isAdmin && <Link href="/admin">Admin</Link>}
+        </nav>
         <div className="row g">
           <button className="ghost" onClick={toggle}>{t.toggle}</button>
           <Link className="ghost" href="/cart">🛒 {cart.reduce((s, i) => s + i.qty, 0)}</Link>
