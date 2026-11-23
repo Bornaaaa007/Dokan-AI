@@ -1,6 +1,7 @@
 'use client';
 // Product management for the seller dashboard: add, hide / show, and edit stock per size and colour.
 // Needs: POST /api/products, PATCH /api/products/:id (list comes from GET /api/products/mine, loaded by the page)
+// AI helper: POST /api/ai/describe-photo
 import { Fragment, useState } from 'react';
 import { api } from '../lib/api';
 import { bdt, commissionRate } from '../lib/data';
@@ -61,11 +62,37 @@ const EMPTY = { name: '', category: 'clothing', custom_category: '', gender: 'fe
 export default function SellerProducts({ products, setProducts, shop }) {
   const [f, setF] = useState(EMPTY), [rows, setRows] = useState([{ size: '', color: '', stock: '' }]);
   const [err, setErr] = useState(''), [ok, setOk] = useState(''), [busy, setBusy] = useState(false);
+  const [aiBusy, setAiBusy] = useState(false), [aiMsg, setAiMsg] = useState('');
   const [editId, setEditId] = useState(null), [editRows, setEditRows] = useState([]), [editImages, setEditImages] = useState([]), [rowErr, setRowErr] = useState(''), [rowBusy, setRowBusy] = useState('');
   const set = (k) => (e) => setF({ ...f, [k]: e.target.value });
   const toggleOcc = (o) => setF({ ...f, occasions: f.occasions.includes(o) ? f.occasions.filter((x) => x !== o) : [...f.occasions, o] });
+
+  // Asks the AI to look at the first photo and fill the form. Seller still reviews everything.
+  const suggest = async () => {
+    setErr(''); setOk(''); setAiMsg('');
+    if (!f.images.length) return setErr('Add a photo first, then use the AI helper.');
+    setAiBusy(true);
+    try {
+      const { data } = await api('/ai/describe-photo', { method: 'POST', body: { image_url: f.images[0] } });
+      setF((x) => ({
+        ...x,
+        name: x.name || data.name || '',
+        category: data.category || x.category,
+        custom_category: x.custom_category || data.custom_category || '',
+        gender: data.gender || x.gender,
+        age_group: data.age_group || x.age_group,
+        colors: x.colors || (data.colors || []).join(', '),
+        occasions: x.occasions.length ? x.occasions : (data.occasions || []),
+        description: x.description || data.description || '',
+      }));
+      setAiMsg('AI filled in the form. Please check every field, then add price and stock.');
+    } catch (e2) { setErr(e2.message); }
+    setAiBusy(false);
+  };
+
   const rejected = shop.verification_status === 'rejected';
   const priceNow = f.discount_price ? +f.discount_price : +f.price;
+  const aiOff = aiBusy || !f.images.length;
 
   const add = async (e) => {
     e.preventDefault(); setErr(''); setOk('');
@@ -87,7 +114,7 @@ export default function SellerProducts({ products, setProducts, shop }) {
     try {
       const res = await api('/products', { method: 'POST', body });
       setProducts([res.data, ...products]);
-      setF(EMPTY); setRows([{ size: '', color: '', stock: '' }]);
+      setF(EMPTY); setRows([{ size: '', color: '', stock: '' }]); setAiMsg('');
       setOk('Product added.');
     } catch (e2) { setErr(e2.message); }
     setBusy(false);
@@ -148,6 +175,42 @@ export default function SellerProducts({ products, setProducts, shop }) {
       <form className="box form wide" onSubmit={add}>
         <h3>Add product</h3>
         {rejected && <p className="err">Your shop was rejected. Fix it in Shop profile first.</p>}
+
+        {/* ✨ AI quick start: photo first, then one big button */}
+        <div style={{
+          border: '2px solid #7c3aed', borderRadius: 14, padding: 14, color: '#1f1235',
+          background: 'linear-gradient(135deg, #f5f3ff, #fdf2f8)',
+          boxShadow: '0 4px 16px rgba(124, 58, 237, 0.18)',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+            <strong style={{ fontSize: 16 }}>✨ Quick start with AI</strong>
+            <span style={{ background: '#7c3aed', color: '#fff', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 999 }}>NEW</span>
+          </div>
+          <p className="sm" style={{ margin: '0 0 10px', color: '#4b3b6b' }}>
+            Step 1: add a photo (the first one is the main photo). Step 2: tap the button and AI fills in the name, type, colours, occasions and description.
+          </p>
+
+          <PhotoPicker value={f.images} onChange={(images) => setF((x) => ({ ...x, images }))} />
+
+          <button
+            type="button"
+            onClick={suggest}
+            disabled={aiOff}
+            style={{
+              width: '100%', marginTop: 12, padding: '14px 16px', fontSize: 16, fontWeight: 700,
+              color: '#fff', border: 'none', borderRadius: 12,
+              background: 'linear-gradient(135deg, #7c3aed, #db2777)',
+              cursor: aiOff ? 'not-allowed' : 'pointer',
+              opacity: aiOff ? 0.55 : 1,
+            }}
+          >
+            {aiBusy ? '✨ AI is looking at your photo…' : '✨ Fill the form with AI'}
+          </button>
+
+          {!f.images.length && <p className="sm" style={{ margin: '8px 0 0', color: '#4b3b6b' }}>Add a photo above to turn this button on.</p>}
+          {aiMsg && <p className="sm" style={{ margin: '8px 0 0', color: '#15803d', fontWeight: 600 }}>✓ {aiMsg}</p>}
+        </div>
+
         <input required placeholder="Product name" value={f.name} onChange={set('name')} />
         <div className="f2">
           <select value={f.category} onChange={set('category')}>{CATEGORIES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
@@ -167,7 +230,6 @@ export default function SellerProducts({ products, setProducts, shop }) {
           <div className="opts" style={{ marginTop: 6 }}>{OCCASIONS.map((o) => <button type="button" key={o} className={f.occasions.includes(o) ? 'on' : ''} onClick={() => toggleOcc(o)}>{o}</button>)}</div>
         </div>
         <div><span className="sm">Sizes and stock</span><div style={{ marginTop: 6 }}><VariantsEditor rows={rows} setRows={setRows} /></div></div>
-        <div><span className="sm">Photos (the first one is the main photo)</span><div style={{ marginTop: 6 }}><PhotoPicker value={f.images} onChange={(images) => setF((x) => ({ ...x, images }))} /></div></div>
         <textarea placeholder="Description (optional)" value={f.description} onChange={set('description')} />
         {err && <p className="err">{err}</p>}
         {ok && <p className="sm" style={{ color: 'var(--ok)' }}>{ok}</p>}
