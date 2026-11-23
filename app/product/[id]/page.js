@@ -6,7 +6,6 @@ import { PRODUCTS, shopOf, bdt } from '../../../lib/data';
 import ProductArt from '../../../components/ProductArt';
 import { ProductCard, ShopBadge } from '../../../components/ui';
 import { useStore } from '../../../components/Store';
-import ProductReviews from '../../../components/ProductReviews';
 
 export default function Product() {
   const { id } = useParams(), r = useRouter(), { add } = useStore();
@@ -33,8 +32,8 @@ export default function Product() {
           </div>
         </div>
       </div>
-      <h3 id="reviews" style={{ margin: '34px 0 12px' }}>Reviews</h3>
-      <ProductReviews product={p} />
+      <h3 style={{ margin: '34px 0 12px' }}>Reviews</h3>
+      <div className="box"><p className="sm">No reviews yet. Reviews for delivered orders are coming soon.</p></div>
       <h3 style={{ margin: '30px 0 12px' }}>More from this shop</h3>
       <div className="pgrid">{PRODUCTS.filter((x) => x.shop === p.shop && x.id !== p.id).slice(0, 4).map((x) => <ProductCard key={x.id} p={x} />)}</div>
     </div>
