@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../../lib/api';
 import RequireAuth from '../../components/RequireAuth';
 import LedgerPanel from '../../components/LedgerPanel';
+import AdminReviews from '../../components/AdminReviews';
 
 const day = (iso) => new Date(iso).toLocaleDateString('en-GB', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'short', year: 'numeric' });
 const REASON = { not_delivered: 'Not delivered', not_as_described: 'Not as described', wrong_size: 'Wrong size', refused_delivery: 'Refused delivery', false_claim: 'False claim', other: 'Other' };
@@ -175,11 +176,12 @@ function Refunds() {
 function AdminInner() {
   const [tab, setTab] = useState('Overview');
   return (
-    <div className="wrap page"><h1>Admin console</h1><p className="sub">Verification, complaints, refunds and payouts.</p>
-      <div className="tabs">{['Overview', 'Shops', 'Complaints', 'Refunds', 'Ledger'].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
+    <div className="wrap page"><h1>Admin console</h1><p className="sub">Verification, complaints, reviews, refunds and payouts.</p>
+      <div className="tabs">{['Overview', 'Shops', 'Complaints', 'Reviews', 'Refunds', 'Ledger'].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
       {tab === 'Overview' && <Overview goto={setTab} />}
       {tab === 'Shops' && <Shops />}
       {tab === 'Complaints' && <Complaints />}
+      {tab === 'Reviews' && <AdminReviews />}
       {tab === 'Refunds' && <Refunds />}
       {tab === 'Ledger' && <LedgerPanel base="/admin/ledger" title="Platform ledger" />}
     </div>

@@ -15,7 +15,7 @@ export function ProductCard({ p }) {
   return (
     <Link href={`/product/${p.id}`} className="pcard">
       <div className="sw"><ProductPhoto p={p} />{s.premium && <span className="fl">Featured</span>}</div>
-      <div className="bd"><h4>{p.name}</h4><b>{bdt(p.price)}</b>{p.oldPrice && <> <small style={{ textDecoration: 'line-through' }}>{bdt(p.oldPrice)}</small></>}<br /><small>{s.name} · ★ {s.rating}</small><br /><ShopBadge shop={s} />
+      <div className="bd"><h4>{p.name}</h4><b>{bdt(p.price)}</b>{p.oldPrice && <> <small style={{ textDecoration: 'line-through' }}>{bdt(p.oldPrice)}</small></>}<br /><small>{s.name}</small><br /><ShopBadge shop={s} />
         <button type="button" className="btn" style={{ marginTop: 10, width: '100%' }}>Choose size</button></div>
     </Link>
   );
