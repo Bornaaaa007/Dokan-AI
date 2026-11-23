@@ -24,7 +24,7 @@ Say first: **payments are a sandbox, no real money moves.**
 | 6:45 | – | Close: what is built, what is next. |
 
 ## Be honest about future work
-Product reviews, chat, wishlist, vouchers, notifications, real payment gateways, courier tracking, saved addresses, partial refunds, scheduled automatic payouts, admin two-factor login.
+Chat, wishlist, vouchers, notifications, real payment gateways, courier tracking, saved addresses, partial refunds, scheduled automatic payouts, admin two-factor login.
 
 ## If something fails
 Don't debug live. Say "this is the sandbox" and switch to the backup recording.

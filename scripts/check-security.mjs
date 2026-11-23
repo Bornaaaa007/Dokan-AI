@@ -8,7 +8,7 @@ const H = { apikey: key, Authorization: 'Bearer ' + key, 'Content-Type': 'applic
 let bad = 0;
 const report = (ok, what, detail = '') => { if (!ok) bad++; console.log((ok ? 'PASS  ' : 'FAIL  ') + what + (detail ? '  (' + detail + ')' : '')); };
 
-const tables = ['users', 'shops', 'products', 'orders', 'complaints', 'badges', 'search_logs', 'event_logs', 'ai_conversations'];
+const tables = ['users', 'shops', 'products', 'orders', 'complaints', 'badges', 'search_logs', 'event_logs', 'ai_conversations', 'product_reviews', 'platform_reviews'];
 for (const t of tables) {
   const r = await fetch(`${url}/rest/v1/${t}?select=*&limit=1`, { headers: H });
   const body = await r.json().catch(() => null);
@@ -19,7 +19,7 @@ for (const v of ['demand_gap', 'trending_products', 'product_performance', 'top_
   const body = await r.json().catch(() => null);
   report(!r.ok || (Array.isArray(body) && body.length === 0), `anonymous cannot read view ${v}`, 'HTTP ' + r.status);
 }
-for (const [t, row] of [['badges', { user_id: '00000000-0000-4000-8000-000000000000', role: 'seller' }], ['complaints', { reason_code: 'other' }], ['users', { name: 'x', roles: ['admin'] }], ['event_logs', { type: 'view' }]]) {
+for (const [t, row] of [['badges', { user_id: '00000000-0000-4000-8000-000000000000', role: 'seller' }], ['complaints', { reason_code: 'other' }], ['users', { name: 'x', roles: ['admin'] }], ['event_logs', { type: 'view' }], ['product_reviews', { rating: 5, body: 'anonymous write attempt' }]]) {
   const r = await fetch(`${url}/rest/v1/${t}`, { method: 'POST', headers: H, body: JSON.stringify(row) });
   report(!r.ok, `anonymous cannot write to ${t}`, 'HTTP ' + r.status);
 }
@@ -33,6 +33,7 @@ const rpcCalls = {
   release_order: { p_order: ZERO },
   release_due_orders: { p_cutoff: '2000-01-01T00:00:00Z' },
   refund_order: { p_order: ZERO },
+  product_review_summary: { p_product: ZERO },
 };
 for (const [fn, args] of Object.entries(rpcCalls)) {
   const r = await fetch(`${url}/rest/v1/rpc/${fn}`, { method: 'POST', headers: H, body: JSON.stringify(args) });
