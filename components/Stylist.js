@@ -1,5 +1,9 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
+import { useStore } from './Store';
+import { PRODUCTS } from '../lib/data';
+import { track } from '../lib/track';
 import { bdt } from '../lib/stylist';
 import { askStylist } from '../lib/stylistApi';
 
@@ -33,6 +37,21 @@ export default function Stylist() {
   const [conv, setConv] = useState(null);      // conversation id (the AI remembers earlier messages)
   const [alt, setAlt] = useState(0);           // which look is shown (0 = main, 1+ = alternatives)
   const [added, setAdded] = useState(false);
+    const { add } = useStore();
+  const [missing, setMissing] = useState(0);
+
+  // Puts every item of the shown look into the real cart (matched by database id).
+  const addBundle = () => {
+    let skipped = 0;
+    look.items.forEach((it) => {
+      const p = PRODUCTS.find((x) => x.uuid === it.product_id);
+      const size = (p && (p.sizes || []).find((s) => (it.sizes || []).includes(s))) || (it.sizes || [])[0] || (p && p.sizes[0]);
+      if (!p || !size) { skipped++; return; }
+      add(p.id, size);
+      track('add_to_cart', p);
+    });
+    setMissing(skipped); setAdded(true);
+  };
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [chat, setChat] = useState('');
@@ -138,9 +157,10 @@ export default function Stylist() {
                   Show another look ({(alt % looks.length) + 1}/{looks.length})
                 </button>
               )}
-              <button className="btn" type="button" onClick={() => setAdded(true)}>
-                {added ? `Added – split into ${sellers} order${sellers === 1 ? '' : 's'} (one per seller) ✓` : 'Add bundle to cart'}
-              </button>
+                            {added
+                ? <Link className="btn" href="/cart">Added ✓ View cart (splits into {sellers} order{sellers === 1 ? '' : 's'}, one per seller)</Link>
+                : <button className="btn" type="button" onClick={addBundle}>Add bundle to cart</button>}
+              {added && missing > 0 && <div className="msg warn">{missing} item(s) could not be added because they are not in the live shop.</div>}
             </>}
 
             {!look && data.min_required_total ? (

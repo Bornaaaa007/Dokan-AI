@@ -1,13 +1,13 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '../../lib/supabaseClient';
-import { PRODUCTS, shopOf, bdt, DELIVERY } from '../../lib/data';
-import { useStore, itemsTotal } from '../../components/Store';
+import { bdt } from '../../lib/data';
+import { api } from '../../lib/api';
 import { useAuth } from '../../components/AuthProvider';
 import RequireAuth from '../../components/RequireAuth';
 
-const itemName = (pid) => PRODUCTS.find((p) => p.id === pid)?.name ?? 'Product';
+const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '');
 const initials = (name) => (name || '?').split(' ').filter(Boolean).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
 const ROLE_LABEL = { customer: 'Customer', seller: 'Seller', admin: 'Admin' };
 
@@ -54,7 +54,11 @@ const css = `
 
 function ProfileInner() {
   const { user, profile, refreshProfile } = useAuth();
-  const { orders } = useStore();
+    const [orders, setOrders] = useState(null);
+  useEffect(() => {
+    if (!profile?.roles?.includes('customer')) return;
+    api('/orders?as=customer&limit=50').then((r) => setOrders(r.data)).catch(() => setOrders([]));
+  }, [profile?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const roles = profile?.roles ?? [];
   const isCustomer = roles.includes('customer');
 
@@ -73,10 +77,10 @@ function ProfileInner() {
 
   const [flt, setFlt] = useState('all');
 
-  const mine = orders.filter((o) => o.customerId === profile.id);
-  const delivered = mine.filter((o) => o.status === 'Delivered');
-  const active = mine.filter((o) => o.status !== 'Delivered');
-  const spent = mine.reduce((s, o) => s + itemsTotal(o.items) + DELIVERY, 0);
+    const mine = orders || [];
+  const delivered = mine.filter((o) => o.status === 'delivered');
+  const active = mine.filter((o) => !['delivered', 'cancelled'].includes(o.status));
+  const spent = mine.filter((o) => ['held', 'released'].includes(o.payment_status)).reduce((s, o) => s + o.total, 0);
   const shown = flt === 'all' ? mine : flt === 'done' ? delivered : active;
 
   const goTab = (t) => { setTab(t); setDMsg(null); setPMsg(null); };
@@ -202,18 +206,18 @@ function ProfileInner() {
             </div>
             {!shown.length ? (
               <div className="pf-empty">
-                <p>No orders here yet.</p>
+                <p>{orders === null ? 'Loading your orders…' : 'No orders here yet.'}</p>
                 <Link className="btn sm" href="/shop">Start shopping</Link>
               </div>
             ) : shown.map((o) => (
               <div className="pf-order" key={o.id}>
                 <div className="pf-orow">
-                  <b>Order #{o.id} · {shopOf(o.shopId).name}</b>
-                  <span className={`badge ${o.status !== 'Delivered' ? 'pend' : ''}`}>{o.status}</span>
+                                    <b>Order {o.id.slice(0, 8).toUpperCase()} · {o.shop_name}</b>
+                  <span className={`badge ${o.status === 'cancelled' ? 'bad' : o.status !== 'delivered' ? 'pend' : ''}`}>{cap(o.status)}</span>
                 </div>
-                <div className="pf-items">{o.items.map((i) => `${itemName(i.pid)} (${i.size}) ×${i.qty}`).join(' · ')}</div>
+                <div className="pf-items">{o.items.map((i) => `${i.name} (${i.size}) ×${i.qty}`).join(' · ')}</div>
                 <div className="pf-orow">
-                  <span><b>{bdt(itemsTotal(o.items) + DELIVERY)}</b> <span className="sm">· {o.method}</span></span>
+                  <span><b>{bdt(o.total)}</b> <span className="sm">· {o.payment_method === 'cod' ? 'Cash on Delivery' : 'Online payment'}</span></span>
                   <Link className="btn alt sm" href="/orders">Track order</Link>
                 </div>
               </div>

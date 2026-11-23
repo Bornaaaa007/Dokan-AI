@@ -7,3 +7,6 @@ node_modules/
 
 scripts/seed-ids.json
 supabase/.temp/
+*.zip
+dump.txt
+ledger.csv

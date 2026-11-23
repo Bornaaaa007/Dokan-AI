@@ -1,16 +1,22 @@
-const Q = [
-  ['Tania S.', 'Shopper · Chattogram', 'I gave it my budget and got a full wedding look in a minute. No more scrolling through chats.'],
-  ['Nusrat A.', 'Boutique owner · Comilla', 'My orders, stock and payouts are finally in one place. The restock tips are a big help.'],
-  ['Rafi H.', 'Menswear seller · Dhaka', 'Escrow means customers trust me from the first order, and I get paid on delivery.'],
+'use client';
+import { PRODUCTS, SHOPS } from '../lib/data';
+
+// Real counts from the live catalog (the Store loads it before anything renders).
+const BENEFITS = [
+  ['🎯', 'A stylist that respects your budget', 'Tell it your budget and occasion. It only suggests real, in-stock items from verified sellers.'],
+  ['🔒', 'Escrow on every order', 'Your payment is held safely until you confirm delivery or 48 hours pass. Sellers are paid on delivery.'],
+  ['📦', 'One place for small sellers', 'Orders, stock, earnings and analytics in one dashboard, instead of scattered chats.'],
 ];
-const stats = [['2,000+', 'Products listed'], ['500+', 'Small sellers'], ['48h', 'Escrow protection'], ['4.8★', 'Average shop rating']];
+
 export default function Testimonials() {
+  const stats = [[PRODUCTS.length, 'Products listed'], [SHOPS.length, 'Verified shops'], ['48h', 'Escrow protection']];
   return (
     <section className="sec tint"><div className="wrap">
       <ul className="stats band">{stats.map(([b, t]) => <li key={t}><b>{b}</b>{t}</li>)}</ul>
-      <h2 style={{ marginTop: 44 }}>Loved by shoppers and sellers</h2>
-      <div className="cards4 three">{Q.map(([n, r, t]) => (
-        <article key={n}><div className="stars">★★★★★</div><p>“{t}”</p><div className="who"><i>{n[0]}</i><div><b>{n}</b><small>{r}</small></div></div></article>))}</div>
+      <h2 style={{ marginTop: 44 }}>Why shoppers and sellers use Dokan AI</h2>
+      <div className="cards4 three">{BENEFITS.map(([icon, title, text]) => (
+        <article key={title}><div className="ic">{icon}</div><h3>{title}</h3><p>{text}</p></article>
+      ))}</div>
     </div></section>
   );
 }
