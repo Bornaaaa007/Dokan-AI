@@ -80,3 +80,4 @@ label.chk{flex-direction:row;align-items:flex-start;gap:8px;font-weight:400;font
 /* admin login */
 .admin-auth .auth-brand{background:linear-gradient(150deg,#1d1521,#3a1830)}
 .admin-auth .auth-card{border-top:4px solid var(--pri)}
+.err{color:#b3261e;font-size:13px;margin:0}

@@ -1,6 +1,7 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { track } from '../../../lib/track';
 import { PRODUCTS, shopOf, bdt } from '../../../lib/data';
 import ProductArt from '../../../components/ProductArt';
 import { ProductCard, ShopBadge } from '../../../components/ui';
@@ -9,6 +10,7 @@ import { useStore } from '../../../components/Store';
 export default function Product() {
   const { id } = useParams(), r = useRouter(), { add } = useStore();
   const p = PRODUCTS.find((x) => x.id === +id), [size, setSize] = useState('');
+  useEffect(() => { track('view', p); }, [p?.uuid]);
   if (!p) return <div className="wrap page">Product not found.</div>;
   const s = shopOf(p.shop);
   return (
@@ -20,8 +22,8 @@ export default function Product() {
           <div className="price" style={{ fontSize: 34 }}>{bdt(p.price)}</div><p className="sub">{p.desc}</p>
           <b>Size</b><div className="opts" style={{ margin: '8px 0 18px' }}>{p.sizes.map((x) => <button key={x} className={size === x ? 'on' : ''} onClick={() => setSize(x)}>{x}</button>)}</div>
           <div className="row g" style={{ justifyContent: 'flex-start' }}>
-            <button className="btn" disabled={!size} style={{ opacity: size ? 1 : .5 }} onClick={() => { add(p.id, size); r.push('/cart'); }}>{size ? 'Add to cart' : 'Select a size'}</button>
-            <button className="btn alt" disabled={!size} onClick={() => add(p.id, size)}>Add &amp; keep shopping</button>
+            <button className="btn" disabled={!size} style={{ opacity: size ? 1 : .5 }} onClick={() => { add(p.id, size); track('add_to_cart', p); r.push('/cart'); }}>{size ? 'Add to cart' : 'Select a size'}</button>
+            <button className="btn alt" disabled={!size} onClick={() => { add(p.id, size); track('add_to_cart', p); }}>Add &amp; keep shopping</button>
           </div>
           <div className="box" style={{ marginTop: 20 }}>
             <h3>{s.name} <ShopBadge shop={s} /></h3><p className="sm">★ {s.rating} · {s.followers} followers · {s.city}</p>

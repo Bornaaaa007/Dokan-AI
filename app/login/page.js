@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '../../lib/supabaseClient';
+import { api } from '../../lib/api';
 
 const emailOk = (v) => /^\S+@\S+\.\S+$/.test(v);
 
@@ -23,7 +24,17 @@ export default function Login() {
   const valid = emailOk(email) && password.length >= 6 && (!isSignup || (name.trim().length > 1 && terms));
   const reset = (m) => { setMode(m); setError(''); setInfo(''); };
 
-  const go = (r) => { router.push(r === 'admin' ? '/admin' : r === 'seller' ? '/seller' : '/shop'); router.refresh(); };
+ // Ask the backend who this user is, then send them to the right place
+const go = async () => {
+  try {
+    const { data } = await api('/me');
+    const roles = data.roles || [];
+    router.push(roles.includes('admin') ? '/admin' : roles.includes('seller') ? '/seller' : '/shop');
+  } catch {
+    router.push('/shop');
+  }
+  router.refresh();
+};
 
   const submit = async (e) => {
     e.preventDefault();
@@ -38,11 +49,11 @@ export default function Login() {
           setMode('login');
           return;
         }
-        go(role);
+        await go();
       } else {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        go(data.user?.user_metadata?.role || 'customer'); // use the role saved on the account
+        await go();
       }
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -118,7 +129,7 @@ export default function Login() {
             <button type="button" className="btn alt gbtn" onClick={google}>
               <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2 5-4.4 6.5v5.4h7.1c4.2-3.8 6.5-9.5 6.5-15.9z" /><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.4c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.6C8.1 41.1 15.5 46 24 46z" /><path fill="#FBBC05" d="M11.8 28.4c-.4-1.3-.7-2.7-.7-4.4s.3-3 .7-4.4v-5.6H4.5C3 17 2 20.4 2 24s1 7 2.5 10z" /><path fill="#EA4335" d="M24 10.6c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.5 2 8.1 6.9 4.5 14l7.3 5.6c1.7-5.2 6.5-9 12.2-9z" /></svg> Continue with Google
             </button>
-            <p className="note" style={{ textAlign: 'center' }}>Are you staff? <Link href="/admin/login">Admin login</Link></p>
+            
           </form>
         </div>
       </main>
