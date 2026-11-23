@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import RequireAuth from '../../components/RequireAuth';
 import { useAuth } from '../../components/AuthProvider';
+import { useLang } from '../../components/LangProvider';
 import ShopSetup from '../../components/ShopSetup';
 import SellerOrders, { useSellerOrders } from '../../components/SellerOrders';
 import SellerProducts from '../../components/SellerProducts';
@@ -25,6 +26,20 @@ function Dashboard({ shop, setShop }) {
   // Analytics: sent with the login token by api(); a seller always gets their own shop.
   const [data, setData] = useState(null), [aload, setAload] = useState(false), [aerr, setAerr] = useState('');
   const [previewFree, setPreviewFree] = useState(false);
+
+  // AI analysis: Gemini reads this shop's numbers (rebuilt on the server) and writes a short coaching note.
+  const { lang } = useLang();
+  const A = AI_TXT[lang] ?? AI_TXT.en;
+  const [ai, setAi] = useState(null), [aiBusy, setAiBusy] = useState(false), [aiErr, setAiErr] = useState('');
+  useEffect(() => { setAi(null); }, [lang]);   // tips are written in one language: clear them when the language changes
+  const generateAi = async () => {
+    setAiBusy(true); setAiErr('');
+    try {
+      const r = await api('/seller/analytics/ai', { method: 'POST', body: { language: lang } });
+      setAi(r.data);
+    } catch (e) { setAiErr(e.message); }
+    setAiBusy(false);
+  };
 
   useEffect(() => {
     api('/products/mine').then((r) => setProducts(r.data)).catch((e) => { setPerr(e.message); setProducts([]); });
@@ -91,7 +106,33 @@ function Dashboard({ shop, setShop }) {
             {data.shop.top_seller_rank && <div><b>#{data.shop.top_seller_rank}</b><span>Top seller rank</span></div>}
           </div>
           {premium && <>
-            <div className="insights box"><h3>AI insights</h3>
+            <div style={{ border: '2px solid var(--pri)', borderRadius: 16, padding: 18, marginBottom: 16, background: 'linear-gradient(135deg, var(--tint), var(--card))', boxShadow: '0 4px 16px rgba(122, 31, 69, 0.15)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <strong style={{ fontSize: 17 }}>{A.title}</strong>
+                <span className="badge pend">NEW</span>
+              </div>
+              {!ai && <p className="sm" style={{ margin: '0 0 12px' }}>{A.intro}</p>}
+              {ai && <>
+                <p style={{ fontWeight: 700, fontSize: 17, margin: '0 0 6px' }}>{ai.headline}</p>
+                <p style={{ margin: '0 0 12px' }}>{ai.summary}</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 12px', display: 'grid', gap: 10 }}>
+                  {ai.actions.map((a, i) => (
+                    <li key={i} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '12px 14px' }}>
+                      <span className={`badge ${a.priority === 'high' ? 'bad' : a.priority === 'medium' ? 'pend' : ''}`}>{A.prio[a.priority] ?? a.priority}</span> <b>{a.title}</b>
+                      <div style={{ marginTop: 4, fontSize: 14.5 }}>{a.text}</div>
+                    </li>
+                  ))}
+                </ul>
+                {ai.watch_out && <p className="sm" style={{ margin: '0 0 12px' }}>⚠ {ai.watch_out}</p>}
+                {ai.source === 'rules' && <p className="sm" style={{ margin: '0 0 12px' }}>{A.rules}</p>}
+              </>}
+              <button className="btn" style={{ width: '100%', fontSize: 16, opacity: aiBusy ? 0.6 : 1 }} disabled={aiBusy} onClick={generateAi}>
+                {aiBusy ? A.busy : ai ? A.again : A.gen}
+              </button>
+              {aiErr && <p className="err" style={{ margin: '8px 0 0' }}>{aiErr}</p>}
+              <p className="sm" style={{ margin: '8px 0 0' }}>{A.note}</p>
+            </div>
+            <div className="insights box"><h3>Quick tips</h3>
               {data.insights.length === 0
                 ? <p className="sm">Not enough data yet for tips. They appear once your products get views and sales.</p>
                 : <ul>{data.insights.map((x, i) => <li key={i}><b>{x.title}</b> {x.text}</li>)}</ul>}
@@ -144,6 +185,12 @@ function SellerInner() {
   }
   return <Dashboard shop={shop} setShop={setShop} />;
 }
+
+// Text for the AI tips panel (Bangla and English). The tips themselves come from the server in the chosen language.
+const AI_TXT = {
+  en: { title: '✨ AI tips for your shop', intro: 'AI reads your last 30 days (views, carts, sales, stock and what customers search for) and gives you 3 simple tips for this week.', busy: '✨ AI is analysing your shop…', gen: '✨ Get my 3 tips', again: '✨ Refresh tips', note: 'AI can make mistakes. Check the advice against what you know about your shop.', rules: 'AI was busy, so these tips come from your numbers directly.', prio: { high: 'high', medium: 'medium', low: 'low' } },
+  bn: { title: '✨ আপনার দোকানের জন্য এআই টিপস', intro: 'এআই আপনার গত ৩০ দিনের হিসাব (ভিউ, কার্ট, বিক্রি, স্টক ও ক্রেতারা কী খুঁজছে) দেখে এই সপ্তাহের জন্য ৩টি সহজ টিপস দেয়।', busy: '✨ এআই আপনার দোকান দেখছে…', gen: '✨ আমার ৩টি টিপস দিন', again: '✨ নতুন টিপস নিন', note: 'এআই ভুল করতে পারে। পরামর্শ আপনার দোকানের অবস্থার সাথে মিলিয়ে নিন।', rules: 'এআই ব্যস্ত ছিল, তাই আপনার হিসাব থেকেই সরাসরি এই টিপসগুলো দেওয়া হয়েছে।', prio: { high: 'জরুরি', medium: 'মাঝারি', low: 'পরে' } },
+};
 
 export default function Seller() {
   return (

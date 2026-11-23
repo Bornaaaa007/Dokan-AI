@@ -1,6 +1,7 @@
 import Hero from '../components/Hero';
 import Experience from '../components/Experience';
 import Stylist from '../components/Stylist';
+import HomeShopTheLook from '../components/HomeShopTheLook';
 import TopSellers from '../components/TopSellers';
 import Sellers from '../components/Sellers';
 import Testimonials from '../components/Testimonials';
@@ -10,7 +11,7 @@ export default function Home() {
   return (
     <>
       <main id="top">
-        <Hero /><Experience /><Stylist /><TopSellers /><Sellers /><Testimonials /><PlatformReviews />
+        <Hero /><Experience /><Stylist /><HomeShopTheLook /><TopSellers /><Sellers /><Testimonials /><PlatformReviews />
         <section className="cta"><div className="wrap">
           <h2>Ready to bring your shop out of the inbox?</h2>
           <a className="btn light" href="#sellers">Open your shop – it&apos;s free</a>

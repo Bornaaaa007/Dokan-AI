@@ -13,6 +13,7 @@ export default function Hero() {
         <p className="lead">{t.lead}</p>
         <div className="row g" style={{ justifyContent: 'flex-start' }}>
           <a className="btn" href="#stylist">{t.try}</a>
+          <a className="btn alt" href="#shop-the-look">{t.look}</a>
           <a className="btn alt" href="#sellers">{t.sell}</a>
         </div>
         <ul className="stats">
