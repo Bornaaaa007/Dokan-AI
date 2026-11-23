@@ -1,103 +1,142 @@
-# Dokan AI – Next.js app
-# DOKAN AI
+# Dokan AI
 
-**Project Name:** Dokan AI  
-**Team Name:** Yuki_no_Hana
+> **Smart Shopping, Smarter Styling.** An AI-powered fashion marketplace for small sellers in Bangladesh.
 
-**Team Members:**
-- Shamima Akther Borna
-- Lamiya Rahman Khan
-- Umma Hafsa Kashfi
+- **Project name:** Dokan AI
+- **Team name:** Yuki_no_Hana
+- **Team members:**
+  - Shamima Akther Borna
+  - Lamiya Rahman Khan
+  - Umma Hafsa Kashfi
+- **Event:** CoU AI Hackathon 2026 (Comilla University)
+- **Domain:** Business and Industry (primary) · FinTech / Accessibility (secondary: escrow payments, Bangla-first UI)
+- **Live link:** `TODO: https://<your-deployment-url>`
+- **Demo video (max 3 min):** `TODO: <video-url>`
+- **Test credentials** (customer / seller / admin): `TODO: fill in before submission`
 
-## 1. Problem & Solution Summary
-
-**Problem:** Small fashion businesses in Bangladesh lack proper digital storefronts and management tools. Customers struggle to find matching outfits within their budgets and face trust issues when shopping online.
-
-**Solution:** Dokan AI is an AI-powered fashion marketplace connecting small sellers with customers through digital shops, personalized outfit recommendations, and a safer shopping experience.
-
-## 2. Features & How AI Works
-
-**Main Features:**
-- Digital shops for sellers.
-- Product browsing, search, and filtering.
-- AI Personal Stylist.
-- Budget-friendly outfit recommendations.
-- Shopping cart and order tracking.
-- Seller analytics.
-- Complaint management and fraud-warning badges.
-- Admin dashboard.
-
-**How AI Works:**
-1. Customer enters occasion, preferences, and budget.
-2. Gemini understands the request.
-3. Backend retrieves matching products from the database.
-4. Rule-based logic selects products and calculates the total.
-5. Gemini generates personalized styling suggestions.
-
-## 3. Tech Stack, Models, APIs & Datasets
-
-- **Frontend:** Next.js, React, JavaScript, CSS.
-- **Backend:** Next.js API Routes.
-- **Database:** Supabase (PostgreSQL).
-- **AI Model:** Google Gemini 2.5 Flash.
-- **APIs:** Gemini API, Supabase API, REST APIs.
-- **Dataset:** Structured product catalog, sample product records, seller information, prices, sizes, colors, and marketplace activity logs.
-- **Training:** No custom ML model training; uses an LLM with rule-based recommendation logic.
-
-## 4. AI Tools Used
-
-- **Google Gemini:** Understands customer requests and generates styling suggestions.
-- **Gemini API:** Integrates the AI model into the application.
-- **Rule-Based Recommendation Engine:** Selects suitable products and ensures budget limits.
-- **Supabase Edge Functions:** Connects AI processing with marketplace data.
-
-## 5. Third-Party Code, Assets & Credits
-
-- **Next.js & React:** Frontend framework.
-- **Supabase:** Database and backend services.
-- **Google Gemini:** AI integration.
-- **npm Packages:** Third-party libraries listed in `package.json`.
-- **Assets:** Product images stored in the project's `public/images/` directory.
-
-Third-party assets and libraries retain their respective licenses and attribution requirements.
-
-**Original Development:** Team Yuki_no_Hana.
+> Payments are a **sandbox**. No real money moves.
 
 ---
 
-**Dokan AI — Smart Shopping, Smarter Styling.**
+## 1. Problem & Solution Summary
 
+**Problem.** Small fashion businesses in Bangladesh sell through chat inboxes and social pages. They have no proper digital storefront, no analytics and no dispute process. Customers struggle to find matching outfits within a budget and have trust issues when buying online.
 
+**Solution.** Dokan AI connects small sellers and customers through verified digital shops, an AI Personal Stylist that builds a full outfit inside a budget, escrow-style sandbox payments, a complaint process and fraud-warning badges, plus AI tools that help sellers list products and understand their shop.
 
+## 2. Features & How the AI Works
 
+### Main features
+- Digital shops for sellers, product browsing, search and filtering
+- Shopping cart, sandbox checkout (bKash-style), order tracking
+- Escrow ledger: money is held until delivery is confirmed, then released to the seller
+- Seller Hub: products, orders, earnings, analytics, Premium plan (sandbox)
+- Complaints with seller response, admin decision and fraud-warning badges
+- Admin dashboard: shop verification, refunds, payouts, ledger CSV, review moderation
+- Product and platform reviews, top-sellers ranking
+- Full Bangla / English interface (toggle in the navbar)
 
+### AI features
+| Feature | Where | What the AI does | What our code does |
+| --- | --- | --- | --- |
+| **AI Personal Stylist** | `dokan-stylist/` (Supabase Edge Function), `/stylist` | Gemini extracts occasion, who it is for, budget and colours from free text (English, Bangla or Banglish), then writes the friendly reply | Searches real products, applies guardrails, builds the bundle and totals the price. Replies that mention numbers we did not supply are rejected |
+| **Shop the Look** | `lib/visual/`, `/look` | Gemini lists the separate fashion pieces visible in an outfit photo (never the person) | `match.mjs` matches each piece to real in-stock products |
+| **Photo to listing** | `lib/ai/describePhoto.mjs` | Gemini suggests name, category, colours, occasions and description from a product photo | Seller always reviews; the AI never sets price or stock |
+| **Seller AI tips (Bangla/English)** | `lib/ai/analyzeShop.mjs`, `lib/ai/bnTips.mjs` | Gemini writes exactly 3 coaching tips from the shop's own 30-day numbers | Numbers come from our database. If Gemini is busy, 3 rule-based tips are returned (`source: "rules"`) |
+| **Complaint triage** | `lib/ai/triageComplaint.mjs`, `POST /api/admin/complaints/:id/triage` | Gemini summarises the thread and suggests uphold / reject / need more info | Admin only; writes nothing; the admin records the decision. Gemini sees roles and facts only, never names, ids or contact details |
 
+**Design principle:** the LLM understands language and writes words; deterministic code does the product search, price maths, budget limits and every money or status change.
 
+## 3. Tech Stack, Models, APIs & Datasets
 
+- **Frontend:** Next.js 14 (App Router), React 18, JavaScript, CSS
+- **Backend:** Next.js API Routes (`app/api/`), business logic in `lib/`
+- **Database / storage / auth:** Supabase (PostgreSQL, Storage, Auth)
+- **Edge function:** Supabase Edge Function in Deno / TypeScript (`dokan-stylist/supabase/functions/stylist-chat`)
+- **AI models (Google Gemini via REST):**
+  - `gemini-2.5-flash`: AI Stylist (Edge Function)
+  - `gemini-3.1-flash-lite` (default, override with `GEMINI_MODEL`), with fallbacks `gemini-3.5-flash-lite` and `gemini-3.6-flash`: seller tips, photo-to-listing, Shop the Look, complaint triage
+- **APIs:** Google Gemini API, Supabase API, Resend (optional transactional email), internal REST API (documented in `docs/`)
+- **Datasets:** our own structured product catalog (about 80 sample products with photos), sample shops, orders, complaints and marketplace activity logs (`dokan-stylist/seed.sql`, `scripts/*.sql`, `scripts/seed-logs.mjs`). All sample data was created by the team.
+- **Training:** no custom model training; LLM plus rule-based recommendation logic.
+- **Tests:** 273 backend unit tests (`npm test`, Node's built-in test runner) and Deno tests for the stylist function.
 
+## 4. AI Tools Used (and for what)
 
-Requires Node.js 18.17+.
+**In the product (runtime):**
+- **Google Gemini API**: language understanding, image understanding, Bangla/English text generation (see section 2)
+- **Rule-based engines**: bundle building and budget limits, demand-gap and restock insights, complaint rules, escrow ledger
 
-    npm install
-    npm run dev          # http://localhost:3000
-    npm run build && npm start
-    npm test             # backend unit tests
+**While building (coding assistants):**
+`TODO: list every assistant the team used and for what, e.g. "Claude: debugging and code review", "ChatGPT: ...", "Copilot: ...". Undisclosed tools can cost points (rule 13).`
 
-## Pages
-/ home · /shop · /product/[id] · /cart (checkout) · /orders · /stylist · /complaint · /profile · /login · /seller (Seller Hub) · /admin
+## 5. Third-Party Code, Assets & Credits
 
-## How it works
-- Products and shops load from Supabase (lib/catalog.js). The cart is in memory (components/Store.js).
-- Orders, payments (sandbox), complaints, ledger, analytics and admin tools are real: they go through the API in app/api/ using lib/api.js with the user's login token.
-- The AI stylist runs as a Supabase Edge Function (dokan-stylist/).
-- No real money moves. Payments are a sandbox.
+- **Next.js, React**: web framework (MIT)
+- **@supabase/supabase-js, @supabase/server**: database, storage and auth client (MIT / Apache-2.0)
+- **Google Gemini**: AI models and API
+- **Resend**: optional email delivery
+- **npm packages**: see `package.json` and `package-lock.json`
+- **Product images** in `public/images/`: `TODO: state the source and licence of these photos (own photos, stock site, generated, etc.)`
 
-## Backend
-API docs are in docs/. SQL to run once in Supabase: scripts/shops.sql, scripts/orders.sql, scripts/security.sql (plus the ledger and analytics SQL). Never re-run schema.sql or seed.sql (they wipe the data).
-On the deployed site set SUPABASE_URL, SUPABASE_SECRET_KEY, the two NEXT_PUBLIC_ Supabase keys and DISABLE_DEV_USER_HEADER=true.
+Third-party libraries and assets keep their own licences. All application code was written by Team Yuki_no_Hana.
 
-## Newer AI features
-- **Shop the Look on the home page** (`components/HomeShopTheLook.js`) links to `/look`. The AI Stylist section and Shop the Look are fully Bangla/English (use the বাংলা toggle).
-- **Seller AI tips in Bangla** (`lib/ai/analyzeShop.mjs`, `lib/ai/bnTips.mjs`): exactly 3 tips built from the shop's own numbers (demand gaps, restocks, underperformers, trends). If Gemini is busy, 3 rule-based tips are returned instead (`source: "rules"`).
-- **Complaint triage** (`POST /api/admin/complaints/:id/triage`, admin only): Gemini summarises the thread and suggests uphold / reject / need more info with reasons. It writes nothing; the admin still records the decision via `PATCH .../decision`. Gemini sees roles and facts only, never names, ids or contact details.
-- Needs `GEMINI_API_KEY` on the server. `npm test` sets `ENABLE_DEV_USER_HEADER=true` itself (lib/test-setup.cjs).
+---
+
+## 6. Setup
+
+Requires **Node.js 18.17+** and a Supabase project.
+
+```bash
+git clone <repo-url>
+cd Dokan-AI
+npm install
+cp .env.example .env.local     # then fill in the values
+npm run dev                    # http://localhost:3000
+```
+
+**Other commands**
+```bash
+npm run build && npm start     # production build
+npm test                       # backend unit tests (sets ENABLE_DEV_USER_HEADER itself)
+```
+
+**Database (run once in Supabase → SQL Editor)**
+1. `dokan-stylist/schema.sql` and `dokan-stylist/seed.sql`, **on a fresh project only**. Never re-run them later; they wipe data.
+2. `scripts/shops.sql`, `scripts/orders.sql`, `scripts/security.sql`, `scripts/storage.sql`, plus the ledger, complaints, reviews and analytics SQL in `scripts/`.
+
+**AI Stylist Edge Function**
+```bash
+cd dokan-stylist
+supabase functions deploy stylist-chat
+supabase secrets set GEMINI_API_KEY=<key>
+```
+
+**Environment variables** (see `.env.example`; never commit real keys)
+
+| Variable | Purpose |
+| --- | --- |
+| `GEMINI_API_KEY` | Gemini access (server only) |
+| `GEMINI_MODEL` | Optional model override |
+| `SUPABASE_URL`, `SUPABASE_SECRET_KEY` | Server-side Supabase access |
+| `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Browser Supabase client |
+| `RESEND_API_KEY`, `MAIL_FROM` | Optional email (without a key, emails are only logged) |
+| `ISSUE_BADGES` | `true` to let upheld complaints issue fraud badges |
+| `ENABLE_DEV_USER_HEADER` | Local testing only. Leave unset in production; it is ignored when `NODE_ENV=production` |
+
+## 7. Project map
+
+```
+app/            pages and API routes (/shop, /stylist, /look, /cart, /orders, /seller, /admin, ...)
+components/     React components
+lib/            backend logic: orders, ledger, complaints, shops, analytics, ai/, visual/ (+ tests)
+dokan-stylist/  AI Stylist: Supabase Edge Function, schema.sql, seed.sql
+scripts/        SQL and helper scripts
+docs/           API docs (docs/contract.md first) and DEMO_SCRIPT.md
+```
+
+Pages: `/` home · `/shop` · `/product/[id]` · `/cart` · `/orders` · `/stylist` · `/look` · `/complaint` · `/profile` · `/login` · `/seller` · `/admin`
+
+## 8. Known limitations / future work
+
+Chat, wishlist, vouchers, notifications, real payment gateways, courier tracking, saved addresses, partial refunds, scheduled automatic payouts and admin two-factor login are not built yet.
