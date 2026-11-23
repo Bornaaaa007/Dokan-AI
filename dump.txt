@@ -1,0 +1,3305 @@
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\admin\complaints\[id]\decision\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\admin\complaints\[id]\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\admin\complaints\route.js =====
+
+// GET /api/admin/complaints?status=open
+import { handleAdminList } from '../../../../lib/complaints/handlers.mjs';
+import { createServerDb } from '../../../../lib/complaints/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleAdminList(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\admin\insights\route.js =====
+
+// GET /api/admin/insights
+import { handleAdminInsights } from '../../../../lib/analytics/handlers.mjs';
+import { createServerDb } from '../../../../lib/analytics/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleAdminInsights(request, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\admin\ledger\route.js =====
+
+// GET /api/admin/ledger   (admin: every shop's payment ledger, JSON or CSV)
+import { handleAdminLedger } from '../../../../lib/ledger/handlers.mjs';
+import { createServerDb } from '../../../../lib/ledger/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleAdminLedger(request, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\admin\orders\[id]\refund\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\admin\payouts\release\route.js =====
+
+// POST /api/admin/payouts/release
+import { handleReleaseDue } from '../../../../../lib/orders/handlers.mjs';
+import { createServerDb } from '../../../../../lib/orders/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function POST(request) {
+  return handleReleaseDue(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\admin\shops\[id]\verification\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\admin\shops\route.js =====
+
+// GET /api/admin/shops?status=pending
+import { handleAdminListShops } from '../../../../lib/shops/handlers.mjs';
+import { createServerDb } from '../../../../lib/shops/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleAdminListShops(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\complaints\mine\route.js =====
+
+// GET /api/complaints/mine
+import { handleMyComplaints } from '../../../../lib/complaints/handlers.mjs';
+import { createServerDb } from '../../../../lib/complaints/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleMyComplaints(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\complaints\[id]\respond\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\events\route.js =====
+
+// POST /api/events  (records a product view or add-to-cart)
+import { handleRecordEvent } from '../../../lib/events/handlers.mjs';
+import { createServerDb } from '../../../lib/events/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function POST(request) {
+  return handleRecordEvent(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\me\route.js =====
+
+// GET /api/me  (the signed-in user, roles, and the seller's shop)
+import { handleMe } from '../../../lib/me/handlers.mjs';
+import { createServerDb } from '../../../lib/me/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleMe(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\orders\[id]\complaints\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\orders\[id]\pay\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\orders\[id]\status\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\orders\[id]\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\orders\route.js =====
+
+// GET /api/orders (my orders)  and  POST /api/orders (place an order)
+import { handleListOrders, handleCreateOrder } from '../../../lib/orders/handlers.mjs';
+import { createServerDb } from '../../../lib/orders/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleListOrders(request, {}, createServerDb);
+}
+export async function POST(request) {
+  return handleCreateOrder(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\products\[id]\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\products\route.js =====
+
+// GET /api/products (search)  and  POST /api/products (seller adds a product)
+import { handleListProducts, handleCreateProduct } from '../../../lib/products/handlers.mjs';
+import { createServerDb } from '../../../lib/products/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleListProducts(request, {}, createServerDb);
+}
+export async function POST(request) {
+  return handleCreateProduct(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\seller\analytics\route.js =====
+
+// GET /api/seller/analytics   (seller: own shop; admin: add ?shop_id=<uuid>)
+import { handleSellerAnalytics } from '../../../../lib/analytics/handlers.mjs';
+import { createServerDb } from '../../../../lib/analytics/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleSellerAnalytics(request, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\seller\ledger\route.js =====
+
+// GET /api/seller/ledger   (seller: own shop's payment ledger, JSON or CSV)
+import { handleSellerLedger } from '../../../../lib/ledger/handlers.mjs';
+import { createServerDb } from '../../../../lib/ledger/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleSellerLedger(request, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\shops\mine\route.js =====
+
+// GET /api/shops/mine
+import { handleMyShop } from '../../../../lib/shops/handlers.mjs';
+import { createServerDb } from '../../../../lib/shops/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleMyShop(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\shops\[id]\badge\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\shops\[id]\premium\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\shops\[id]\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\shops\route.js =====
+
+// POST /api/shops
+import { handleCreateShop } from '../../../lib/shops/handlers.mjs';
+import { createServerDb } from '../../../lib/shops/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function POST(request) {
+  return handleCreateShop(request, {}, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\top-sellers\route.js =====
+
+// GET /api/top-sellers
+import { handleTopSellers } from '../../../lib/analytics/handlers.mjs';
+import { createServerDb } from '../../../lib/analytics/server.mjs';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET(request) {
+  return handleTopSellers(request, createServerDb);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\api\users\[id]\badge\route.js =====
+
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\seller\page.js =====
+
+'use client';
+import { useState, useEffect } from 'react';
+import { PRODUCTS, SHOPS, bdt, commissionRate, STATUS, DELIVERY } from '../../lib/data';
+import { useStore, itemsTotal } from '../../components/Store';
+import { DEMO_SHOPS, DEMO_SHOP_KEY } from '../../lib/demoShops';
+import RequireAuth from '../../components/RequireAuth';
+
+const NEXT = { Placed: 'Accepted', Accepted: 'Packed', Packed: 'Shipped' };
+const pct = (r) => (r == null ? '—' : (r * 100).toFixed(1) + '%');
+
+function SellerInner() {
+  const shop = SHOPS[0], { orders, setStatus } = useStore();
+  const [tab, setTab] = useState('Overview'), [mine, setMine] = useState(PRODUCTS.filter((p) => p.shop === 1));
+  const [f, setF] = useState({ name: '', cat: '', price: '', stock: '' });
+  const my = orders.filter((o) => o.shopId === 1), gross = my.reduce((s, o) => s + itemsTotal(o.items), 0);
+  const fee = my.reduce((s, o) => s + itemsTotal(o.items) * commissionRate(itemsTotal(o.items)) / 100, 0);
+  const add = (e) => { e.preventDefault(); setMine([{ id: Date.now(), name: f.name, cat: f.cat, price: +f.price, stock: +f.stock }, ...mine]); setF({ name: '', cat: '', price: '', stock: '' }); };
+
+  // ---- Demo seller login + real analytics ----
+  const [shopId, setShopId] = useState('');
+  const [data, setData] = useState(null);
+  const [aload, setAload] = useState(false);
+  const [aerr, setAerr] = useState('');
+  const [previewFree, setPreviewFree] = useState(false);
+
+  useEffect(() => {
+    let saved = '';
+    try { saved = localStorage.getItem(DEMO_SHOP_KEY) || ''; } catch { /* storage blocked */ }
+    setShopId(DEMO_SHOPS.some((s) => s.id === saved) ? saved : DEMO_SHOPS[0].id);
+  }, []);
+
+  useEffect(() => {
+    if (!shopId) return;
+    let off = false;
+    setAload(true); setAerr('');
+    fetch('/api/seller/analytics?shop_id=' + shopId)
+      .then(async (r) => {
+        const j = await r.json().catch(() => null);
+        if (!r.ok) throw new Error(j?.error?.message || 'Analytics request failed (' + r.status + ')');
+        return j.data;
+      })
+      .then((d) => { if (!off) setData(d); })
+      .catch((e) => { if (!off) { setData(null); setAerr(e.message); } })
+      .finally(() => { if (!off) setAload(false); });
+    return () => { off = true; };
+  }, [shopId]);
+
+  const pick = (id) => {
+    setShopId(id); setPreviewFree(false); setData(null);
+    try { localStorage.setItem(DEMO_SHOP_KEY, id); } catch { /* ignore */ }
+  };
+  const premium = !!data && !data.locked && !previewFree;
+  const shopName = data?.shop?.name || DEMO_SHOPS.find((s) => s.id === shopId)?.name || shop.name;
+
+  return (
+    <div className="wrap page"><div className="rowb"><div><h1>{shopName}</h1><span className="badge">✓ Verified</span> <span className="badge">{data ? (premium ? 'Premium' : 'Free plan') : '…'}</span></div>
+      <div>
+        <label className="sm">Demo seller login{' '}
+          <select value={shopId} onChange={(e) => pick(e.target.value)}>
+            {DEMO_SHOPS.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.plan})</option>)}
+          </select>
+        </label>{' '}
+        {data && !data.locked && <button className="btn alt" onClick={() => setPreviewFree(!previewFree)}>{previewFree ? 'Back to Premium view' : 'Preview Free plan'}</button>}
+      </div></div>
+      <div className="tabs">{['Overview', 'Products', 'Orders', 'Analytics', 'Shop profile'].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
+      {tab === 'Overview' && <><div className="kpis"><div><b>{my.length}</b><span>Orders</span></div><div><b>{bdt(gross)}</b><span>Gross sales</span></div><div><b>{bdt(fee)}</b><span>Platform commission</span></div><div><b>{bdt(gross - fee)}</b><span>Net payout (escrow released on delivery)</span></div><div><b>★ {shop.rating}</b><span>Shop rating</span></div></div>
+        <div className="box"><h3>To do</h3><p className="sm">{my.filter((o) => o.status === 'Placed').length} new order(s) waiting · {mine.filter((p) => p.stock < 10).length} low-stock product(s)</p></div></>}
+      {tab === 'Products' && <div className="two"><div className="tbl-w"><table className="tbl"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th></tr></thead><tbody>{mine.map((p) => <tr key={p.id}><td>{p.name}</td><td>{p.cat}</td><td>{bdt(p.price)}</td><td>{p.stock}</td></tr>)}</tbody></table></div>
+        <form className="box form wide" onSubmit={add}><h3>Add product</h3><input required placeholder="Product name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /><input required placeholder="Custom category (e.g. Kurti)" value={f.cat} onChange={(e) => setF({ ...f, cat: e.target.value })} />
+          <div className="f2"><input required type="number" placeholder="Price BDT" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} /><input required type="number" placeholder="Stock" value={f.stock} onChange={(e) => setF({ ...f, stock: e.target.value })} /></div>
+          <label>Photos (up to 5)<input type="file" multiple accept="image/*" /></label>
+          {f.price && <p className="sm">Commission {commissionRate(+f.price)}% · you receive {bdt(f.price * (1 - commissionRate(+f.price) / 100))}</p>}<button className="btn">Publish product</button></form></div>}
+      {tab === 'Orders' && (my.length ? my.map((o) => <div className="box rowb" key={o.id}><div><b>#{o.id}</b> · {o.customer} · {o.method}<br /><span className="sm">{o.items.length} item(s) · {bdt(itemsTotal(o.items) + DELIVERY)} · {o.status}</span></div>{NEXT[o.status] ? <button className="btn sm2" onClick={() => setStatus(o.id, NEXT[o.status])}>Mark {NEXT[o.status]}</button> : <span className="badge">{o.status}</span>}</div>) : <div className="box">No orders yet.</div>)}
+      {tab === 'Analytics' && <div>
+        {aload && <div className="box">Loading analytics…</div>}
+        {aerr && <div className="box">⚠ {aerr}</div>}
+        {data && <>
+          {!premium && <div className="box">🔒 Full AI analytics are Premium. Showing basic stats only.</div>}
+          <div className="kpis">
+            <div><b>{data.summary.views_30d.toLocaleString('en-US')}</b><span>Views (30d)</span></div>
+            <div><b>{data.summary.purchases_30d}</b><span>Purchases (30d)</span></div>
+            <div><b>{pct(data.summary.conversion)}</b><span>Conversion</span></div>
+            <div><b>{data.summary.best_seller?.name || '—'}</b><span>Best seller</span></div>
+            {data.shop.top_seller_rank && <div><b>#{data.shop.top_seller_rank}</b><span>Top seller rank</span></div>}
+          </div>
+          {premium && <>
+            <div className="insights box"><h3>AI insights</h3>
+              {data.insights.length === 0
+                ? <p className="sm">Not enough data yet for tips. They appear once your products get views and sales.</p>
+                : <ul>{data.insights.map((x, i) => <li key={i}><b>{x.title}</b> {x.text}</li>)}</ul>}
+            </div>
+            {data.best_products.length > 0 && <div className="box"><h3>Doing well</h3><ul>{data.best_products.map((p) => <li key={p.product_id}>{p.name}: {p.purchases_30d} sales from {p.views_30d} views ({pct(p.conversion)})</li>)}</ul></div>}
+            {data.worst_products.length > 0 && <div className="box"><h3>Needs attention</h3><ul>{data.worst_products.map((p) => <li key={p.product_id}>{p.name}: {p.views_30d} views, {p.purchases_30d} sales</li>)}</ul></div>}
+            {data.platform?.demand_gap?.length > 0 && <div className="box"><h3>What customers are looking for</h3><ul>{data.platform.demand_gap.map((d, i) => <li key={i}>“{d.name}”: {d.searches_30d} searches, {d.listings} in-stock listing{d.listings === 1 ? '' : 's'}</li>)}</ul></div>}
+            {data.platform?.trending_categories?.length > 0 && <div className="box"><h3>Trending this week</h3><ul>{data.platform.trending_categories.map((t) => <li key={t.custom_category}>{t.custom_category}: {t.trending_products} trending product{t.trending_products === 1 ? '' : 's'}</li>)}</ul></div>}
+          </>}
+        </>}
+      </div>}
+      {tab === 'Shop profile' && <form className="form box wide"><input defaultValue={shop.name} /><input defaultValue="@nusrat.boutique (Facebook)" /><textarea defaultValue={shop.policy} /><p className="sm">Verification: NID ✓ · Social page ✓ · Payout account (bKash) ✓</p><button className="btn" type="button">Save profile</button></form>}
+    </div>
+  );
+}
+
+export default function Seller() {
+  return (
+    <RequireAuth role="seller">
+      <SellerInner />
+    </RequireAuth>
+  );
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\app\login\page.js =====
+
+'use client';
+import { useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { supabase } from '../../lib/supabaseClient';
+import { api } from '../../lib/api';
+
+const emailOk = (v) => /^\S+@\S+\.\S+$/.test(v);
+
+export default function Login() {
+  const router = useRouter();
+  const [mode, setMode] = useState('login'); // 'login' | 'signup'
+  const [role, setRole] = useState('customer');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [show, setShow] = useState(false);
+  const [terms, setTerms] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
+
+  const isSignup = mode === 'signup';
+  const valid = emailOk(email) && password.length >= 6 && (!isSignup || (name.trim().length > 1 && terms));
+  const reset = (m) => { setMode(m); setError(''); setInfo(''); };
+
+ // Ask the backend who this user is, then send them to the right place
+const go = async () => {
+  try {
+    const { data } = await api('/me');
+    const roles = data.roles || [];
+    router.push(roles.includes('admin') ? '/admin' : roles.includes('seller') ? '/seller' : '/shop');
+  } catch {
+    router.push('/shop');
+  }
+  router.refresh();
+};
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!valid) return;
+    setError(''); setInfo(''); setBusy(true);
+    try {
+      if (isSignup) {
+        const { data, error } = await supabase.auth.signUp({ email, password, options: { data: { name, role } } });
+        if (error) throw error;
+        if (!data.session) {
+          setInfo('Account created. Check your email to confirm, then log in.');
+          setMode('login');
+          return;
+        }
+        await go();
+      } else {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+        await go();
+      }
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const google = async () => {
+    setError('');
+    const { error } = await supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: `${window.location.origin}/shop` } });
+    if (error) setError(error.message);
+  };
+
+  const forgot = async () => {
+    setError(''); setInfo('');
+    if (!emailOk(email)) return setError('Enter your email above first.');
+    const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/login` });
+    if (error) setError(error.message); else setInfo('Password reset link sent. Check your email.');
+  };
+
+  return (
+    <div className="auth">
+      <aside className="auth-brand">
+        <Link href="/" className="logo">Dokan<b>AI</b></Link>
+        <h2>Your shop. Your stylist. Your trust.</h2>
+        <ul>
+          <li><b>Shop smarter</b>Complete outfits within your budget, from verified sellers.</li>
+          <li><b>Sell with confidence</b>Orders, stock and payouts in one place.</li>
+          <li><b>Protected payments</b>Funds stay in escrow until delivery is confirmed.</li>
+        </ul>
+      </aside>
+
+      <main className="auth-main">
+        <div className="auth-card">
+          <form onSubmit={submit}>
+            <div className="seg" role="tablist">
+              {[['login', 'Log in'], ['signup', 'Sign up']].map(([k, l]) => (
+                <button type="button" key={k} className={mode === k ? 'on' : ''} onClick={() => reset(k)}>{l}</button>
+              ))}
+            </div>
+            <h1>{isSignup ? 'Create your account' : 'Welcome back'}</h1>
+            <p className="sub">{isSignup ? 'It takes less than a minute.' : 'Log in to continue.'}</p>
+
+            {isSignup && <>
+              <div className="roles">
+                {[['customer', '🛍️', 'Customer', 'Shop and get styled'], ['seller', '🏪', 'Seller', 'Open your shop']].map(([k, ic, t, d]) => (
+                  <button type="button" key={k} className={role === k ? 'on' : ''} onClick={() => setRole(k)}><span>{ic}</span><b>{t}</b><small>{d}</small></button>
+                ))}
+              </div>
+              <label>Full name<input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" autoComplete="name" /></label>
+            </>}
+
+            <label>Email address<input type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" /></label>
+            <label>Password
+              <div className="pfx">
+                <input type={show ? 'text' : 'password'} placeholder="Min 6 characters" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete={isSignup ? 'new-password' : 'current-password'} style={{ paddingLeft: 12 }} />
+                <button type="button" className="link" onClick={() => setShow(!show)} style={{ padding: '0 12px' }}>{show ? 'Hide' : 'Show'}</button>
+              </div>
+            </label>
+            {!isSignup && <button type="button" className="link" style={{ justifySelf: 'end', fontSize: 13 }} onClick={forgot}>Forgot password?</button>}
+
+            {isSignup && <label className="chk"><input type="checkbox" checked={terms} onChange={(e) => setTerms(e.target.checked)} /> <span>I agree to the Terms and Privacy Policy.</span></label>}
+            {isSignup && role === 'seller' && <p className="note">After signup you will verify your business (NID, shop page, payout account) before you can sell.</p>}
+
+            {error && <p className="err">{error}</p>}
+            {info && <p style={{ color: 'var(--ok)', margin: 0, fontSize: 14 }}>{info}</p>}
+
+            <button className="btn" type="submit" disabled={!valid || busy} style={{ opacity: !valid || busy ? 0.5 : 1 }}>
+              {busy ? 'Please wait…' : isSignup ? 'Create account' : 'Log in'}
+            </button>
+            <div className="or"><span>or</span></div>
+            <button type="button" className="btn alt gbtn" onClick={google}>
+              <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h11.8c-.5 2.7-2 5-4.4 6.5v5.4h7.1c4.2-3.8 6.5-9.5 6.5-15.9z" /><path fill="#34A853" d="M24 46c5.9 0 10.9-2 14.5-5.3l-7.1-5.4c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.6C8.1 41.1 15.5 46 24 46z" /><path fill="#FBBC05" d="M11.8 28.4c-.4-1.3-.7-2.7-.7-4.4s.3-3 .7-4.4v-5.6H4.5C3 17 2 20.4 2 24s1 7 2.5 10z" /><path fill="#EA4335" d="M24 10.6c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.9 4.1 29.9 2 24 2 15.5 2 8.1 6.9 4.5 14l7.3 5.6c1.7-5.2 6.5-9 12.2-9z" /></svg> Continue with Google
+            </button>
+            
+          </form>
+        </div>
+      </main>
+    </div>
+  );
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\analytics\db.mjs =====
+
+// Reads the analytics views through the Supabase client. The client is passed in, so this file is testable offline.
+const must = ({ data, error }, what) => {
+  if (error) throw new Error(what + ': ' + error.message);
+  return data;
+};
+
+export function createAnalyticsDb(sb) {
+  return {
+    async getUser(id) {
+      return must(await sb.from('users').select('id,name,roles').eq('id', id).maybeSingle(), 'load user');
+    },
+    // Written for Supabase Auth: the token belongs to auth.users, and users.auth_id links to it.
+    async getUserByToken(token) {
+      const { data, error } = await sb.auth.getUser(token);
+      if (error || !data?.user) return null;
+      return must(await sb.from('users').select('id,name,roles').eq('auth_id', data.user.id).maybeSingle(), 'load user by token');
+    },
+    async getShopsByOwner(ownerId) {
+      return (must(await sb.from('shops').select('id,name,plan,plan_expires_at').eq('owner_id', ownerId), 'load shops by owner')) ?? [];
+    },
+    async getShop(id) {
+      return must(await sb.from('shops').select('id,name,plan,plan_expires_at').eq('id', id).maybeSingle(), 'load shop');
+    },
+    async getPerformance(shopId) {
+      return (must(await sb.from('product_performance').select('*').eq('shop_id', shopId), 'load performance')) ?? [];
+    },
+    async getDemandGap() {
+      return (must(await sb.from('demand_gap').select('*').order('opportunity_score', { ascending: false }).limit(50), 'load demand gap')) ?? [];
+    },
+    async getTrending() {
+      return (must(await sb.from('trending_products').select('*').order('score_7d', { ascending: false }).limit(200), 'load trending')) ?? [];
+    },
+    async getTopSellers() {
+      return (must(await sb.from('top_sellers').select('*').order('rnk', { ascending: true }), 'load top sellers')) ?? [];
+    },
+  };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\analytics\handlers.mjs =====
+
+// Request handlers for the analytics endpoints. The database is passed in (or a function that makes it).
+// Identity comes only from lib/auth/current-user.mjs.
+import { buildSellerAnalytics, buildAdminInsights, isPremium } from './shape.mjs';
+import { run, json, http, UUID } from '../api/http.mjs';
+import { requireUser, hasRole } from '../auth/current-user.mjs';
+
+// GET /api/seller/analytics
+// A seller always gets their OWN shop; any shop_id they send is ignored.
+// An admin may look at any shop by sending ?shop_id=<uuid>.
+export function handleSellerAnalytics(request, dbOrFactory, now = new Date()) {
+  return run(dbOrFactory, async (db) => {
+    const user = await requireUser(request, db);
+    let shop;
+    if (hasRole(user, 'admin')) {
+      const shopId = new URL(request.url).searchParams.get('shop_id');
+      if (!shopId || !UUID.test(shopId)) throw http(400, 'bad_shop_id', 'Send ?shop_id=<shop uuid>.');
+      shop = await db.getShop(shopId.toLowerCase());
+      if (!shop) throw http(404, 'shop_not_found', 'No shop with that id.');
+    } else if (hasRole(user, 'seller')) {
+      const mine = await db.getShopsByOwner(user.id);
+      if (!mine.length) throw http(404, 'no_shop', 'Create your shop first.');
+      shop = mine[0];
+    } else {
+      throw http(403, 'seller_only', 'Only sellers can see shop analytics.');
+    }
+    const premium = isPremium(shop, now);
+    const [performance, topSellers] = await Promise.all([db.getPerformance(shop.id), db.getTopSellers()]);
+    const [demand, trending] = premium ? await Promise.all([db.getDemandGap(), db.getTrending()]) : [[], []];
+    return json(200, { data: buildSellerAnalytics({ shop, performance, trending, demand, topSellers, now }) });
+  }, 'seller analytics');
+}
+
+// GET /api/admin/insights   (admins only)
+export function handleAdminInsights(request, dbOrFactory) {
+  return run(dbOrFactory, async (db) => {
+    const user = await requireUser(request, db);
+    if (!hasRole(user, 'admin')) throw http(403, 'admin_only', 'Admins only.');
+    const [demand, trending, topSellers] = await Promise.all([db.getDemandGap(), db.getTrending(), db.getTopSellers()]);
+    return json(200, { data: buildAdminInsights({ demand, trending, topSellers }) });
+  }, 'admin insights');
+}
+
+// GET /api/top-sellers   (public)
+export function handleTopSellers(_request, dbOrFactory) {
+  return run(dbOrFactory, async (db) => {
+    const rows = await db.getTopSellers();
+    return json(200, { data: { shops: rows.map((t) => ({ shop_id: t.shop_id, name: t.name, rank: t.rnk })) } });
+  }, 'top sellers');
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\analytics\server.mjs =====
+
+// Server-only: uses the SECRET key. Never import this file from browser code.
+import { createClient } from '@supabase/supabase-js';
+import { createAnalyticsDb } from './db.mjs';
+
+export function createServerDb() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env');
+  return createAnalyticsDb(createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\analytics\shape.mjs =====
+
+// Pure functions: turn rows from the analytics views into API responses and plain-language tips.
+// No database, no network: everything here is unit-tested.
+
+export const isPremium = (shop, now = new Date()) =>
+  shop?.plan === 'premium' && (!shop.plan_expires_at || new Date(shop.plan_expires_at) > now);
+
+const plural = (n, word) => n + ' ' + word + (n === 1 ? '' : 's');
+const demandName = (r) => [r.occasion, r.color, r.custom_category].filter(Boolean).join(' ');
+const byDesc = (key) => (a, b) => (b[key] ?? 0) - (a[key] ?? 0);
+
+function demandTip(r) {
+  const name = demandName(r);
+  const supply = r.listings === 0 ? 'no shop has it in stock'
+    : r.listings === 1 ? 'only 1 in-stock listing exists'
+    : 'only ' + r.listings + ' in-stock listings exist';
+  return 'Customers searched for "' + name + '" ' + r.searches_30d + ' times in the last 30 days, but ' + supply + '. Stocking it could win these buyers.';
+}
+
+export function demandList(demand, limit = 5) {
+  return demand
+    .filter((r) => r.signal !== 'not_enough_data')
+    .sort(byDesc('opportunity_score'))
+    .slice(0, limit)
+    .map((r) => ({ name: demandName(r), custom_category: r.custom_category, color: r.color, occasion: r.occasion, searches_30d: r.searches_30d, listings: r.listings, signal: r.signal }));
+}
+
+// Seller view: categories only, so one shop never sees another shop's products or name.
+export function trendingCategories(trending, limit = 5) {
+  const map = new Map();
+  for (const t of trending.filter((x) => x.signal === 'trending')) {
+    const key = t.custom_category ?? 'other';
+    const cur = map.get(key) ?? { custom_category: key, trending_products: 0, score_7d: 0 };
+    cur.trending_products += 1;
+    cur.score_7d += t.score_7d;
+    map.set(key, cur);
+  }
+  return [...map.values()].sort(byDesc('score_7d')).slice(0, limit);
+}
+
+export function sellerInsights({ performance, trending, demand }) {
+  const out = [];
+  for (const r of demand.filter((d) => d.signal === 'high_opportunity').sort(byDesc('opportunity_score')).slice(0, 2))
+    out.push({ type: 'demand_gap', title: 'Demand gap', text: demandTip(r), product_id: null });
+  for (const p of performance.filter((x) => x.signal === 'doing_badly').sort(byDesc('views_30d')).slice(0, 2))
+    out.push({ type: 'underperformer', title: 'Underperformer', text: p.name + ' got ' + plural(p.views_30d, 'view') + ' but no sales in 30 days. Try a lower price or better photos.', product_id: p.product_id });
+  for (const p of performance.filter((x) => !x.in_stock && x.purchases_30d > 0).sort(byDesc('purchases_30d')).slice(0, 2))
+    out.push({ type: 'restock', title: 'Restock', text: p.name + ' sold ' + plural(p.purchases_30d, 'time') + ' in 30 days but is out of stock. Restock it.', product_id: p.product_id });
+  const mine = new Set(performance.map((p) => p.product_id));
+  for (const t of trending.filter((x) => x.signal === 'trending' && mine.has(x.product_id)).sort(byDesc('score_7d')).slice(0, 1))
+    out.push({ type: 'trending', title: 'Trending', text: t.name + ' is trending this week. Keep it in stock.', product_id: t.product_id });
+  return out;
+}
+
+export function buildSellerAnalytics({ shop, performance, trending = [], demand = [], topSellers = [], now = new Date() }) {
+  const premium = isPremium(shop, now);
+  const views = performance.reduce((t, p) => t + p.views_30d, 0);
+  const carts = performance.reduce((t, p) => t + p.carts_30d, 0);
+  const purchases = performance.reduce((t, p) => t + p.purchases_30d, 0);
+  const best = performance.filter((p) => p.purchases_30d > 0).sort((a, b) => b.purchases_30d - a.purchases_30d || b.views_30d - a.views_30d);
+  const rank = topSellers.find((t) => t.shop_id === shop.id)?.rnk ?? null;
+
+  const base = {
+    shop: { id: shop.id, name: shop.name, plan: premium ? 'premium' : 'free', top_seller_rank: rank },
+    summary: {
+      views_30d: views, carts_30d: carts, purchases_30d: purchases,
+      conversion: views > 0 ? Math.round((purchases / views) * 1000) / 1000 : null,
+      best_seller: best[0] ? { product_id: best[0].product_id, name: best[0].name, purchases_30d: best[0].purchases_30d } : null,
+    },
+    locked: !premium,
+  };
+  if (!premium) return { ...base, best_products: [], worst_products: [], insights: [], platform: null };
+
+  const slim = (p) => ({ product_id: p.product_id, name: p.name, views_30d: p.views_30d, carts_30d: p.carts_30d, purchases_30d: p.purchases_30d, conversion: p.conversion, in_stock: p.in_stock });
+  return {
+    ...base,
+    best_products: performance.filter((p) => p.signal === 'doing_well').sort(byDesc('purchases_30d')).slice(0, 3).map((p) => ({ ...slim(p), signal: p.signal })),
+    worst_products: performance.filter((p) => p.signal === 'doing_badly').sort(byDesc('views_30d')).slice(0, 3).map((p) => ({ ...slim(p), signal: p.signal })),
+    no_data_products: performance.filter((p) => p.signal === 'new_no_views' || p.signal === 'not_enough_data').length,
+    insights: sellerInsights({ performance, trending, demand }),
+    platform: { demand_gap: demandList(demand), trending_categories: trendingCategories(trending) },
+  };
+}
+
+export function buildAdminInsights({ demand = [], trending = [], topSellers = [] }) {
+  const gaps = demandList(demand, 10);
+  return {
+    demand_gap: gaps,
+    trending_products: trending.filter((t) => t.signal === 'trending').sort(byDesc('score_7d')).slice(0, 10)
+      .map((t) => ({ product_id: t.product_id, name: t.name, shop_name: t.shop_name, custom_category: t.custom_category, score_7d: t.score_7d, score_prev_7d: t.score_prev_7d })),
+    top_sellers: topSellers.map((t) => ({ shop_id: t.shop_id, name: t.name, purchases_30d: t.purchases_30d, rank: t.rnk })),
+    suggestions: gaps.filter((g) => g.signal === 'high_opportunity').slice(0, 3)
+      .map((g) => 'Ask sellers to stock "' + g.name + '": ' + g.searches_30d + ' searches in 30 days, ' + (g.listings === 0 ? 'none in stock.' : plural(g.listings, 'listing') + ' in stock.')),
+  };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\api\http.mjs =====
+
+// Small shared helpers for API handlers: JSON replies, typed errors, one place that turns errors into responses.
+export const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export const json = (status, body) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
+
+export class HttpError extends Error {
+  constructor(status, code, message) { super(message); this.status = status; this.code = code; }
+}
+export const http = (status, code, message) => new HttpError(status, code, message);
+
+export const resolveDb = (d) => (typeof d === 'function' ? d() : d);
+
+export async function run(dbOrFactory, fn, label = 'api') {
+  try {
+    return await fn(resolveDb(dbOrFactory));
+  } catch (e) {
+    if (e instanceof HttpError) return json(e.status, { error: { code: e.code, message: e.message } });
+    console.error(label + ' error:', e);   // details stay in the server log, never in the reply
+    return json(500, { error: { code: 'internal', message: 'Something went wrong. Please try again.' } });
+  }
+}
+
+export async function readJson(request) {
+  try { return await request.json(); } catch { return undefined; }
+}
+export const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\auth\current-user.mjs =====
+
+// ONE place that answers "who is calling?". Every new route uses this, so real login only has to change this file.
+//
+// 1) Authorization: Bearer <token>  -> db.getUserByToken(token). Written for Supabase Auth
+//    (users.auth_id links to auth.users). If the auth teammate issues their own tokens, change getUserByToken in db.mjs.
+// 2) x-user-id header (demo mode)   -> db.getUser(id).
+//    TODO(auth): delete this branch once login works, or set DISABLE_DEV_USER_HEADER=true in production.
+import { UUID, http } from '../api/http.mjs';
+
+export async function currentUser(request, db) {
+  const auth = request.headers.get('authorization');
+  if (auth) {
+    const m = /^Bearer\s+(\S+)$/i.exec(auth.trim());
+    if (!m || typeof db.getUserByToken !== 'function') return null;   // a bad token never falls back to the demo header
+    return (await db.getUserByToken(m[1])) ?? null;
+  }
+  if (process.env.DISABLE_DEV_USER_HEADER === 'true') return null;
+  const id = request.headers.get('x-user-id');
+  if (!id || !UUID.test(id)) return null;
+  return (await db.getUser(id)) ?? null;
+}
+
+export async function requireUser(request, db) {
+  const user = await currentUser(request, db);
+  if (!user) throw http(401, 'not_signed_in', 'Please sign in first.');
+  return user;
+}
+
+export const hasRole = (user, role) => Array.isArray(user?.roles) && user.roles.includes(role);
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\complaints\db.mjs =====
+
+// Database access for complaints. The Supabase client is passed in, so this file is testable offline.
+const must = ({ data, error }, what) => {
+  if (error) throw new Error(what + ': ' + error.message);
+  return data;
+};
+const COMPLAINT_COLS = '*';
+
+export function createComplaintsDb(sb) {
+  return {
+    // Only non-sensitive user columns: never phone or email.
+    async getUser(id) {
+      return must(await sb.from('users').select('id,name,roles').eq('id', id).maybeSingle(), 'load user');
+    },
+    // Written for Supabase Auth: the token belongs to auth.users, and users.auth_id links to it.
+    async getUserByToken(token) {
+      const { data, error } = await sb.auth.getUser(token);
+      if (error || !data?.user) return null;
+      return must(await sb.from('users').select('id,name,roles').eq('auth_id', data.user.id).maybeSingle(), 'load user by token');
+    },
+    async getUsersByIds(ids) {
+      if (!ids.length) return [];
+      return (must(await sb.from('users').select('id,name,roles').in('id', ids), 'load users')) ?? [];
+    },
+    async getOrder(id) {
+      return must(await sb.from('orders').select('id,customer_id,shop_id,items,item_total,delivery_charge,payment_method,payment_status,status,placed_at,delivered_at').eq('id', id).maybeSingle(), 'load order');
+    },
+    // Never selects nid_number.
+    async getShop(id) {
+      return must(await sb.from('shops').select('id,owner_id,name').eq('id', id).maybeSingle(), 'load shop');
+    },
+    async getComplaint(id) {
+      return must(await sb.from('complaints').select(COMPLAINT_COLS).eq('id', id).maybeSingle(), 'load complaint');
+    },
+    async findComplaint(orderId, filedBy) {
+      return must(await sb.from('complaints').select('id').eq('order_id', orderId).eq('filed_by', filedBy).maybeSingle(), 'check duplicate');
+    },
+    async countRecentComplaints(userId, sinceIso) {
+      const { count, error } = await sb.from('complaints').select('id', { count: 'exact', head: true }).eq('filed_by', userId).gte('created_at', sinceIso);
+      if (error) throw new Error('count complaints: ' + error.message);
+      return count ?? 0;
+    },
+    async insertComplaint(row) {
+      const { data, error } = await sb.from('complaints').insert(row).select(COMPLAINT_COLS).single();
+      if (error) {
+        if (error.code === '23505') { const e = new Error('duplicate'); e.code = 'duplicate'; throw e; }
+        throw new Error('save complaint: ' + error.message);
+      }
+      return data;
+    },
+    // Atomic: only updates while the complaint is still "submitted" and the caller is the accused party.
+    async saveResponse(id, accusedId, patch) {
+      return must(await sb.from('complaints').update({ ...patch, status: 'responded' }).eq('id', id).eq('accused_id', accusedId).eq('status', 'submitted').select(COMPLAINT_COLS).maybeSingle(), 'save response');
+    },
+    async listForUser(userId) {
+      return (must(await sb.from('complaints').select(COMPLAINT_COLS).or('filed_by.eq.' + userId + ',accused_id.eq.' + userId).order('created_at', { ascending: false }).limit(50), 'list my complaints')) ?? [];
+    },
+    async listByStatus(statuses) {
+      return (must(await sb.from('complaints').select(COMPLAINT_COLS).in('status', statuses).order('created_at', { ascending: true }).limit(100), 'list complaints')) ?? [];
+    },
+    async countUpheldAgainst(userId) {
+      const { count, error } = await sb.from('complaints').select('id', { count: 'exact', head: true }).eq('accused_id', userId).eq('status', 'upheld');
+      if (error) throw new Error('count upheld: ' + error.message);
+      return count ?? 0;
+    },
+    async getActiveBadges(userId, nowIso) {
+      return (must(await sb.from('badges').select('id,role,expires_at').eq('user_id', userId).eq('status', 'active').gt('expires_at', nowIso), 'load badges')) ?? [];
+    },
+    // One transaction in the database: decision + optional badge. Errors come back as short codes.
+    async decide({ complaintId, adminId, outcome, note, issueBadge }) {
+      const { data, error } = await sb.rpc('decide_complaint', {
+        p_complaint_id: complaintId, p_admin_id: adminId, p_outcome: outcome, p_note: note, p_issue_badge: issueBadge,
+      });
+      if (error) { const e = new Error(error.message); e.code = 'rpc'; throw e; }
+      return data;
+    },
+  };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\complaints\handlers.mjs =====
+
+// Request handlers for the complaint endpoints.
+// Identity comes only from lib/auth/current-user.mjs (Bearer token, or the temporary x-user-id header in demo mode).
+import { requireUser } from '../auth/current-user.mjs';
+import { run, json, http, readJson } from '../api/http.mjs';
+import { validateFile, validateRespond, validateDecision, responseDueAt, LIMITS, BADGE_LABEL, BADGE_LEVEL } from './rules.mjs';
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const OPEN = ['submitted', 'responded'];
+const ALL_STATUSES = ['submitted', 'responded', 'upheld', 'rejected', 'appealed'];
+const DECIDED = new Set(['upheld', 'rejected']);
+
+async function actorOf(request, db) {
+  return requireUser(request, db);   // identity comes from lib/auth/current-user.mjs only
+}
+async function adminOf(request, db) {
+  const user = await actorOf(request, db);
+  if (!Array.isArray(user.roles) || !user.roles.includes('admin')) throw http(403, 'admin_only', 'Admins only.');
+  return user;
+}
+function idParam(params) {
+  const id = params?.id;
+  if (typeof id !== 'string' || !UUID.test(id)) throw http(400, 'bad_id', 'The id in the URL is not valid.');
+  return id;
+}
+
+// What a party to the complaint may see: never who decided it, and the note only after the decision.
+function partyView(c, viewerId) {
+  const mine = c.filed_by === viewerId ? 'filer' : 'accused';
+  return {
+    id: c.id, order_id: c.order_id, my_role: mine,
+    reason_code: c.reason_code, description: c.description, evidence_urls: c.evidence_urls ?? [],
+    response_text: c.response_text ?? null, response_evidence_urls: c.response_evidence_urls ?? [],
+    status: c.status,
+    decision_note: DECIDED.has(c.status) ? (c.decision_note ?? null) : null,
+    response_due_at: mine === 'accused' && c.status === 'submitted' ? responseDueAt(c.created_at).toISOString() : null,
+    created_at: c.created_at, responded_at: c.responded_at ?? null, decided_at: c.decided_at ?? null,
+  };
+}
+function adminView(c) {
+  return {
+    id: c.id, order_id: c.order_id,
+    filed_by: c.filed_by, filed_by_role: c.filed_by_role, accused_id: c.accused_id, accused_role: c.accused_role,
+    reason_code: c.reason_code, description: c.description, evidence_urls: c.evidence_urls ?? [],
+    response_text: c.response_text ?? null, response_evidence_urls: c.response_evidence_urls ?? [],
+    status: c.status, decision_note: c.decision_note ?? null, decided_by: c.decided_by ?? null,
+    created_at: c.created_at, responded_at: c.responded_at ?? null, decided_at: c.decided_at ?? null,
+  };
+}
+
+// POST /api/orders/:id/complaints
+export function handleFileComplaint(request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const orderId = idParam(params);
+    const actor = await actorOf(request, db);
+    const body = await readJson(request);
+    const order = await db.getOrder(orderId);
+    const shop = order ? await db.getShop(order.shop_id) : null;
+    if (!order || !shop) throw http(404, 'order_not_found', 'No order with that id.');
+    if (order.customer_id === shop.owner_id) throw http(400, 'self_order', 'A complaint cannot be filed on an order from your own shop.');
+
+    let role, accusedId, accusedRole;
+    if (actor.id === order.customer_id) { role = 'customer'; accusedId = shop.owner_id; accusedRole = 'seller'; }
+    else if (actor.id === shop.owner_id) { role = 'seller'; accusedId = order.customer_id; accusedRole = 'customer'; }
+    else throw http(403, 'not_your_order', 'Only the customer or the shop owner of this order can file a complaint.');
+
+    if (order.status === 'cancelled') throw http(409, 'order_cancelled', 'A cancelled order cannot have a complaint.');
+    const v = validateFile(body, role);
+    if (!v.ok) throw http(400, 'invalid_complaint', v.message);
+    if (await db.findComplaint(orderId, actor.id)) throw http(409, 'already_filed', 'You already filed a complaint on this order.');
+    const since = new Date(now.getTime() - 24 * 3600 * 1000).toISOString();
+    if ((await db.countRecentComplaints(actor.id, since)) >= LIMITS.filesPer24h)
+      throw http(429, 'too_many_complaints', 'Too many complaints in the last 24 hours. Please try again later.');
+
+    let row;
+    try {
+      row = await db.insertComplaint({ order_id: orderId, filed_by: actor.id, accused_id: accusedId, filed_by_role: role, accused_role: accusedRole, ...v.value });
+    } catch (e) {
+      if (e.code === 'duplicate') throw http(409, 'already_filed', 'You already filed a complaint on this order.');
+      throw e;
+    }
+    return json(201, { data: partyView(row, actor.id) });
+  });
+}
+
+// GET /api/complaints/mine
+export function handleMyComplaints(request, _params, dbOrFactory) {
+  return run(dbOrFactory, async (db) => {
+    const actor = await actorOf(request, db);
+    const rows = await db.listForUser(actor.id);
+    return json(200, { data: { complaints: rows.map((c) => partyView(c, actor.id)) } });
+  });
+}
+
+// POST /api/complaints/:id/respond
+export function handleRespond(request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const actor = await actorOf(request, db);
+    const body = await readJson(request);
+    const c = await db.getComplaint(id);
+    if (!c) throw http(404, 'complaint_not_found', 'No complaint with that id.');
+    if (actor.id !== c.accused_id) throw http(403, 'not_accused', 'Only the accused party can respond to this complaint.');
+    if (c.status !== 'submitted') throw http(409, 'not_open_for_response', 'This complaint is no longer waiting for a response.');
+    const v = validateRespond(body);
+    if (!v.ok) throw http(400, 'invalid_response', v.message);
+    const saved = await db.saveResponse(id, actor.id, { ...v.value, responded_at: now.toISOString() });
+    if (!saved) throw http(409, 'not_open_for_response', 'This complaint is no longer waiting for a response.');
+    return json(200, { data: partyView(saved, actor.id) });
+  });
+}
+
+// GET /api/admin/complaints?status=open|submitted|responded|upheld|rejected|appealed
+export function handleAdminList(request, _params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    await adminOf(request, db);
+    const status = new URL(request.url).searchParams.get('status') ?? 'open';
+    const statuses = status === 'open' ? OPEN : ALL_STATUSES.includes(status) ? [status] : null;
+    if (!statuses) throw http(400, 'bad_status', 'status must be open or one of: ' + ALL_STATUSES.join(', ') + '.');
+    const rows = await db.listByStatus(statuses);
+    const users = new Map((await db.getUsersByIds([...new Set(rows.flatMap((c) => [c.filed_by, c.accused_id]))])).map((u) => [u.id, u]));
+    const who = (id, role) => ({ id, name: users.get(id)?.name ?? null, role });
+    return json(200, { data: { complaints: rows.map((c) => {
+      const due = responseDueAt(c.created_at);
+      return {
+        id: c.id, order_id: c.order_id, status: c.status, reason_code: c.reason_code,
+        filed_by: who(c.filed_by, c.filed_by_role), accused: who(c.accused_id, c.accused_role),
+        created_at: c.created_at, response_due_at: due.toISOString(),
+        response_overdue: c.status === 'submitted' && now > due, has_response: Boolean(c.response_text),
+      };
+    }) } });
+  });
+}
+
+// GET /api/admin/complaints/:id
+export function handleAdminDetail(request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    await adminOf(request, db);
+    const c = await db.getComplaint(id);
+    if (!c) throw http(404, 'complaint_not_found', 'No complaint with that id.');
+    const order = await db.getOrder(c.order_id);
+    const shop = order ? await db.getShop(order.shop_id) : null;
+    const users = new Map((await db.getUsersByIds([c.filed_by, c.accused_id])).map((u) => [u.id, u]));
+    const [upheldBefore, badges] = await Promise.all([db.countUpheldAgainst(c.accused_id), db.getActiveBadges(c.accused_id, now.toISOString())]);
+    const due = responseDueAt(c.created_at);
+    return json(200, { data: {
+      complaint: adminView(c),
+      filed_by: { id: c.filed_by, name: users.get(c.filed_by)?.name ?? null, role: c.filed_by_role },
+      accused: { id: c.accused_id, name: users.get(c.accused_id)?.name ?? null, role: c.accused_role },
+      order: order ? { ...order, shop_name: shop?.name ?? null } : null,
+      response_due_at: due.toISOString(),
+      response_overdue: c.status === 'submitted' && now > due,
+      responded_late: c.responded_at ? new Date(c.responded_at) > due : null,
+      accused_history: { upheld_before: upheldBefore - (c.status === 'upheld' ? 1 : 0), has_active_badge: badges.some((b) => b.role === c.accused_role) },
+    } });
+  });
+}
+
+const RPC_ERRORS = {
+  complaint_not_found: [404, 'No complaint with that id.'],
+  already_decided: [409, 'This complaint has already been decided.'],
+  admin_required: [403, 'Admins only.'],
+  conflict_of_interest: [403, 'You cannot decide a complaint you are a party to.'],
+  note_required: [400, 'A written decision_note of at least 10 characters is required.'],
+  invalid_outcome: [400, 'outcome must be "upheld" or "rejected".'],
+};
+
+// PATCH /api/admin/complaints/:id/decision
+export function handleDecision(request, params, dbOrFactory, { issueBadges = false } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const admin = await adminOf(request, db);
+    const v = validateDecision(await readJson(request));
+    if (!v.ok) throw http(400, 'invalid_decision', v.message);
+    const { outcome, decision_note, proof_confirmed } = v.value;
+
+    let result;
+    try {
+      result = await db.decide({ complaintId: id, adminId: admin.id, outcome, note: decision_note, issueBadge: issueBadges && outcome === 'upheld' && proof_confirmed });
+    } catch (e) {
+      const known = e.code === 'rpc' ? RPC_ERRORS[e.message] : null;
+      if (known) throw http(known[0], e.message, known[1]);
+      throw e;
+    }
+    let badgeNote = null;
+    if (outcome === 'upheld') {
+      badgeNote = !proof_confirmed ? 'No badge: proof was not confirmed.'
+        : !issueBadges ? 'No badge: badge issuing is switched off.'
+        : result.badge_created ? 'Badge issued.' : 'The accused already has an active badge.';
+    }
+    return json(200, { data: {
+      complaint: adminView(result.complaint),
+      badge_issued: Boolean(result.badge_created),
+      badge_expires_at: result.badge_created ? result.badge.expires_at : null,
+      badge_note: badgeNote,
+    } });
+  });
+}
+
+// Public badge status: label and level only, never complaint details or the other party.
+function badgeView(badges, role) {
+  const roles = [...new Set(badges.filter((b) => !role || b.role === role).map((b) => b.role))];
+  const has = roles.length > 0;
+  return { has_badge: has, label: has ? BADGE_LABEL : null, level: has ? BADGE_LEVEL : null, roles };
+}
+
+// GET /api/users/:id/badge
+export function handleUserBadge(_request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    return json(200, { data: badgeView(await db.getActiveBadges(id, now.toISOString())) });
+  });
+}
+
+// GET /api/shops/:id/badge  (the shop owner's seller badge)
+export function handleShopBadge(_request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const shop = await db.getShop(id);
+    if (!shop) throw http(404, 'shop_not_found', 'No shop with that id.');
+    return json(200, { data: badgeView(await db.getActiveBadges(shop.owner_id, now.toISOString()), 'seller') });
+  });
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\complaints\rules.mjs =====
+
+// Complaint rules in one place. Pure functions, no database.
+
+export const REASONS = {
+  customer: ['not_delivered', 'not_as_described', 'wrong_size', 'other'],
+  seller: ['refused_delivery', 'false_claim', 'other'],
+};
+export const LIMITS = {
+  textMin: 10, textMax: 2000,
+  evidenceMax: 10, urlMax: 500,
+  filesPer24h: 5,
+  responseHours: 48,
+};
+export const BADGE_LABEL = 'Verified complaints';
+export const BADGE_LEVEL = 'fraud';
+
+const ok = (value) => ({ ok: true, value });
+const bad = (message) => ({ ok: false, message });
+
+export const responseDueAt = (createdAt) => new Date(new Date(createdAt).getTime() + LIMITS.responseHours * 3600 * 1000);
+
+function cleanText(v, label) {
+  if (typeof v !== 'string') return bad(label + ' is required.');
+  const t = v.trim();
+  if (t.length < LIMITS.textMin) return bad(label + ' must be at least ' + LIMITS.textMin + ' characters.');
+  if (t.length > LIMITS.textMax) return bad(label + ' must be at most ' + LIMITS.textMax + ' characters.');
+  return ok(t);
+}
+
+export function cleanEvidence(v) {
+  if (v === undefined || v === null) return ok([]);
+  if (!Array.isArray(v)) return bad('evidence_urls must be a list of links.');
+  if (v.length > LIMITS.evidenceMax) return bad('At most ' + LIMITS.evidenceMax + ' evidence links are allowed.');
+  const out = [];
+  for (const u of v) {
+    const s = typeof u === 'string' ? u.trim() : '';
+    if (!/^https?:\/\/\S+$/i.test(s) || s.length > LIMITS.urlMax) return bad('Each evidence link must be a http(s) URL under ' + LIMITS.urlMax + ' characters.');
+    out.push(s);
+  }
+  return ok([...new Set(out)]);
+}
+
+export function validateFile(body, filerRole) {
+  if (!body || typeof body !== 'object') return bad('Send a JSON body.');
+  if (!REASONS[filerRole]?.includes(body.reason_code))
+    return bad('reason_code must be one of: ' + (REASONS[filerRole] ?? []).join(', ') + '.');
+  const d = cleanText(body.description, 'description');
+  if (!d.ok) return d;
+  const e = cleanEvidence(body.evidence_urls);
+  if (!e.ok) return e;
+  return ok({ reason_code: body.reason_code, description: d.value, evidence_urls: e.value });
+}
+
+export function validateRespond(body) {
+  if (!body || typeof body !== 'object') return bad('Send a JSON body.');
+  const t = cleanText(body.response_text, 'response_text');
+  if (!t.ok) return t;
+  const e = cleanEvidence(body.evidence_urls);
+  if (!e.ok) return e;
+  return ok({ response_text: t.value, response_evidence_urls: e.value });
+}
+
+export function validateDecision(body) {
+  if (!body || typeof body !== 'object') return bad('Send a JSON body.');
+  if (body.outcome !== 'upheld' && body.outcome !== 'rejected') return bad('outcome must be "upheld" or "rejected".');
+  const n = cleanText(body.decision_note, 'decision_note');
+  if (!n.ok) return n;
+  return ok({ outcome: body.outcome, decision_note: n.value, proof_confirmed: body.proof_confirmed === true });
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\complaints\server.mjs =====
+
+// Server-only: uses the SECRET key. Never import this file from browser code.
+import { createClient } from '@supabase/supabase-js';
+import { createComplaintsDb } from './db.mjs';
+
+export function createServerDb() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env');
+  return createComplaintsDb(createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
+}
+
+// Badges are parked for now. Set ISSUE_BADGES=true in .env to switch them on.
+export const issueBadges = () => process.env.ISSUE_BADGES === 'true';
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\events\db.mjs =====
+
+// Database access for events. The Supabase client is passed in, so this file is testable offline.
+const must = ({ data, error }, what) => {
+  if (error) throw new Error(what + ': ' + error.message);
+  return data;
+};
+
+export function createEventsDb(sb) {
+  return {
+    async getUser(id) {
+      return must(await sb.from('users').select('id,name,roles').eq('id', id).maybeSingle(), 'load user');
+    },
+    // Written for Supabase Auth: the token belongs to auth.users, and users.auth_id links to it.
+    async getUserByToken(token) {
+      const { data, error } = await sb.auth.getUser(token);
+      if (error || !data?.user) return null;
+      return must(await sb.from('users').select('id,name,roles').eq('auth_id', data.user.id).maybeSingle(), 'load user by token');
+    },
+    async getProduct(id) {
+      return must(await sb.from('products').select('id,shop_id,status').eq('id', id).maybeSingle(), 'load product');
+    },
+    // Never selects nid_number.
+    async getShop(id) {
+      return must(await sb.from('shops').select('id,owner_id,verification_status').eq('id', id).maybeSingle(), 'load shop');
+    },
+    async hasRecentEvent(userId, productId, type, sinceIso) {
+      const { count, error } = await sb.from('event_logs').select('id', { count: 'exact', head: true })
+        .eq('user_id', userId).eq('product_id', productId).eq('type', type).gte('created_at', sinceIso);
+      if (error) throw new Error('check recent event: ' + error.message);
+      return (count ?? 0) > 0;
+    },
+    async insertEvent(row) {
+      must(await sb.from('event_logs').insert(row), 'save event');
+    },
+  };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\events\handlers.mjs =====
+
+// POST /api/events  (view and add_to_cart only; sign-in optional)
+// - "purchase" events are NOT accepted here. The payment endpoint writes them, so nobody can fake sales.
+// - shop_id is always taken from the product, never from the request.
+// - A shop owner looking at their own product is not counted, and a signed-in user repeating the same
+//   event within 30 seconds is counted once. Both keep the trending and performance numbers honest.
+import { run, json, http, readJson, isPlainObject, UUID } from '../api/http.mjs';
+import { currentUser } from '../auth/current-user.mjs';
+
+export const CLIENT_EVENT_TYPES = ['view', 'add_to_cart'];
+export const DEDUPE_SECONDS = 30;
+
+export function handleRecordEvent(request, _params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const body = await readJson(request);
+    if (!isPlainObject(body)) throw http(400, 'bad_json', 'Send a JSON object as the request body.');
+    const type = typeof body.type === 'string' ? body.type.trim().toLowerCase() : '';
+    if (!CLIENT_EVENT_TYPES.includes(type)) throw http(400, 'bad_type', 'type must be "view" or "add_to_cart".');
+    if (typeof body.product_id !== 'string' || !UUID.test(body.product_id)) throw http(400, 'bad_product_id', 'product_id is not valid.');
+    const productId = body.product_id.toLowerCase();
+
+    // A bad token must not turn into an anonymous event, so identity is resolved before anything is written.
+    const hasAuth = request.headers.get('authorization');
+    const user = await currentUser(request, db);
+    if (hasAuth && !user) throw http(401, 'not_signed_in', 'Please sign in again.');
+
+    const product = await db.getProduct(productId);
+    const shop = product ? await db.getShop(product.shop_id) : null;
+    if (!product || !shop || product.status !== 'active' || shop.verification_status === 'rejected')
+      throw http(404, 'product_not_found', 'No product with that id.');
+
+    if (user && user.id === shop.owner_id) return json(200, { data: { recorded: false, reason: 'own_product' } });
+    if (user) {
+      const since = new Date(now.getTime() - DEDUPE_SECONDS * 1000).toISOString();
+      if (await db.hasRecentEvent(user.id, productId, type, since)) return json(200, { data: { recorded: false, reason: 'duplicate' } });
+    }
+    await db.insertEvent({ user_id: user?.id ?? null, product_id: productId, shop_id: product.shop_id, type });
+    return json(201, { data: { recorded: true } });
+  }, 'events');
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\events\server.mjs =====
+
+// Server-only: uses the SECRET key. Never import this file from browser code.
+import { createClient } from '@supabase/supabase-js';
+import { createEventsDb } from './db.mjs';
+
+export function createServerDb() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env');
+  return createEventsDb(createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\ledger\db.mjs =====
+
+// Database access for the ledger. It reuses the orders database (users, shops) and adds one read of paid orders.
+import { createOrdersDb } from '../orders/db.mjs';
+import { LEDGER_DB_STATUSES, MAX_ROWS } from './rules.mjs';
+
+const COLS = 'id,customer_id,shop_id,item_total,delivery_charge,commission_rate,commission_amount,payment_method,payment_status,status,placed_at,paid_at,delivered_at,released_at,refunded_at';
+const CHUNK = 1000;   // Supabase returns at most 1000 rows per request
+
+export function createLedgerDb(sb) {
+  return {
+    ...createOrdersDb(sb),
+    // Reads every matching paid order in chunks. Returns up to MAX_ROWS + 1 rows so the caller can tell "too many".
+    async listLedgerOrders({ shopId, status, startIso, endIso }) {
+      const rows = [];
+      for (let from = 0; rows.length <= MAX_ROWS; from += CHUNK) {
+        let q = sb.from('orders').select(COLS).in('payment_status', status ? (status === 'held' ? ['held', 'paid'] : [status]) : LEDGER_DB_STATUSES);
+        if (shopId) q = q.eq('shop_id', shopId);
+        if (startIso) q = q.gte('placed_at', startIso);
+        if (endIso) q = q.lt('placed_at', endIso);
+        const { data, error } = await q.order('placed_at', { ascending: false }).order('id').range(from, from + CHUNK - 1);
+        if (error) throw new Error('list ledger: ' + error.message);
+        rows.push(...(data ?? []));
+        if (!data || data.length < CHUNK) break;
+      }
+      return rows.slice(0, MAX_ROWS + 1);
+    },
+  };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\ledger\handlers.mjs =====
+
+// Payment ledger (PRD PAY-5). Sellers download their own shop's ledger; admins download everything.
+// Identity comes ONLY from lib/auth/current-user.mjs.
+import { run, json, http } from '../api/http.mjs';
+import { requireUser, hasRole } from '../auth/current-user.mjs';
+import { parseLedgerQuery, dateRangeIso, toEntry, summarize, toCsv, dhakaToday, tooMany, MAX_ROWS } from './rules.mjs';
+
+async function build(db, q, role, shopId) {
+  const { start, end } = dateRangeIso(q);
+  const rows = await db.listLedgerOrders({ shopId, status: q.status, startIso: start, endIso: end });
+  if (rows.length > MAX_ROWS) throw tooMany();
+  const shops = new Map((await db.getShopsByIds([...new Set(rows.map((r) => r.shop_id))])).map((s) => [s.id, s]));
+  const entries = rows.map((r) => toEntry(r, { shop: shops.get(r.shop_id) }, role));
+  return { entries, summary: summarize(entries) };
+}
+
+function reply(q, role, { entries, summary }, now, name) {
+  if (q.format === 'csv') {
+    return new Response(toCsv(entries, role), { status: 200, headers: {
+      'Content-Type': 'text/csv; charset=utf-8', 'Cache-Control': 'no-store',
+      'Content-Disposition': `attachment; filename="${name}-${dhakaToday(now)}.csv"`,
+    } });
+  }
+  const from = (q.page - 1) * q.limit;
+  return json(200, { data: { entries: entries.slice(from, from + q.limit), summary }, meta: { page: q.page, limit: q.limit, total: entries.length } });
+}
+
+// GET /api/seller/ledger?format=json|csv&status=held|released|refunded&from=YYYY-MM-DD&to=YYYY-MM-DD&page=&limit=
+// A seller always gets their own shop. Shop owners only; admins use /api/admin/ledger.
+export function handleSellerLedger(request, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const user = await requireUser(request, db);
+    if (!hasRole(user, 'seller')) throw http(403, 'seller_only', 'Only sellers have a shop ledger.');
+    const { errors, value: q } = parseLedgerQuery(new URL(request.url).searchParams, { isAdmin: false });
+    if (errors.length) throw http(400, 'bad_query', errors.join(' '));
+    const mine = await db.getShopsByOwner(user.id);
+    if (!mine.length) return reply(q, 'seller', { entries: [], summary: summarize([]) }, now, 'dokan-ledger');
+    return reply(q, 'seller', await build(db, q, 'seller', mine[0].id), now, 'dokan-ledger');
+  }, 'ledger');
+}
+
+// GET /api/admin/ledger   same filters, plus shop_id=<uuid> to look at one shop
+export function handleAdminLedger(request, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const admin = await requireUser(request, db);
+    if (!hasRole(admin, 'admin')) throw http(403, 'admin_only', 'Admins only.');
+    const { errors, value: q } = parseLedgerQuery(new URL(request.url).searchParams, { isAdmin: true });
+    if (errors.length) throw http(400, 'bad_query', errors.join(' '));
+    const result = await build(db, q, 'admin', q.shopId);
+    if (q.format === 'csv') console.log('[audit] ledger CSV (%d rows) downloaded by admin %s', result.entries.length, admin.id);
+    return reply(q, 'admin', result, now, 'dokan-ledger-all');
+  }, 'ledger');
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\ledger\rules.mjs =====
+
+// Pure ledger rules (PRD PAY-5): turn paid orders into ledger entries, add them up, write CSV. No database here.
+import { http, UUID } from '../api/http.mjs';
+
+export const LEDGER_STATUSES = ['held', 'released', 'refunded'];
+// An order has a ledger entry once money has moved. `pending` and `failed` payments never reach the ledger.
+export const LEDGER_DB_STATUSES = ['paid', 'held', 'released', 'refunded'];
+export const MAX_ROWS = 10000;
+export const PAGE_MAX = 200;
+const DHAKA_OFFSET_HOURS = 6;
+
+// Money seen by the platform for one order. Seller payout = item price minus commission (PAY-3).
+export function toEntry(o, { shop, customer } = {}, role = 'seller') {
+  const itemTotal = o.item_total;
+  const commission = o.commission_amount ?? 0;
+  const payout = itemTotal - commission;
+  const paidOnline = o.payment_method === 'cod' ? o.delivery_charge : itemTotal + o.delivery_charge;
+  const status = o.payment_status === 'paid' ? 'held' : o.payment_status;
+  const entry = {
+    order_id: o.id,
+    shop_id: o.shop_id,
+    shop_name: shop?.name ?? null,
+    payment_method: o.payment_method,
+    item_total: itemTotal,
+    delivery_charge: o.delivery_charge,
+    order_total: itemTotal + o.delivery_charge,
+    paid_online: paidOnline,
+    commission_rate: Number(o.commission_rate ?? 0),
+    commission_amount: commission,
+    seller_payout: payout,
+    escrow_status: status,
+    order_status: o.status,
+    // What has actually settled: nothing is booked or paid out until the escrow is released.
+    commission_booked: status === 'released' ? commission : 0,
+    paid_to_seller: status === 'released' ? payout : 0,
+    refunded_amount: status === 'refunded' ? paidOnline : 0,
+    placed_at: o.placed_at ?? null,
+    paid_at: o.paid_at ?? null,
+    delivered_at: o.delivered_at ?? null,
+    released_at: o.released_at ?? null,
+    refunded_at: o.refunded_at ?? null,
+  };
+  if (role === 'admin') entry.customer_id = o.customer_id;
+  return entry;
+}
+
+const sum = (rows, k) => rows.reduce((s, r) => s + (r[k] ?? 0), 0);
+export function summarize(entries) {
+  const by = (s) => entries.filter((e) => e.escrow_status === s);
+  return {
+    orders: entries.length,
+    item_total: sum(entries, 'item_total'),
+    in_escrow: sum(by('held'), 'seller_payout'),
+    commission_booked: sum(entries, 'commission_booked'),
+    paid_to_sellers: sum(entries, 'paid_to_seller'),
+    refunded: sum(entries, 'refunded_amount'),
+    orders_held: by('held').length,
+    orders_released: by('released').length,
+    orders_refunded: by('refunded').length,
+  };
+}
+
+const isDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(s + 'T00:00:00Z')) && new Date(s + 'T00:00:00Z').toISOString().slice(0, 10) === s;
+
+export function parseLedgerQuery(sp, { isAdmin }) {
+  const errors = [];
+  const format = (sp.get('format') ?? 'json').toLowerCase();
+  if (!['json', 'csv'].includes(format)) errors.push('format must be json or csv.');
+  const status = sp.get('status') ? sp.get('status').toLowerCase() : undefined;
+  if (status && !LEDGER_STATUSES.includes(status)) errors.push(`status must be one of: ${LEDGER_STATUSES.join(', ')}.`);
+  const from = sp.get('from') || undefined;
+  const to = sp.get('to') || undefined;
+  if (from && !isDate(from)) errors.push('from must be a date like 2026-11-01.');
+  if (to && !isDate(to)) errors.push('to must be a date like 2026-11-30.');
+  if (from && to && isDate(from) && isDate(to) && from > to) errors.push('from must not be after to.');
+  const shopId = sp.get('shop_id') || undefined;
+  if (shopId && isAdmin && !UUID.test(shopId)) errors.push('shop_id is not valid.');
+  const int = (k, def, min, max) => { const s = sp.get(k); if (s == null || s === '') return def; if (!/^\d+$/.test(s) || Number(s) < min || Number(s) > max) { errors.push(`${k} must be between ${min} and ${max}.`); return def; } return Number(s); };
+  const value = {
+    format, status, from, to,
+    shopId: isAdmin && shopId ? shopId.toLowerCase() : undefined,   // a seller can never pick another shop
+    page: int('page', 1, 1, 100000), limit: int('limit', 50, 1, PAGE_MAX),
+  };
+  return { errors, value };
+}
+
+// Dates are in Dhaka time (UTC+6, no daylight saving). "to" is the whole last day.
+export function dateRangeIso({ from, to }) {
+  const start = from ? new Date(`${from}T00:00:00+06:00`).toISOString() : undefined;
+  const end = to ? new Date(new Date(`${to}T00:00:00+06:00`).getTime() + 86400000).toISOString() : undefined;
+  return { start, end };   // start inclusive, end exclusive
+}
+
+export function toDhaka(iso) {
+  if (!iso) return '';
+  const t = Date.parse(iso);
+  if (Number.isNaN(t)) return '';
+  return new Date(t + DHAKA_OFFSET_HOURS * 3600000).toISOString().slice(0, 16).replace('T', ' ');
+}
+export const dhakaToday = (now = new Date()) => toDhaka(now.toISOString()).slice(0, 10);
+
+// CSV cells that start with = + - @ are read as formulas by Excel. Shop names come from users, so neutralise them.
+export function csvCell(v) {
+  if (v === null || v === undefined) return '';
+  let s = String(v);
+  if (typeof v === 'string' && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+  return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+
+const COLUMNS = [
+  ['Order ID', 'order_id'], ['Placed (Dhaka)', 'placed_at', 'date'], ['Paid (Dhaka)', 'paid_at', 'date'], ['Delivered (Dhaka)', 'delivered_at', 'date'],
+  ['Released (Dhaka)', 'released_at', 'date'], ['Refunded (Dhaka)', 'refunded_at', 'date'], ['Shop', 'shop_name'], ['Payment method', 'payment_method'],
+  ['Item total (BDT)', 'item_total'], ['Delivery (BDT)', 'delivery_charge'], ['Order total (BDT)', 'order_total'], ['Paid online (BDT)', 'paid_online'],
+  ['Commission rate', 'commission_rate'], ['Commission (BDT)', 'commission_amount'], ['Seller payout (BDT)', 'seller_payout'],
+  ['Escrow status', 'escrow_status'], ['Order status', 'order_status'],
+  ['Commission booked (BDT)', 'commission_booked'], ['Paid to seller (BDT)', 'paid_to_seller'], ['Refunded (BDT)', 'refunded_amount'],
+];
+
+// UTF-8 with a byte order mark so Excel shows Bangla shop names correctly.
+export function toCsv(entries, role = 'seller') {
+  const cols = role === 'admin' ? [...COLUMNS, ['Customer ID', 'customer_id']] : COLUMNS;
+  const lines = [cols.map((c) => csvCell(c[0])).join(',')];
+  for (const e of entries) lines.push(cols.map(([, k, kind]) => csvCell(kind === 'date' ? toDhaka(e[k]) : e[k])).join(','));
+  return '﻿' + lines.join('\r\n') + '\r\n';
+}
+
+export const tooMany = () => http(413, 'too_many_rows', `The ledger has more than ${MAX_ROWS} rows. Narrow it with from and to dates.`);
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\ledger\server.mjs =====
+
+// Server-only: uses the SECRET key. Never import this file from browser code.
+import { createClient } from '@supabase/supabase-js';
+import { createLedgerDb } from './db.mjs';
+
+export function createServerDb() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env');
+  return createLedgerDb(createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\mail\send.mjs =====
+
+// Sends one email. NEVER throws: a mail problem must not undo a decision that was already saved.
+// Without RESEND_API_KEY it only logs the message (fine for the demo). Set RESEND_API_KEY and MAIL_FROM to really send.
+export async function sendMail({ to, subject, text }, { fetchImpl = fetch } = {}) {
+  if (!to) return { sent: false, reason: 'no_recipient' };
+  const key = process.env.RESEND_API_KEY;
+  if (!key) {
+    console.log('[mail stub] to=%s subject=%s', to, subject);
+    return { sent: false, reason: 'stub' };
+  }
+  try {
+    const res = await fetchImpl('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + key },
+      body: JSON.stringify({ from: process.env.MAIL_FROM || 'Dokan AI <onboarding@resend.dev>', to: [to], subject, text }),
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) { console.error('mail failed: HTTP ' + res.status); return { sent: false, reason: 'http_' + res.status }; }
+    return { sent: true };
+  } catch (e) {
+    console.error('mail failed:', e?.message ?? e);
+    return { sent: false, reason: 'error' };
+  }
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\me\db.mjs =====
+
+// Database access for GET /api/me. The Supabase client is passed in, so this file is testable offline.
+const must = ({ data, error }, what) => {
+  if (error) throw new Error(what + ': ' + error.message);
+  return data;
+};
+
+export function createMeDb(sb) {
+  return {
+    async getUser(id) {
+      return must(await sb.from('users').select('id,name,roles').eq('id', id).maybeSingle(), 'load user');
+    },
+    // Written for Supabase Auth: the token belongs to auth.users, and users.auth_id links to it.
+    async getUserByToken(token) {
+      const { data, error } = await sb.auth.getUser(token);
+      if (error || !data?.user) return null;
+      return must(await sb.from('users').select('id,name,roles').eq('auth_id', data.user.id).maybeSingle(), 'load user by token');
+    },
+    async getProfile(id) {
+      return must(await sb.from('users').select('id,name,email,phone,roles,gender,age_group,created_at').eq('id', id).maybeSingle(), 'load profile');
+    },
+    // Never selects nid_number.
+    async getShopsByOwner(ownerId) {
+      return must(await sb.from('shops').select('id,name,verification_status,plan,plan_expires_at').eq('owner_id', ownerId).order('created_at', { ascending: true }), 'load shops') ?? [];
+    },
+  };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\me\handlers.mjs =====
+
+// GET /api/me: the signed-in user, their roles and (for sellers) their shop.
+// Identity comes only from lib/auth/current-user.mjs.
+import { run, json, http } from '../api/http.mjs';
+import { requireUser, hasRole } from '../auth/current-user.mjs';
+
+export function handleMe(request, _params, dbOrFactory) {
+  return run(dbOrFactory, async (db) => {
+    const user = await requireUser(request, db);
+    const p = await db.getProfile(user.id);
+    if (!p) throw http(401, 'not_signed_in', 'Please sign in first.');
+    let shop = null;
+    if (hasRole(p, 'seller')) {
+      const mine = await db.getShopsByOwner(p.id);
+      const s = mine[0];
+      if (s) shop = { id: s.id, name: s.name, verification_status: s.verification_status, plan: s.plan, plan_expires_at: s.plan_expires_at ?? null };
+    }
+    return json(200, { data: {
+      id: p.id, name: p.name, email: p.email ?? null, phone: p.phone ?? null, roles: p.roles ?? [],
+      gender: p.gender ?? null, age_group: p.age_group ?? null, created_at: p.created_at, shop,
+    } });
+  }, 'me');
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\me\server.mjs =====
+
+// Server-only: uses the SECRET key. Never import this file from browser code.
+import { createClient } from '@supabase/supabase-js';
+import { createMeDb } from './db.mjs';
+
+export function createServerDb() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env');
+  return createMeDb(createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\orders\db.mjs =====
+
+// Database access for orders. The Supabase client is passed in, so this file is testable offline.
+// Anything that changes stock or money runs as a database function (scripts/orders.sql) so it is one transaction.
+const must = ({ data, error }, what) => {
+  if (error) throw new Error(what + ': ' + error.message);
+  return data;
+};
+const rpcFail = (error) => { const e = new Error(error.message); e.code = 'rpc'; return e; };
+const ORDER_COLS = 'id,customer_id,shop_id,items,item_total,delivery_charge,commission_rate,commission_amount,payment_method,payment_status,status,placed_at,delivered_at,delivery_address';
+
+export function createOrdersDb(sb) {
+  return {
+    async getUser(id) {
+      return must(await sb.from('users').select('id,name,roles').eq('id', id).maybeSingle(), 'load user');
+    },
+    // Written for Supabase Auth: the token belongs to auth.users, and users.auth_id links to it.
+    async getUserByToken(token) {
+      const { data, error } = await sb.auth.getUser(token);
+      if (error || !data?.user) return null;
+      return must(await sb.from('users').select('id,name,roles').eq('auth_id', data.user.id).maybeSingle(), 'load user by token');
+    },
+    async getUsersByIds(ids) {
+      if (!ids.length) return [];
+      return must(await sb.from('users').select('id,name').in('id', ids), 'load users') ?? [];
+    },
+    // Never selects nid_number.
+    async getShop(id) {
+      return must(await sb.from('shops').select('id,owner_id,name,verification_status').eq('id', id).maybeSingle(), 'load shop');
+    },
+    async getShopsByIds(ids) {
+      if (!ids.length) return [];
+      return must(await sb.from('shops').select('id,owner_id,name').in('id', ids), 'load shops') ?? [];
+    },
+    async getShopsByOwner(ownerId) {
+      return must(await sb.from('shops').select('id,owner_id,name').eq('owner_id', ownerId), 'load shops by owner') ?? [];
+    },
+    async getProductsByIds(ids) {
+      return must(await sb.from('products').select('id,shop_id,name,price,discount_price,variants,status,image_urls').in('id', ids), 'load products') ?? [];
+    },
+    async getOrder(id) {
+      return must(await sb.from('orders').select(ORDER_COLS).eq('id', id).maybeSingle(), 'load order');
+    },
+    async listOrders({ customerId, shopId, status, page, limit }) {
+      let q = sb.from('orders').select(ORDER_COLS, { count: 'exact' });
+      if (customerId) q = q.eq('customer_id', customerId);
+      if (shopId) q = q.eq('shop_id', shopId);
+      if (status) q = q.eq('status', status);
+      const from = (page - 1) * limit;
+      const { data, error, count } = await q.order('placed_at', { ascending: false }).range(from, from + limit - 1);
+      if (error) throw new Error('list orders: ' + error.message);
+      return { rows: data ?? [], total: count ?? 0 };
+    },
+    // One transaction: checks and lowers stock, then inserts the order.
+    async placeOrder(a) {
+      const { data, error } = await sb.rpc('place_order', {
+        p_customer: a.customerId, p_shop: a.shopId, p_items: a.items, p_item_total: a.itemTotal,
+        p_delivery: a.deliveryCharge, p_method: a.method, p_address: a.address,
+      });
+      if (error) throw rpcFail(error);
+      return data;
+    },
+    // Only moves forward from the status the caller saw, so two quick clicks cannot both win.
+    async updateStatus(id, from, patch) {
+      return must(await sb.from('orders').update(patch).eq('id', id).eq('status', from).select(ORDER_COLS).maybeSingle(), 'update status');
+    },
+    // One transaction: puts stock back and refunds held money.
+    async cancelOrder(id) {
+      const { data, error } = await sb.rpc('cancel_order', { p_order: id });
+      if (error) throw rpcFail(error);
+      return data;
+    },
+    // Only an unpaid (or failed) order can be paid, and only once.
+    async markPaid(id, patch) {
+      return must(await sb.from('orders').update(patch).eq('id', id).in('payment_status', ['pending', 'failed']).select(ORDER_COLS).maybeSingle(), 'mark paid');
+    },
+    async markPaymentFailed(id) {
+      must(await sb.from('orders').update({ payment_status: 'failed' }).eq('id', id).eq('payment_status', 'pending'), 'mark failed');
+    },
+    async insertEvents(rows) {
+      must(await sb.from('event_logs').insert(rows), 'save purchase events');
+    },
+    // Skips any order with a complaint that is still open or upheld (an upheld one needs an admin refund decision).
+    async releaseOrder(id) {
+      const { data, error } = await sb.rpc('release_order', { p_order: id });
+      if (error) throw rpcFail(error);
+      return data === true;
+    },
+    async releaseDue(cutoffIso) {
+      const { data, error } = await sb.rpc('release_due_orders', { p_cutoff: cutoffIso });
+      if (error) throw rpcFail(error);
+      return data ?? [];
+    },
+    async refundOrder(id) {
+      const { data, error } = await sb.rpc('refund_order', { p_order: id });
+      if (error) throw rpcFail(error);
+      return data === true;
+    },
+  };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\orders\handlers.mjs =====
+
+// Request handlers for orders and sandbox payment.
+// Identity comes ONLY from lib/auth/current-user.mjs. Money and stock changes run as database functions.
+import { run, json, http, readJson, isPlainObject, UUID } from '../api/http.mjs';
+import { requireUser, hasRole } from '../auth/current-user.mjs';
+import { charge as sandboxCharge, GATEWAYS, OUTCOMES } from '../payments/sandbox.mjs';
+import { validateOrderInput, parseListQuery, computeCommission, checkTransition, DELIVERY_CHARGE, ESCROW_HOURS } from './rules.mjs';
+
+const lc = (s) => String(s ?? '').trim().toLowerCase();
+const effectivePrice = (p) => (p.discount_price != null && p.discount_price < p.price ? p.discount_price : p.price);
+
+function idParam(params) {
+  const id = params?.id;
+  if (typeof id !== 'string' || !UUID.test(id)) throw http(400, 'bad_id', 'The id in the URL is not valid.');
+  return id.toLowerCase();
+}
+async function bodyOf(request) {
+  const body = await readJson(request);
+  if (!isPlainObject(body)) throw http(400, 'bad_json', 'Send a JSON object as the request body.');
+  return body;
+}
+const RPC_ERRORS = {
+  product_unavailable: [409, 'One of the products is no longer available.'],
+  variant_unavailable: [409, 'That size or colour is no longer available.'],
+  out_of_stock: [409, 'Not enough stock for one of the items.'],
+  order_not_found: [404, 'No order with that id.'],
+  already_cancelled: [409, 'This order is already cancelled.'],
+  cannot_cancel: [409, 'This order can no longer be cancelled.'],
+};
+async function rpc(fn) {
+  try { return await fn(); } catch (e) {
+    const known = e.code === 'rpc' ? RPC_ERRORS[e.message] : null;
+    if (known) throw http(known[0], e.message, known[1]);
+    throw e;
+  }
+}
+
+// The same order looks different to each party: only seller and admin see commission, only the customer's own
+// side sees what is due online, and the address goes to the people who need it to deliver.
+function orderView(o, role, { shop, customer } = {}) {
+  const base = {
+    id: o.id, shop_id: o.shop_id, shop_name: shop?.name ?? null, items: o.items ?? [],
+    item_total: o.item_total, delivery_charge: o.delivery_charge, total: o.item_total + o.delivery_charge,
+    amount_due_online: o.payment_method === 'cod' ? o.delivery_charge : o.item_total + o.delivery_charge,
+    payment_method: o.payment_method, payment_status: o.payment_status, status: o.status,
+    placed_at: o.placed_at, delivered_at: o.delivered_at ?? null, delivery_address: o.delivery_address ?? null, my_role: role,
+  };
+  if (role === 'customer') return base;
+  return { ...base, customer: { id: o.customer_id, name: customer?.name ?? null }, commission_rate: Number(o.commission_rate), commission_amount: o.commission_amount, seller_payout: o.item_total - o.commission_amount };
+}
+
+// Who is this person for this order? Strangers get a 404 so order ids cannot be probed.
+async function partyFor(db, user, order) {
+  const shop = await db.getShop(order.shop_id);
+  if (hasRole(user, 'admin')) return { role: 'admin', shop };
+  if (shop && user.id === shop.owner_id) return { role: 'seller', shop };
+  if (user.id === order.customer_id) return { role: 'customer', shop };
+  throw http(404, 'order_not_found', 'No order with that id.');
+}
+async function loadOrder(db, id) {
+  const order = await db.getOrder(id);
+  if (!order) throw http(404, 'order_not_found', 'No order with that id.');
+  return order;
+}
+async function viewFor(db, order, role, shop) {
+  const customer = role === 'customer' ? null : (await db.getUsersByIds([order.customer_id]))[0];
+  return orderView(order, role, { shop, customer });
+}
+
+// POST /api/orders   (customer; one shop per order, the frontend splits a mixed cart)
+export function handleCreateOrder(request, _params, dbOrFactory) {
+  return run(dbOrFactory, async (db) => {
+    const user = await requireUser(request, db);
+    if (hasRole(user, 'admin')) throw http(403, 'admin_cannot_buy', 'Admins cannot place orders.');
+    const { errors, value } = validateOrderInput(await bodyOf(request));
+    if (errors.length) throw http(400, 'invalid_order', errors.join(' '));
+
+    const products = new Map((await db.getProductsByIds([...new Set(value.items.map((i) => i.product_id))])).map((p) => [p.id, p]));
+    const shopIds = new Set();
+    const lines = [];
+    for (const it of value.items) {
+      const p = products.get(it.product_id);
+      if (!p || p.status !== 'active') throw http(404, 'product_not_found', 'One of the products does not exist or is no longer available.');
+      shopIds.add(p.shop_id);
+      const variants = Array.isArray(p.variants) ? p.variants : [];
+      const match = variants.filter((v) => lc(v?.size) === lc(it.size) && (!it.color || lc(v?.color) === it.color));
+      if (match.length === 0) throw http(409, 'variant_unavailable', `${p.name}: that size or colour does not exist.`);
+      if (match.length > 1) throw http(400, 'color_required', `${p.name}: choose a colour.`);
+      if (!(Number(match[0].stock) >= it.qty)) throw http(409, 'out_of_stock', `${p.name}: only ${Math.max(0, Number(match[0].stock) || 0)} left in that size.`);
+      lines.push({ product_id: p.id, name: p.name, size: match[0].size, color: lc(match[0].color), qty: it.qty, unit_price: effectivePrice(p), image_url: (p.image_urls ?? [])[0] ?? null });
+    }
+    if (shopIds.size > 1) throw http(400, 'multiple_shops', 'One order can only hold items from one shop. Place a separate order for each shop.');
+    const shop = await db.getShop([...shopIds][0]);
+    if (!shop || shop.verification_status === 'rejected') throw http(404, 'shop_not_found', 'This shop is not available.');
+    if (shop.owner_id === user.id) throw http(400, 'own_shop', 'You cannot order from your own shop.');
+
+    const itemTotal = lines.reduce((s, l) => s + l.unit_price * l.qty, 0);
+    const order = await rpc(() => db.placeOrder({
+      customerId: user.id, shopId: shop.id, items: lines, itemTotal, deliveryCharge: DELIVERY_CHARGE,
+      method: value.payment_method, address: value.delivery_address,
+    }));
+    return json(201, { data: orderView(order, 'customer', { shop }) });
+  }, 'orders');
+}
+
+// GET /api/orders?as=customer|seller|admin&status=&page=&limit=
+export function handleListOrders(request, _params, dbOrFactory) {
+  return run(dbOrFactory, async (db) => {
+    const user = await requireUser(request, db);
+    const { errors, value } = parseListQuery(new URL(request.url).searchParams);
+    if (errors.length) throw http(400, 'bad_query', errors.join(' '));
+    const q = { status: value.status, page: value.page, limit: value.limit };
+    if (value.as === 'customer') q.customerId = user.id;
+    else if (value.as === 'admin') { if (!hasRole(user, 'admin')) throw http(403, 'admin_only', 'Admins only.'); }
+    else {
+      if (!hasRole(user, 'seller')) throw http(403, 'seller_only', 'Only sellers have shop orders.');
+      const mine = await db.getShopsByOwner(user.id);
+      if (!mine.length) return json(200, { data: [], meta: { page: value.page, limit: value.limit, total: 0 } });
+      q.shopId = mine[0].id;
+    }
+    const { rows, total } = await db.listOrders(q);
+    const shops = new Map((await db.getShopsByIds([...new Set(rows.map((r) => r.shop_id))])).map((s) => [s.id, s]));
+    const users = new Map((value.as === 'customer' ? [] : await db.getUsersByIds([...new Set(rows.map((r) => r.customer_id))])).map((u) => [u.id, u]));
+    const data = rows.map((o) => orderView(o, value.as, { shop: shops.get(o.shop_id), customer: users.get(o.customer_id) }));
+    return json(200, { data, meta: { page: value.page, limit: value.limit, total } });
+  }, 'orders');
+}
+
+// GET /api/orders/:id   (the customer, the shop owner or an admin)
+export function handleGetOrder(request, params, dbOrFactory) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const user = await requireUser(request, db);
+    const order = await loadOrder(db, id);
+    const { role, shop } = await partyFor(db, user, order);
+    return json(200, { data: await viewFor(db, order, role, shop) });
+  }, 'orders');
+}
+
+// PATCH /api/orders/:id/status   { status: accepted | packed | shipped | delivered | cancelled }
+export function handleUpdateStatus(request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const user = await requireUser(request, db);
+    const order = await loadOrder(db, id);
+    const { role, shop } = await partyFor(db, user, order);
+    const body = await bodyOf(request);
+    const to = typeof body.status === 'string' ? lc(body.status) : '';
+    if (!['accepted', 'packed', 'shipped', 'delivered', 'cancelled'].includes(to)) throw http(400, 'bad_status', 'status must be accepted, packed, shipped, delivered or cancelled.');
+    const bad = checkTransition({ order, to, actor: role });
+    if (bad) throw http(bad.status, bad.code, bad.message);
+
+    let updated;
+    if (to === 'cancelled') updated = await rpc(() => db.cancelOrder(id));
+    else {
+      updated = await db.updateStatus(id, order.status, to === 'delivered' ? { status: to, delivered_at: now.toISOString() } : { status: to });
+      if (!updated) throw http(409, 'status_changed', 'The order was changed by someone else. Reload and try again.');
+      // The customer confirming receipt releases the escrow at once, unless a complaint is open.
+      if (to === 'delivered' && role === 'customer') {
+        try { if (await db.releaseOrder(id)) updated = (await db.getOrder(id)) ?? updated; } catch (e) { console.error('release failed:', e?.message ?? e); }
+      }
+    }
+    return json(200, { data: await viewFor(db, updated, role, shop) });
+  }, 'orders');
+}
+
+// POST /api/orders/:id/pay   { gateway?: bkash|nagad|card, outcome?: success|failure|pending }   (the customer)
+// Sandbox order: pays items + delivery. Cash on delivery: pays only the delivery charge online (PRD 6.3).
+export function handlePayOrder(request, params, dbOrFactory, { gateway = { charge: sandboxCharge }, now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const user = await requireUser(request, db);
+    const order = await loadOrder(db, id);
+    if (order.customer_id !== user.id) throw http(404, 'order_not_found', 'No order with that id.');
+    const body = (await readJson(request)) ?? {};
+    if (!isPlainObject(body)) throw http(400, 'bad_json', 'Send a JSON object, or no body.');
+    const gw = body.gateway === undefined ? 'bkash' : lc(body.gateway);
+    const outcome = body.outcome === undefined ? 'success' : lc(body.outcome);
+    if (!GATEWAYS.includes(gw)) throw http(400, 'bad_gateway', `gateway must be one of: ${GATEWAYS.join(', ')}.`);
+    if (!OUTCOMES.includes(outcome)) throw http(400, 'bad_outcome', `outcome must be one of: ${OUTCOMES.join(', ')}.`);
+    if (order.status === 'cancelled') throw http(409, 'order_cancelled', 'This order was cancelled.');
+    if (!['pending', 'failed'].includes(order.payment_status)) throw http(409, 'already_paid', 'This order has already been paid.');
+
+    const amount = order.payment_method === 'cod' ? order.delivery_charge : order.item_total + order.delivery_charge;
+    const result = gateway.charge({ amount, gateway: gw, outcome });
+    const shop = await db.getShop(order.shop_id);
+    if (result.status === 'pending') return json(202, { data: { payment: { status: 'pending', reference: result.reference, amount, gateway: gw }, order: orderView(order, 'customer', { shop }) } });
+    if (result.status === 'failed') {
+      await db.markPaymentFailed(id);
+      return json(402, { error: { code: 'payment_failed', message: 'The sandbox payment failed. You can try again.' }, data: { payment: { status: 'failed', reference: result.reference, amount, gateway: gw } } });
+    }
+
+    // Success: the money is held in escrow and the commission is fixed on the order.
+    const c = computeCommission(order.items);
+    const paid = await db.markPaid(id, { payment_status: 'held', commission_rate: c.commission_rate, commission_amount: c.commission_amount, paid_at: now.toISOString() });
+    if (!paid) throw http(409, 'already_paid', 'This order has already been paid.');
+    // One purchase event per product feeds trending and performance. A logging problem must not undo the payment.
+    try {
+      await db.insertEvents([...new Set(order.items.map((i) => i.product_id))].map((pid) => ({ user_id: user.id, product_id: pid, shop_id: order.shop_id, type: 'purchase' })));
+    } catch (e) { console.error('purchase events failed:', e?.message ?? e); }
+    return json(200, { data: { payment: { status: 'success', reference: result.reference, amount, gateway: gw }, order: orderView(paid, 'customer', { shop }) } });
+  }, 'orders');
+}
+
+// POST /api/admin/orders/:id/refund   (admins; full refund of money still held in escrow)
+export function handleAdminRefund(request, params, dbOrFactory) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const admin = await requireUser(request, db);
+    if (!hasRole(admin, 'admin')) throw http(403, 'admin_only', 'Admins only.');
+    const order = await loadOrder(db, id);
+    if (!(await rpc(() => db.refundOrder(id)))) throw http(409, 'not_refundable', 'Only an order whose money is still held in escrow can be refunded.');
+    console.log('[audit] order %s fully refunded by admin %s', id, admin.id);
+    const shop = await db.getShop(order.shop_id);
+    return json(200, { data: await viewFor(db, (await db.getOrder(id)) ?? order, 'admin', shop) });
+  }, 'orders');
+}
+
+// POST /api/admin/payouts/release   (admins; releases escrow 48 hours after delivery when no complaint is open)
+export function handleReleaseDue(request, _params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const admin = await requireUser(request, db);
+    if (!hasRole(admin, 'admin')) throw http(403, 'admin_only', 'Admins only.');
+    const cutoff = new Date(now.getTime() - ESCROW_HOURS * 3600 * 1000).toISOString();
+    const ids = await rpc(() => db.releaseDue(cutoff));
+    console.log('[audit] %d orders released by admin %s', ids.length, admin.id);
+    return json(200, { data: { released: ids.length, order_ids: ids } });
+  }, 'orders');
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\orders\rules.mjs =====
+
+// Pure order rules: input checks, prices, commission, and the allowed status changes. No database here.
+import { UUID } from '../api/http.mjs';
+
+export const DELIVERY_CHARGE = 80;
+export const ESCROW_HOURS = 48;
+export const PAYMENT_METHODS = ['sandbox', 'cod'];
+export const LIMITS = { lines: 20, qty: 10, size: 20, color: 20, text: 120, page_max: 50 };
+// Admin-editable later. The rate depends on the unit price after discount (PRD section 6.1).
+export const COMMISSION_BANDS = [{ below: 500, rate: 0.02 }, { below: 1000, rate: 0.03 }, { below: Infinity, rate: 0.05 }];
+
+export const commissionRate = (unitPrice) => COMMISSION_BANDS.find((b) => unitPrice < b.below).rate;
+
+// Commission on the item price only, never on delivery. The amount is authoritative;
+// the stored rate is the effective rate (exact when all lines fall in one band).
+export function computeCommission(items) {
+  const itemTotal = items.reduce((s, i) => s + i.unit_price * i.qty, 0);
+  const amount = items.reduce((s, i) => s + Math.round(i.unit_price * i.qty * commissionRate(i.unit_price)), 0);
+  return { item_total: itemTotal, commission_amount: amount, commission_rate: itemTotal ? Math.round((amount / itemTotal) * 100) / 100 : 0 };
+}
+
+const lc = (s) => String(s).trim().toLowerCase();
+const text = (v, max) => (typeof v === 'string' && v.trim().length >= 1 && v.trim().length <= max ? v.trim().replace(/\s+/g, ' ') : null);
+
+export function validateOrderInput(body) {
+  const errors = [];
+  const value = {};
+  if (!Array.isArray(body.items) || body.items.length < 1 || body.items.length > LIMITS.lines) {
+    errors.push(`items must be a list of 1 to ${LIMITS.lines} lines.`);
+  } else {
+    const merged = new Map();
+    for (const it of body.items) {
+      const size = typeof it?.size === 'string' ? it.size.trim() : '';
+      const color = it?.color == null || it.color === '' ? '' : typeof it.color === 'string' ? lc(it.color) : null;
+      if (typeof it?.product_id !== 'string' || !UUID.test(it.product_id) || !size || size.length > LIMITS.size || color === null || color.length > LIMITS.color ||
+          !Number.isInteger(it.qty) || it.qty < 1 || it.qty > LIMITS.qty) {
+        errors.push(`Each item needs product_id, size, an optional color and qty from 1 to ${LIMITS.qty}.`);
+        break;
+      }
+      const key = [it.product_id.toLowerCase(), lc(size), color].join('|');
+      const prev = merged.get(key);
+      if (prev) prev.qty += it.qty; else merged.set(key, { product_id: it.product_id.toLowerCase(), size, color, qty: it.qty });
+    }
+    if (!errors.length) {
+      const lines = [...merged.values()];
+      if (lines.some((l) => l.qty > LIMITS.qty)) errors.push(`Quantity per line is at most ${LIMITS.qty}.`); else value.items = lines;
+    }
+  }
+  const method = body.payment_method === undefined ? 'sandbox' : typeof body.payment_method === 'string' ? lc(body.payment_method) : '';
+  if (!PAYMENT_METHODS.includes(method)) errors.push(`payment_method must be one of: ${PAYMENT_METHODS.join(', ')}.`); else value.payment_method = method;
+
+  const a = body.delivery_address;
+  if (!a || typeof a !== 'object' || Array.isArray(a)) errors.push('delivery_address is required: { name, phone, line1, city }.');
+  else {
+    const phone = typeof a.phone === 'string' ? a.phone.replace(/[\s-]/g, '') : '';
+    const addr = { name: text(a.name, LIMITS.text), phone, line1: text(a.line1, 200), city: text(a.city, 60), area: a.area == null || a.area === '' ? null : text(a.area, 60) };
+    if (!addr.name || !addr.line1 || !addr.city || !/^\+?[0-9]{10,15}$/.test(phone) || (a.area != null && a.area !== '' && !addr.area)) errors.push('delivery_address needs a name, a phone number (10 to 15 digits), line1 and city.');
+    else value.delivery_address = addr;
+  }
+  return { errors, value };
+}
+
+export function parseListQuery(sp) {
+  const errors = [];
+  const as = (sp.get('as') ?? 'customer').toLowerCase();
+  if (!['customer', 'seller', 'admin'].includes(as)) errors.push('as must be customer, seller or admin.');
+  const status = sp.get('status');
+  if (status && !['placed', 'accepted', 'packed', 'shipped', 'delivered', 'cancelled'].includes(status.toLowerCase())) errors.push('status is not valid.');
+  const int = (k, def, min, max) => { const s = sp.get(k); if (s == null || s === '') return def; if (!/^\d+$/.test(s) || Number(s) < min || Number(s) > max) { errors.push(`${k} must be between ${min} and ${max}.`); return def; } return Number(s); };
+  return { errors, value: { as, status: status ? status.toLowerCase() : undefined, page: int('page', 1, 1, 100000), limit: int('limit', 20, 1, LIMITS.page_max) } };
+}
+
+const NEXT = { placed: ['accepted', 'cancelled'], accepted: ['packed', 'cancelled'], packed: ['shipped', 'cancelled'], shipped: ['delivered'] };
+const NEEDS_PAYMENT = new Set(['accepted', 'packed', 'shipped']);
+const PAID = new Set(['paid', 'held', 'released']);
+
+// actor: 'seller' | 'customer' | 'admin'. Returns null when allowed, otherwise { status, code, message }.
+export function checkTransition({ order, to, actor }) {
+  if (!(NEXT[order.status] ?? []).includes(to)) return { status: 409, code: 'bad_transition', message: `An order that is ${order.status} cannot become ${to}.` };
+  if (actor === 'customer') {
+    const ok = (to === 'cancelled' && order.status === 'placed') || (to === 'delivered' && order.status === 'shipped');
+    if (!ok) return { status: 403, code: 'customer_cannot', message: 'Customers can cancel an order before it is accepted, or confirm that a shipped order arrived.' };
+  }
+  if (NEEDS_PAYMENT.has(to) && !PAID.has(order.payment_status)) return { status: 409, code: 'payment_required', message: 'The order has not been paid yet.' };
+  return null;
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\orders\server.mjs =====
+
+// Server-only: uses the SECRET key. Never import this file from browser code.
+import { createClient } from '@supabase/supabase-js';
+import { createOrdersDb } from './db.mjs';
+
+export function createServerDb() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env');
+  return createOrdersDb(createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\payments\sandbox.mjs =====
+
+// The sandbox payment gateway. No real money moves (PAY-1, PAY-6).
+// Order logic only calls charge(); a live provider (SSLCommerz, bKash API) can replace this file later (PAY-7).
+export const GATEWAYS = ['bkash', 'nagad', 'card'];
+export const OUTCOMES = ['success', 'failure', 'pending'];
+
+// Returns { status: 'success' | 'failed' | 'pending', reference }.
+export function charge({ amount, gateway = 'bkash', outcome = 'success' }) {
+  if (!Number.isInteger(amount) || amount < 0) throw new Error('bad amount');
+  if (!GATEWAYS.includes(gateway)) throw new Error('bad gateway');
+  if (!OUTCOMES.includes(outcome)) throw new Error('bad outcome');
+  const status = outcome === 'failure' ? 'failed' : outcome;
+  return { status, reference: 'SBX-' + gateway.toUpperCase() + '-' + Math.random().toString(36).slice(2, 10).toUpperCase() };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\products\db.mjs =====
+
+// Database access for products. The Supabase client is passed in, so this file is testable offline.
+const must = ({ data, error }, what) => {
+  if (error) throw new Error(what + ': ' + error.message);
+  return data;
+};
+const LIST_COLS = 'id,shop_id,name,custom_category,category,gender,age_group,colors,occasion_tags,image_urls,price,discount_price,variants,status,created_at';
+const FULL_COLS = LIST_COLS + ',description';
+// Never selects nid_number.
+const SHOP_COLS = 'id,owner_id,name,city,verification_status,plan,plan_expires_at';
+
+export function createProductsDb(sb) {
+  return {
+    async getUser(id) {
+      return must(await sb.from('users').select('id,name,roles').eq('id', id).maybeSingle(), 'load user');
+    },
+    // Written for Supabase Auth: the token belongs to auth.users, and users.auth_id links to it.
+    async getUserByToken(token) {
+      const { data, error } = await sb.auth.getUser(token);
+      if (error || !data?.user) return null;
+      return must(await sb.from('users').select('id,name,roles').eq('auth_id', data.user.id).maybeSingle(), 'load user by token');
+    },
+    // Hackathon-sized catalog: load the active products once and filter in code (cap keeps it safe).
+    async listActiveProducts() {
+      return must(await sb.from('products').select(LIST_COLS).eq('status', 'active').order('created_at', { ascending: false }).limit(5000), 'list products') ?? [];
+    },
+    async getShopsByIds(ids) {
+      if (!ids.length) return [];
+      return must(await sb.from('shops').select(SHOP_COLS).in('id', ids), 'load shops') ?? [];
+    },
+    async getShop(id) {
+      return must(await sb.from('shops').select(SHOP_COLS).eq('id', id).maybeSingle(), 'load shop');
+    },
+    async getShopsByOwner(ownerId) {
+      return must(await sb.from('shops').select(SHOP_COLS).eq('owner_id', ownerId), 'load shops by owner') ?? [];
+    },
+    async getProduct(id) {
+      return must(await sb.from('products').select(FULL_COLS).eq('id', id).maybeSingle(), 'load product');
+    },
+    async insertProduct(row) {
+      return must(await sb.from('products').insert(row).select(FULL_COLS).single(), 'save product');
+    },
+    async updateProduct(id, patch) {
+      return must(await sb.from('products').update(patch).eq('id', id).select(FULL_COLS).maybeSingle(), 'update product');
+    },
+    async insertSearchLog(row) {
+      must(await sb.from('search_logs').insert(row), 'save search log');
+    },
+  };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\products\handlers.mjs =====
+
+// Request handlers for the product endpoints.
+// Identity comes ONLY from lib/auth/current-user.mjs, so real login needs no change in this file.
+import { run, json, http, readJson, isPlainObject, UUID } from '../api/http.mjs';
+import { currentUser, requireUser, hasRole } from '../auth/current-user.mjs';
+import { validateProductInput, checkPrices, parseSearchQuery } from './rules.mjs';
+import { searchCatalog, toPublicProduct, deriveLogFilters, shouldLogSearch } from './search.mjs';
+
+function idParam(params) {
+  const id = params?.id;
+  if (typeof id !== 'string' || !UUID.test(id)) throw http(400, 'bad_id', 'The id in the URL is not valid.');
+  return id.toLowerCase();
+}
+async function bodyOf(request) {
+  const body = await readJson(request);
+  if (!isPlainObject(body)) throw http(400, 'bad_json', 'Send a JSON object as the request body.');
+  return body;
+}
+
+// GET /api/products   (public)
+export function handleListProducts(request, _params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const { errors, value } = parseSearchQuery(new URL(request.url).searchParams);
+    if (errors.length) throw http(400, 'bad_query', errors.join(' '));
+
+    const rows = await db.listActiveProducts();
+    const shops = new Map((await db.getShopsByIds([...new Set(rows.map((r) => r.shop_id))])).map((s) => [s.id, s]));
+    const { items, total } = searchCatalog(rows, shops, value, now);
+
+    // The search log feeds the demand-gap view. A logging problem must never break the search itself.
+    if (shouldLogSearch(value)) {
+      try {
+        const user = await currentUser(request, db);
+        await db.insertSearchLog({ user_id: user?.id ?? null, query: value.q ?? null, filters: deriveLogFilters(value, rows), result_count: total });
+      } catch (e) { console.error('search log failed:', e?.message ?? e); }
+    }
+    return json(200, { data: items, meta: { page: value.page, limit: value.limit, total } });
+  }, 'products');
+}
+
+// GET /api/products/:id   (public; hidden products only for their owner or an admin)
+export function handleGetProduct(request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const p = await db.getProduct(id);
+    const shop = p ? await db.getShop(p.shop_id) : null;
+    if (!p || !shop) throw http(404, 'product_not_found', 'No product with that id.');
+    if (p.status !== 'active' || shop.verification_status === 'rejected') {
+      const user = await currentUser(request, db);
+      if (!(user && (user.id === shop.owner_id || hasRole(user, 'admin')))) throw http(404, 'product_not_found', 'No product with that id.');
+    }
+    return json(200, { data: toPublicProduct(p, shop, now, { withDescription: true }) });
+  }, 'products');
+}
+
+// POST /api/products   (seller, for their own shop)
+export function handleCreateProduct(request, _params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const user = await requireUser(request, db);
+    if (!hasRole(user, 'seller')) throw http(403, 'seller_only', 'Only sellers can add products.');
+    const body = await bodyOf(request);
+
+    let shop;
+    if (body.shop_id !== undefined) {
+      if (typeof body.shop_id !== 'string' || !UUID.test(body.shop_id)) throw http(400, 'bad_shop_id', 'shop_id is not valid.');
+      shop = await db.getShop(body.shop_id.toLowerCase());
+      if (!shop || shop.owner_id !== user.id) throw http(403, 'not_your_shop', 'You can only add products to your own shop.');
+    } else {
+      const mine = await db.getShopsByOwner(user.id);
+      if (mine.length === 0) throw http(409, 'no_shop', 'Create your shop before adding products.');
+      if (mine.length > 1) throw http(400, 'shop_id_required', 'You have more than one shop: send shop_id.');
+      shop = mine[0];
+    }
+    if (shop.verification_status === 'rejected') throw http(403, 'shop_rejected', 'This shop was rejected and cannot add products.');
+
+    const { errors, value } = validateProductInput(body);
+    const priceError = checkPrices(value.price, value.discount_price);
+    if (priceError) errors.push(priceError);
+    if (errors.length) throw http(400, 'invalid_product', errors.join(' '));
+
+    const row = await db.insertProduct({
+      shop_id: shop.id, name: value.name, description: value.description ?? null, category: value.category,
+      custom_category: value.custom_category ?? null, gender: value.gender, age_group: value.age_group,
+      colors: value.colors ?? [], occasion_tags: value.occasion_tags ?? [], image_urls: value.image_urls ?? [],
+      price: value.price, discount_price: value.discount_price ?? null, variants: value.variants, status: value.status ?? 'active',
+    });
+    return json(201, { data: toPublicProduct(row, shop, now, { withDescription: true }) });
+  }, 'products');
+}
+
+// PATCH /api/products/:id   (the owner, or an admin who may only change status)
+export function handlePatchProduct(request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const user = await requireUser(request, db);
+    const p = await db.getProduct(id);
+    const shop = p ? await db.getShop(p.shop_id) : null;
+    if (!p || !shop) throw http(404, 'product_not_found', 'No product with that id.');
+
+    const isOwner = shop.owner_id === user.id;
+    const isAdmin = hasRole(user, 'admin');
+    if (!isOwner && !isAdmin) {
+      throw p.status === 'active' ? http(403, 'not_your_product', 'You can only change your own products.') : http(404, 'product_not_found', 'No product with that id.');
+    }
+    const body = await bodyOf(request);
+    if (body.shop_id !== undefined && String(body.shop_id).toLowerCase() !== p.shop_id) throw http(400, 'cannot_move_product', 'A product cannot be moved to another shop.');
+    delete body.shop_id;
+    if (!isOwner && Object.keys(body).some((k) => k !== 'status')) throw http(403, 'admin_status_only', 'Admins can only change a product\'s status.');
+    if (isOwner && shop.verification_status === 'rejected') throw http(403, 'shop_rejected', 'This shop was rejected and cannot change products.');
+
+    const { errors, value } = validateProductInput(body, { partial: true });
+    if (Object.keys(value).length === 0 && errors.length === 0) throw http(400, 'nothing_to_update', 'Send at least one field to change.');
+    const priceError = checkPrices(value.price ?? p.price, value.discount_price !== undefined ? value.discount_price : p.discount_price);
+    if (priceError) errors.push(priceError);
+    if (errors.length) throw http(400, 'invalid_product', errors.join(' '));
+
+    const updated = await db.updateProduct(id, value);
+    if (!updated) throw http(404, 'product_not_found', 'No product with that id.');
+    return json(200, { data: toPublicProduct(updated, shop, now, { withDescription: true }) });
+  }, 'products');
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\products\rules.mjs =====
+
+// Pure validation for product input and for search query strings. No database here.
+import { UUID } from '../api/http.mjs';
+
+export const CATEGORIES = ['clothing', 'jewelry', 'shoes', 'accessories'];
+export const GENDERS = ['female', 'male', 'unisex'];
+export const AGE_GROUPS = ['child', 'adult', 'elderly'];
+export const STATUSES = ['active', 'hidden'];
+export const LIMITS = {
+  name: 120, description: 2000, custom_category: 40, colors: 10, color_len: 20, tags: 10, tag_len: 30,
+  images: 8, url_len: 500, price_max: 1000000, variants: 30, size_len: 20, stock_max: 100000, q: 100, page_max: 50,
+};
+
+const isInt = Number.isInteger;
+const lc = (s) => String(s).trim().toLowerCase();
+const WORDISH = /^[\p{L}\p{N}][\p{L}\p{N} -]*$/u;
+
+function wordList(v, field, max, maxLen, errors) {
+  if (!Array.isArray(v) || v.length > max) { errors.push(`${field} must be a list of at most ${max} items.`); return undefined; }
+  const out = [];
+  for (const item of v) {
+    if (typeof item !== 'string') { errors.push(`${field} must contain only text.`); return undefined; }
+    const x = lc(item);
+    if (x.length < 2 || x.length > maxLen || !WORDISH.test(x)) { errors.push(`${field}: "${item.slice(0, 30)}" is not a valid value.`); return undefined; }
+    if (!out.includes(x)) out.push(x);
+  }
+  return out;
+}
+
+function validUrl(s) {
+  if (typeof s !== 'string' || s.length > LIMITS.url_len) return false;
+  try { const u = new URL(s); return u.protocol === 'http:' || u.protocol === 'https:'; } catch { return false; }
+}
+
+// partial=false: all required fields must be present (create). partial=true: only validate what was sent (patch).
+export function validateProductInput(body, { partial = false } = {}) {
+  const errors = [];
+  const value = {};
+  const has = (k) => Object.prototype.hasOwnProperty.call(body, k);
+  const need = (k) => { if (!partial && !has(k)) errors.push(`${k} is required.`); return has(k); };
+
+  if (need('name')) {
+    const n = typeof body.name === 'string' ? body.name.replace(/\s+/g, ' ').trim() : '';
+    if (!n || n.length > LIMITS.name) errors.push(`name must be 1 to ${LIMITS.name} characters.`); else value.name = n;
+  }
+  if (has('description')) {
+    if (body.description === null) value.description = null;
+    else if (typeof body.description !== 'string' || body.description.length > LIMITS.description) errors.push(`description must be text up to ${LIMITS.description} characters.`);
+    else value.description = body.description.trim();
+  }
+  for (const [k, list] of [['category', CATEGORIES], ['gender', GENDERS], ['age_group', AGE_GROUPS]]) {
+    if (need(k)) { const v = typeof body[k] === 'string' ? lc(body[k]) : ''; if (!list.includes(v)) errors.push(`${k} must be one of: ${list.join(', ')}.`); else value[k] = v; }
+  }
+  if (has('status')) { const v = typeof body.status === 'string' ? lc(body.status) : ''; if (!STATUSES.includes(v)) errors.push(`status must be one of: ${STATUSES.join(', ')}.`); else value.status = v; }
+  if (has('custom_category')) {
+    if (body.custom_category === null || body.custom_category === '') value.custom_category = null;
+    else {
+      const v = typeof body.custom_category === 'string' ? lc(body.custom_category) : '';
+      if (!v || v.length > LIMITS.custom_category || !WORDISH.test(v)) errors.push('custom_category must be a short word such as "sari" or "three-piece".'); else value.custom_category = v;
+    }
+  }
+  if (has('colors')) { const v = wordList(body.colors, 'colors', LIMITS.colors, LIMITS.color_len, errors); if (v) value.colors = v; }
+  if (has('occasion_tags')) { const v = wordList(body.occasion_tags, 'occasion_tags', LIMITS.tags, LIMITS.tag_len, errors); if (v) value.occasion_tags = v; }
+  if (has('image_urls')) {
+    if (!Array.isArray(body.image_urls) || body.image_urls.length > LIMITS.images || !body.image_urls.every(validUrl)) errors.push(`image_urls must be at most ${LIMITS.images} http(s) links.`);
+    else value.image_urls = body.image_urls;
+  }
+  if (need('price')) { if (!isInt(body.price) || body.price < 1 || body.price > LIMITS.price_max) errors.push(`price must be a whole number of BDT from 1 to ${LIMITS.price_max}.`); else value.price = body.price; }
+  if (has('discount_price')) {
+    if (body.discount_price === null) value.discount_price = null;
+    else if (!isInt(body.discount_price) || body.discount_price < 1 || body.discount_price > LIMITS.price_max) errors.push('discount_price must be a whole number of BDT, or null.');
+    else value.discount_price = body.discount_price;
+  }
+  if (need('variants')) {
+    const v = body.variants;
+    if (!Array.isArray(v) || v.length < 1 || v.length > LIMITS.variants) errors.push(`variants must be a list of 1 to ${LIMITS.variants} items.`);
+    else {
+      const out = []; const seen = new Set(); let ok = true;
+      for (const x of v) {
+        const size = typeof x?.size === 'string' ? x.size.trim() : '';
+        const color = x?.color == null ? '' : (typeof x.color === 'string' ? lc(x.color) : null);
+        if (!size || size.length > LIMITS.size_len || color === null || color.length > LIMITS.color_len || !isInt(x.stock) || x.stock < 0 || x.stock > LIMITS.stock_max) { ok = false; break; }
+        const key = size.toLowerCase() + '|' + color;
+        if (seen.has(key)) { errors.push('variants has the same size and colour twice.'); ok = false; break; }
+        seen.add(key); out.push({ size, color, stock: x.stock });
+      }
+      if (ok) value.variants = out; else if (!errors.some((e) => e.startsWith('variants'))) errors.push('Each variant needs a size, an optional colour and a stock number of 0 or more.');
+    }
+  }
+  return { errors, value };
+}
+
+// The discount must be a real discount. Checked on the merged result so a patch of one field cannot break the other.
+export function checkPrices(price, discount) {
+  return discount != null && discount >= price ? 'discount_price must be lower than price.' : null;
+}
+
+const intParam = (s, name, min, max, errors) => {
+  if (s == null || s === '') return undefined;
+  if (!/^\d+$/.test(s)) { errors.push(`${name} must be a whole number.`); return undefined; }
+  const n = Number(s);
+  if (n < min || n > max) { errors.push(`${name} must be between ${min} and ${max}.`); return undefined; }
+  return n;
+};
+
+export function parseSearchQuery(sp) {
+  const errors = [];
+  const v = {};
+  const get = (k) => { const x = sp.get(k); return x == null || x.trim() === '' ? undefined : x.trim(); };
+  const q = get('q'); if (q) v.q = q.slice(0, LIMITS.q);
+  for (const [k, list] of [['category', CATEGORIES], ['gender', GENDERS], ['age_group', AGE_GROUPS]]) {
+    const x = get(k); if (x === undefined) continue;
+    if (!list.includes(x.toLowerCase())) errors.push(`${k} must be one of: ${list.join(', ')}.`); else v[k] = x.toLowerCase();
+  }
+  const color = get('color'); if (color) v.color = color.toLowerCase().slice(0, LIMITS.color_len);
+  const size = get('size'); if (size) v.size = size.toLowerCase().slice(0, LIMITS.size_len);
+  const occasion = get('occasion'); if (occasion) v.occasion = occasion.toLowerCase().slice(0, LIMITS.tag_len);
+  const shop = get('shop_id'); if (shop) { if (!UUID.test(shop)) errors.push('shop_id is not valid.'); else v.shop_id = shop.toLowerCase(); }
+  const min = intParam(get('min_price'), 'min_price', 0, LIMITS.price_max, errors); if (min !== undefined) v.min_price = min;
+  const max = intParam(get('max_price'), 'max_price', 0, LIMITS.price_max, errors); if (max !== undefined) v.max_price = max;
+  if (min !== undefined && max !== undefined && min > max) errors.push('min_price cannot be higher than max_price.');
+  const stock = get('in_stock'); if (stock !== undefined) v.in_stock = stock === 'true' || stock === '1';
+  v.page = intParam(get('page'), 'page', 1, 100000, errors) ?? 1;
+  v.limit = intParam(get('limit'), 'limit', 1, LIMITS.page_max, errors) ?? 20;
+  return { errors, value: v };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\products\search.mjs =====
+
+// Pure catalog search: takes rows already loaded from the database. No database calls here.
+
+export const effectivePrice = (p) => (p.discount_price != null && p.discount_price < p.price ? p.discount_price : p.price);
+const lc = (s) => String(s ?? '').trim().toLowerCase();
+export const inStock = (p) => Array.isArray(p.variants) && p.variants.some((v) => Number(v?.stock) > 0);
+export const isFeatured = (shop, now = new Date()) =>
+  shop?.plan === 'premium' && (!shop.plan_expires_at || new Date(shop.plan_expires_at) > now);
+
+const STOP = new Set(['a', 'an', 'the', 'for', 'and', 'or', 'in', 'on', 'of', 'to', 'my', 'me', 'i', 'with', 'under', 'below', 'above', 'show', 'find', 'need', 'want', 'bdt', 'tk', 'taka']);
+const ALIASES = { saree: 'sari', sarees: 'sari', punjabi: 'panjabi', threepiece: 'three-piece' };
+
+export function queryTokens(q) {
+  return lc(q).replace(/three[\s]piece/g, 'three-piece').split(/[^\p{L}\p{N}-]+/u)
+    .filter((t) => t && !STOP.has(t) && !/^\d+[kK]?$/.test(t));
+}
+function tokenVariants(t) {
+  const out = new Set([t]);
+  if (ALIASES[t]) out.add(ALIASES[t]);
+  if (t.length > 3 && t.endsWith('s') && !t.endsWith('ss')) out.add(t.slice(0, -1));
+  return [...out];
+}
+function matchesQuery(p, tokens) {
+  if (!tokens.length) return true;
+  const hay = [p.name, p.custom_category, p.category, ...(p.colors ?? []), ...(p.occasion_tags ?? [])].map(lc).join(' ');
+  return tokens.every((t) => tokenVariants(t).some((v) => hay.includes(v)));
+}
+
+export function toPublicProduct(p, shop, now = new Date(), { withDescription = false } = {}) {
+  return {
+    id: p.id, shop_id: p.shop_id, name: p.name,
+    ...(withDescription ? { description: p.description ?? null } : {}),
+    category: p.category, custom_category: p.custom_category ?? null, gender: p.gender, age_group: p.age_group,
+    colors: p.colors ?? [], occasion_tags: p.occasion_tags ?? [], image_urls: p.image_urls ?? [],
+    price: p.price, discount_price: p.discount_price ?? null, price_now: effectivePrice(p),
+    variants: p.variants ?? [], in_stock: inStock(p), status: p.status, created_at: p.created_at,
+    shop: shop ? { id: shop.id, name: shop.name, city: shop.city ?? null, verified: shop.verification_status === 'verified', featured: isFeatured(shop, now) } : null,
+  };
+}
+
+// Filters, sorts (premium first, then newest) and pages the catalog. A gender search also returns unisex items.
+export function searchCatalog(rows, shops, params, now = new Date()) {
+  const tokens = queryTokens(params.q);
+  const hits = [];
+  for (const p of rows) {
+    const shop = shops.get(p.shop_id);
+    if (!shop || shop.verification_status === 'rejected' || p.status !== 'active') continue;
+    if (params.shop_id && p.shop_id !== params.shop_id) continue;
+    if (params.category && p.category !== params.category) continue;
+    if (params.gender && p.gender !== params.gender && p.gender !== 'unisex') continue;
+    if (params.age_group && p.age_group !== params.age_group) continue;
+    if (params.color && !(p.colors ?? []).some((c) => lc(c) === params.color)) continue;
+    if (params.occasion && !(p.occasion_tags ?? []).some((o) => lc(o) === params.occasion)) continue;
+    if (params.size && !(Array.isArray(p.variants) && p.variants.some((v) => lc(v?.size) === params.size && Number(v?.stock) > 0))) continue;
+    const price = effectivePrice(p);
+    if (params.min_price !== undefined && price < params.min_price) continue;
+    if (params.max_price !== undefined && price > params.max_price) continue;
+    if (params.in_stock && !inStock(p)) continue;
+    if (!matchesQuery(p, tokens)) continue;
+    hits.push({ p, shop, featured: isFeatured(shop, now) });
+  }
+  hits.sort((a, b) =>
+    Number(b.featured) - Number(a.featured) ||
+    new Date(b.p.created_at ?? 0) - new Date(a.p.created_at ?? 0) ||
+    String(a.p.name).localeCompare(String(b.p.name)));
+  const start = (params.page - 1) * params.limit;
+  return { total: hits.length, items: hits.slice(start, start + params.limit).map((h) => toPublicProduct(h.p, h.shop, now)) };
+}
+
+// ---- search log (feeds the demand-gap view) ----
+// Words customers use even when nobody sells them yet: that is exactly the demand we want to see.
+const KNOWN_CATEGORIES = ['sari', 'kurti', 'three-piece', 'lehenga', 'panjabi', 'frock', 'shirt', 'formal shirt', 'pants', 'skirt', 'dress', 'salwar', 'burqa', 'hijab', 'fatua', 'shoes', 'heels', 'flats', 'sandals', 'oxford', 'earrings', 'necklace', 'bangles', 'ring', 'watch', 'clutch', 'bag', 'belt'];
+const KNOWN_COLORS = ['maroon', 'red', 'blue', 'green', 'pink', 'black', 'white', 'navy', 'gold', 'brown', 'yellow', 'purple', 'orange', 'grey', 'gray', 'cream', 'lilac', 'silver', 'beige'];
+const KNOWN_OCCASIONS = ['wedding', 'eid', 'party', 'formal', 'casual', 'festive', 'interview', 'holud'];
+const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+function normalizeText(q) {
+  let t = lc(q).replace(/three[\s]piece/g, 'three-piece');
+  for (const [from, to] of Object.entries(ALIASES)) t = t.replace(new RegExp('(?<![\\p{L}\\p{N}-])' + from + '(?![\\p{L}\\p{N}-])', 'gu'), to);
+  return t;
+}
+function findTerm(text, terms) {
+  for (const term of [...terms].sort((a, b) => b.length - a.length)) {
+    if (new RegExp('(?<![\\p{L}\\p{N}-])' + esc(term) + 's?(?![\\p{L}\\p{N}-])', 'u').test(text)) return term;
+  }
+  return null;
+}
+
+export function deriveLogFilters(params, rows) {
+  const filters = {};
+  const text = params.q ? normalizeText(params.q) : '';
+  if (text) {
+    const cats = new Set([...KNOWN_CATEGORIES, ...rows.map((r) => lc(r.custom_category)).filter(Boolean)]);
+    const cat = findTerm(text, cats); if (cat) filters.custom_category = cat;
+    const occ = new Set([...KNOWN_OCCASIONS, ...rows.flatMap((r) => (r.occasion_tags ?? []).map(lc))]);
+    const o = findTerm(text, occ); if (o) filters.occasion = o;
+  }
+  const color = params.color ?? (text ? findTerm(text, new Set([...KNOWN_COLORS, ...rows.flatMap((r) => (r.colors ?? []).map(lc))])) : null);
+  if (color) filters.color = color;
+  if (params.occasion) filters.occasion = params.occasion;
+  for (const k of ['category', 'gender', 'age_group', 'size', 'min_price', 'max_price']) if (params[k] !== undefined) filters[k] = params[k];
+  return filters;
+}
+
+// Browsing a shop page or paging through results is not a customer search.
+export const shouldLogSearch = (params) =>
+  params.page === 1 && ['q', 'category', 'gender', 'age_group', 'color', 'size', 'occasion', 'min_price', 'max_price'].some((k) => params[k] !== undefined);
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\products\server.mjs =====
+
+// Server-only: uses the SECRET key. Never import this file from browser code.
+import { createClient } from '@supabase/supabase-js';
+import { createProductsDb } from './db.mjs';
+
+export function createServerDb() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env');
+  return createProductsDb(createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\shops\db.mjs =====
+
+// Database access for shops. The Supabase client is passed in, so this file is testable offline.
+const must = ({ data, error }, what) => {
+  if (error) throw new Error(what + ': ' + error.message);
+  return data;
+};
+// nid_number is only ever selected here so the ADMIN view can show it; the public and owner views strip it.
+const SHOP_COLS = 'id,owner_id,name,description,city,social_url,nid_number,verification_status,plan,plan_expires_at,return_policy,rejection_note,created_at';
+
+export function createShopsDb(sb) {
+  return {
+    async getUser(id) {
+      return must(await sb.from('users').select('id,name,roles').eq('id', id).maybeSingle(), 'load user');
+    },
+    async getUserByToken(token) {
+      const { data, error } = await sb.auth.getUser(token);
+      if (error || !data?.user) return null;
+      return must(await sb.from('users').select('id,name,roles').eq('auth_id', data.user.id).maybeSingle(), 'load user by token');
+    },
+    async getUserEmail(id) {
+      const row = must(await sb.from('users').select('email').eq('id', id).maybeSingle(), 'load email');
+      return row?.email ?? null;
+    },
+    async addRole(userId, role) {
+      const row = must(await sb.from('users').select('roles').eq('id', userId).maybeSingle(), 'load roles');
+      const roles = Array.isArray(row?.roles) ? row.roles : [];
+      if (roles.includes(role)) return roles;
+      must(await sb.from('users').update({ roles: [...roles, role] }).eq('id', userId), 'add role');
+      return [...roles, role];
+    },
+    async getShop(id) {
+      return must(await sb.from('shops').select(SHOP_COLS).eq('id', id).maybeSingle(), 'load shop');
+    },
+    async getShopsByOwner(ownerId) {
+      return must(await sb.from('shops').select(SHOP_COLS).eq('owner_id', ownerId), 'load shops by owner') ?? [];
+    },
+    async insertShop(row) {
+      const { data, error } = await sb.from('shops').insert(row).select(SHOP_COLS).single();
+      if (error) throw new Error('save shop: ' + error.message);
+      return data;
+    },
+    async updateShop(id, patch) {
+      return must(await sb.from('shops').update(patch).eq('id', id).select(SHOP_COLS).maybeSingle(), 'update shop');
+    },
+    async listShopsByStatus(status, page, limit) {
+      const from = (page - 1) * limit;
+      const { data, error, count } = await sb.from('shops').select(SHOP_COLS, { count: 'exact' })
+        .eq('verification_status', status).order('created_at', { ascending: true }).range(from, from + limit - 1);
+      if (error) throw new Error('list shops: ' + error.message);
+      return { rows: data ?? [], total: count ?? 0 };
+    },
+  };
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\shops\handlers.mjs =====
+
+// Request handlers for shops. Identity comes ONLY from lib/auth/current-user.mjs.
+import { run, json, http, readJson, isPlainObject, UUID } from '../api/http.mjs';
+import { currentUser, requireUser, hasRole } from '../auth/current-user.mjs';
+import { validateShopInput, validateVerification, PREMIUM_PLANS, premiumExpiry } from './rules.mjs';
+import { sendMail } from '../mail/send.mjs';
+
+const isPremiumNow = (s, now) => s.plan === 'premium' && (!s.plan_expires_at || new Date(s.plan_expires_at) > now);
+
+// Three views of one shop. The NID goes to admins only; owners just see whether one is on file.
+export function toShopView(shop, viewer, now = new Date()) {
+  const isAdmin = hasRole(viewer, 'admin');
+  const isOwner = !!viewer && viewer.id === shop.owner_id;
+  const featured = isPremiumNow(shop, now);
+  const view = {
+    id: shop.id, name: shop.name, description: shop.description ?? null, city: shop.city ?? null,
+    social_url: shop.social_url ?? null, return_policy: shop.return_policy ?? null,
+    verified: shop.verification_status === 'verified', featured, created_at: shop.created_at,
+  };
+  if (isOwner || isAdmin) {
+    Object.assign(view, {
+      verification_status: shop.verification_status, plan: featured ? 'premium' : 'free',
+      plan_expires_at: featured ? shop.plan_expires_at ?? null : null, rejection_note: shop.rejection_note ?? null,
+    });
+  }
+  if (isOwner) view.nid_set = !!shop.nid_number;
+  if (isAdmin) { view.owner_id = shop.owner_id; view.nid_number = shop.nid_number ?? null; }
+  return view;
+}
+
+function idParam(params) {
+  const id = params?.id;
+  if (typeof id !== 'string' || !UUID.test(id)) throw http(400, 'bad_id', 'The id in the URL is not valid.');
+  return id.toLowerCase();
+}
+async function bodyOf(request) {
+  const body = await readJson(request);
+  if (!isPlainObject(body)) throw http(400, 'bad_json', 'Send a JSON object as the request body.');
+  return body;
+}
+async function loadShop(db, id) {
+  const shop = await db.getShop(id);
+  if (!shop) throw http(404, 'shop_not_found', 'No shop with that id.');
+  return shop;
+}
+
+// POST /api/shops  (any signed-in user; creating a shop makes them a seller)
+export function handleCreateShop(request, _params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const user = await requireUser(request, db);
+    if (hasRole(user, 'admin')) throw http(403, 'admin_cannot_sell', 'Admin accounts cannot own a shop.');
+    const body = await bodyOf(request);
+    const { errors, value } = validateShopInput(body);
+    if (errors.length) throw http(400, 'invalid_shop', errors.join(' '));
+    if ((await db.getShopsByOwner(user.id)).length > 0) throw http(409, 'shop_exists', 'You already have a shop.');
+
+    await db.addRole(user.id, 'seller');   // role first: a seller without a shop is harmless, a shop without the role is not
+    const shop = await db.insertShop({
+      owner_id: user.id, name: value.name, description: value.description ?? null, city: value.city ?? null,
+      social_url: value.social_url ?? null, nid_number: value.nid_number ?? null, return_policy: value.return_policy ?? null,
+      verification_status: 'pending', plan: 'free', plan_expires_at: null,
+    });
+    return json(201, { data: toShopView(shop, { ...user, roles: [...(user.roles ?? []), 'seller'] }, now) });
+  }, 'shops');
+}
+
+// GET /api/shops/mine  (signed in; data is null when the user has no shop yet)
+export function handleMyShop(request, _params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const user = await requireUser(request, db);
+    const [shop] = await db.getShopsByOwner(user.id);
+    return json(200, { data: shop ? toShopView(shop, user, now) : null });
+  }, 'shops');
+}
+
+// GET /api/shops/:id  (public; rejected shops only for the owner and admins)
+export function handleGetShop(request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const shop = await loadShop(db, idParam(params));
+    const viewer = await currentUser(request, db);
+    if (shop.verification_status === 'rejected' && !(viewer && (viewer.id === shop.owner_id || hasRole(viewer, 'admin')))) {
+      throw http(404, 'shop_not_found', 'No shop with that id.');
+    }
+    return json(200, { data: toShopView(shop, viewer, now) });
+  }, 'shops');
+}
+
+// PATCH /api/shops/:id  (owner). Editing a rejected shop sends it back to review.
+export function handlePatchShop(request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const user = await requireUser(request, db);
+    const shop = await loadShop(db, id);
+    if (shop.owner_id !== user.id) throw http(403, 'not_your_shop', 'You can only change your own shop.');
+    const body = await bodyOf(request);
+    for (const k of ['verification_status', 'plan', 'plan_expires_at', 'owner_id', 'rejection_note']) {
+      if (body[k] !== undefined) throw http(400, 'field_not_editable', `${k} cannot be changed here.`);
+    }
+    const { errors, value } = validateShopInput(body, { partial: true });
+    if (errors.length) throw http(400, 'invalid_shop', errors.join(' '));
+    if (Object.keys(value).length === 0) throw http(400, 'nothing_to_update', 'Send at least one field to change.');
+    // A verified shop cannot swap its business name or NID without going back to review.
+    const sensitive = value.name !== undefined && value.name !== shop.name || value.nid_number !== undefined && value.nid_number !== shop.nid_number;
+    if (shop.verification_status === 'rejected' || (shop.verification_status === 'verified' && sensitive)) {
+      value.verification_status = 'pending';
+      value.rejection_note = null;
+    }
+    const updated = await db.updateShop(id, value);
+    return json(200, { data: toShopView(updated, user, now) });
+  }, 'shops');
+}
+
+// POST /api/shops/:id/premium  (owner; sandbox payment, no real money)
+export function handleBuyPremium(request, params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const user = await requireUser(request, db);
+    const shop = await loadShop(db, id);
+    if (shop.owner_id !== user.id) throw http(403, 'not_your_shop', 'You can only upgrade your own shop.');
+    if (shop.verification_status === 'rejected') throw http(403, 'shop_rejected', 'A rejected shop cannot buy Premium.');
+    const body = await bodyOf(request);
+    const months = body.months;
+    if (!Object.prototype.hasOwnProperty.call(PREMIUM_PLANS, months) || typeof months !== 'number') {
+      throw http(400, 'bad_plan', 'months must be 1, 3 or 6.');
+    }
+    const expires = premiumExpiry(shop, months, now);
+    const updated = await db.updateShop(id, { plan: 'premium', plan_expires_at: expires.toISOString() });
+    return json(200, { data: { shop: toShopView(updated, user, now), paid: PREMIUM_PLANS[months], months, sandbox: true } });
+  }, 'shops');
+}
+
+// GET /api/admin/shops?status=pending  (admin)
+export function handleAdminListShops(request, _params, dbOrFactory, { now = new Date() } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const admin = await requireUser(request, db);
+    if (!hasRole(admin, 'admin')) throw http(403, 'admin_only', 'Admins only.');
+    const sp = new URL(request.url).searchParams;
+    const status = (sp.get('status') || 'pending').toLowerCase();
+    if (!['pending', 'verified', 'rejected'].includes(status)) throw http(400, 'bad_status', 'status must be pending, verified or rejected.');
+    const page = Math.max(1, parseInt(sp.get('page') || '1', 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(sp.get('limit') || '20', 10) || 20));
+    const { rows, total } = await db.listShopsByStatus(status, page, limit);
+    return json(200, { data: rows.map((s) => toShopView(s, admin, now)), meta: { page, limit, total } });
+  }, 'shops');
+}
+
+// PATCH /api/admin/shops/:id/verification  (admin). Rejection needs a reason; the owner is emailed.
+export function handleVerifyShop(request, params, dbOrFactory, { now = new Date(), mail = sendMail } = {}) {
+  return run(dbOrFactory, async (db) => {
+    const id = idParam(params);
+    const admin = await requireUser(request, db);
+    if (!hasRole(admin, 'admin')) throw http(403, 'admin_only', 'Admins only.');
+    const shop = await loadShop(db, id);
+    const body = await bodyOf(request);
+    const v = validateVerification(body);
+    if (v.error) throw http(400, 'invalid_decision', v.error);
+
+    const updated = await db.updateShop(id, { verification_status: v.status, rejection_note: v.status === 'rejected' ? v.reason : null });
+
+    // Emailing is best effort: the decision is already saved, and mail() never throws.
+    let emailed = false;
+    try {
+      const to = await db.getUserEmail(shop.owner_id);
+      const text = v.status === 'verified'
+        ? `Good news: your shop "${shop.name}" is now verified on Dokan AI.`
+        : `Your shop "${shop.name}" was not approved.\n\nReason: ${v.reason}\n\nYou can fix this in your shop settings and send it for review again.`;
+      emailed = (await mail({ to, subject: v.status === 'verified' ? 'Your shop is verified' : 'Your shop needs changes', text })).sent === true;
+    } catch (e) { console.error('verification mail failed:', e?.message ?? e); }
+
+    return json(200, { data: { shop: toShopView(updated, admin, now), emailed } });
+  }, 'shops');
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\shops\rules.mjs =====
+
+// Pure rules for shops: validation, Premium prices and dates. No database here.
+export const LIMITS = { name_min: 2, name_max: 80, description: 1000, city: 60, policy: 1000, url: 300, reason_min: 3, reason_max: 500 };
+// From the PRD (SF-12): 1, 3 or 6 months.
+export const PREMIUM_PLANS = { 1: 1000, 3: 2500, 6: 5000 };
+const NID = /^(\d{10}|\d{13}|\d{17})$/;   // Bangladesh NIDs have 10, 13 or 17 digits
+
+function isHttp(s) {
+  if (typeof s !== 'string' || s.length > LIMITS.url) return false;
+  try { const u = new URL(s); return u.protocol === 'http:' || u.protocol === 'https:'; } catch { return false; }
+}
+
+// partial=false for create (name required); partial=true for edits.
+export function validateShopInput(body, { partial = false } = {}) {
+  const errors = [], value = {};
+  const has = (k) => Object.prototype.hasOwnProperty.call(body, k);
+  if (!partial && !has('name')) errors.push('name is required.');
+  if (has('name')) {
+    const n = typeof body.name === 'string' ? body.name.replace(/\s+/g, ' ').trim() : '';
+    if (n.length < LIMITS.name_min || n.length > LIMITS.name_max) errors.push(`name must be ${LIMITS.name_min} to ${LIMITS.name_max} characters.`); else value.name = n;
+  }
+  for (const [k, max] of [['description', LIMITS.description], ['city', LIMITS.city], ['return_policy', LIMITS.policy]]) {
+    if (!has(k)) continue;
+    if (body[k] === null || body[k] === '') value[k] = null;
+    else if (typeof body[k] !== 'string' || body[k].trim().length > max) errors.push(`${k} must be text up to ${max} characters.`);
+    else value[k] = body[k].trim();
+  }
+  if (has('social_url')) {
+    if (body.social_url === null || body.social_url === '') value.social_url = null;
+    else if (!isHttp(body.social_url)) errors.push('social_url must be an http(s) link.'); else value.social_url = body.social_url;
+  }
+  if (has('nid_number')) {
+    const n = typeof body.nid_number === 'string' || typeof body.nid_number === 'number' ? String(body.nid_number).replace(/[\s-]/g, '') : '';
+    if (!NID.test(n)) errors.push('nid_number must have 10, 13 or 17 digits.'); else value.nid_number = n;
+  }
+  return { errors, value };
+}
+
+export function validateVerification(body) {
+  const status = typeof body?.status === 'string' ? body.status.toLowerCase() : '';
+  if (status !== 'verified' && status !== 'rejected') return { error: 'status must be "verified" or "rejected".' };
+  if (status === 'verified') return { status };
+  const reason = typeof body.reason === 'string' ? body.reason.trim() : '';
+  if (reason.length < LIMITS.reason_min || reason.length > LIMITS.reason_max) return { error: `A rejection needs a reason of ${LIMITS.reason_min} to ${LIMITS.reason_max} characters.` };
+  return { status, reason };
+}
+
+export function addMonths(date, months) {
+  const d = new Date(date.getTime());
+  const day = d.getUTCDate();
+  d.setUTCDate(1);
+  d.setUTCMonth(d.getUTCMonth() + months);
+  const last = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0)).getUTCDate();
+  d.setUTCDate(Math.min(day, last));
+  return d;
+}
+
+// Buying while Premium is still active extends from the current expiry; otherwise it starts now.
+export function premiumExpiry(shop, months, now = new Date()) {
+  const current = shop.plan === 'premium' && shop.plan_expires_at ? new Date(shop.plan_expires_at) : null;
+  return addMonths(current && current > now ? current : now, months);
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\shops\server.mjs =====
+
+// Server-only: uses the SECRET key. Never import this file from browser code.
+import { createClient } from '@supabase/supabase-js';
+import { createShopsDb } from './db.mjs';
+
+export function createServerDb() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SECRET_KEY in .env');
+  return createShopsDb(createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } }));
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\api.js =====
+
+import { supabase } from './supabaseClient';
+
+// Calls our own backend with the logged-in user's token.
+// Use: const { data } = await api('/orders?as=customer');
+export async function api(path, { method = 'GET', body } = {}) {
+  const { data: { session } } = await supabase.auth.getSession();
+  const res = await fetch('/api' + path, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(session ? { Authorization: 'Bearer ' + session.access_token } : {}),
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) {
+    const e = new Error(json?.error?.message || 'Request failed');
+    e.code = json?.error?.code;
+    e.status = res.status;
+    throw e;
+  }
+  return json; // { data, meta? }
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\catalog.js =====
+
+// Loads shops + products from Supabase and puts them into the SAME arrays the app already uses
+// (SHOPS and PRODUCTS in lib/data.js), in the SAME shape. So the cart, product page and
+// ProductCard keep working. Ids stay numbers (1, 2, 3...); the real database id is in p.uuid / s.uuid.
+// If the database can't be reached, the old hardcoded data stays.
+import { SHOPS, PRODUCTS } from './data';
+
+const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const KEY = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : s);
+
+async function get(path) {
+  const res = await fetch(`${URL}/rest/v1/${path}`, {
+    headers: { apikey: KEY, Authorization: `Bearer ${KEY}` },
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) throw new Error(`${path} -> ${res.status}`);
+  return res.json();
+}
+
+export function shapeCatalog(shopRows, productRows, badgedOwnerIds) {
+  const shops = shopRows
+    .filter((s) => s.verification_status === 'verified')
+    .map((s, i) => ({
+      id: i + 1, uuid: s.id, name: s.name, city: s.city || 'Bangladesh',
+      rating: 4.5, followers: 0,                       // no ratings/followers in the database yet
+      verified: true, fraud: badgedOwnerIds.has(s.owner_id), premium: s.plan === 'premium',
+      policy: s.return_policy || 'Ask the seller about returns and exchanges.',
+    }));
+  const shopNo = new Map(shops.map((s) => [s.uuid, s.id]));
+
+  const products = productRows
+    .filter((p) => p.status === 'active' && shopNo.has(p.shop_id))
+    .map((p) => {
+      const variants = Array.isArray(p.variants) ? p.variants : [];
+      const stock = variants.reduce((t, v) => t + (v.stock > 0 ? v.stock : 0), 0);
+      const sizes = [...new Set(variants.filter((v) => v.stock > 0).map((v) => v.size))];
+      const price = p.discount_price ?? p.price;
+      return {
+        p, stock, sizes, price,
+      };
+    })
+    .filter((x) => x.stock > 0)                         // out-of-stock products are not listed
+    .map(({ p, stock, sizes, price }, i) => ({
+      id: i + 1, uuid: p.id, shopUuid: p.shop_id,
+      name: p.name,
+      cat: cap(p.custom_category || p.category),
+      type: p.category,
+      gender: p.age_group === 'child' ? 'Children' : p.age_group === 'elderly' ? 'Elderly' : p.gender === 'male' ? 'Men' : 'Women',
+      unisex: p.gender === 'unisex',
+      color: (p.colors && p.colors[0]) || '',
+      colors: p.colors || [],
+      price, oldPrice: p.discount_price != null && p.discount_price < p.price ? p.price : null,
+      shop: shopNo.get(p.shop_id),
+      occasion: cap((p.occasion_tags && p.occasion_tags[0]) || ''),
+      tags: p.occasion_tags || [],
+      sizes, stock,
+      image: (p.image_urls && p.image_urls[0]) || null,
+      img: (p.image_urls && p.image_urls[0]) || null,   // ProductArt uses p.img for the real photo
+      desc: p.description || `${p.name} from a verified small seller. Delivery by courier across Bangladesh.`,
+    }));
+  return { shops, products };
+}
+
+let loading = null;
+export function loadCatalog() {
+  if (!URL || !KEY) return Promise.resolve(false);
+  if (loading) return loading;
+  loading = (async () => {
+    try {
+      const [shopRows, productRows, badges] = await Promise.all([
+        get('shops?select=id,owner_id,name,city,verification_status,plan,return_policy'),
+        get('products?select=*&status=eq.active&order=created_at.asc,id.asc&limit=1000'),
+        get('badges?select=user_id&status=eq.active'),
+      ]);
+      const { shops, products } = shapeCatalog(shopRows, productRows, new Set(badges.map((b) => b.user_id)));
+      if (!products.length) return false;
+      SHOPS.splice(0, SHOPS.length, ...shops);
+      PRODUCTS.splice(0, PRODUCTS.length, ...products);
+      return true;
+    } catch (e) {
+      console.error('Could not load catalog, using built-in sample data:', e);
+      loading = null;
+      return false;
+    }
+  })();
+  return loading;
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\data.js =====
+
+export const COLORS = { maroon: '#8a1538', navy: '#1f2a5a', green: '#1f6b5a', black: '#222233', gold: '#c9a227', pink: '#d4688f', white: '#e8e4de', brown: '#6b4a2f' };
+export const SHOPS = [
+  { id: 1, name: 'Nusrat Boutique', city: 'Comilla', rating: 4.7, verified: true, fraud: false, premium: true, followers: 1240, policy: 'Exchange within 3 days if unworn and tags intact.' },
+  { id: 2, name: 'Rafi Menswear', city: 'Dhaka', rating: 4.4, verified: true, fraud: false, premium: false, followers: 640, policy: 'Size exchange within 2 days. No cash refund.' },
+  { id: 3, name: 'Tania Jewels & Shoes', city: 'Chattogram', rating: 4.8, verified: true, fraud: false, premium: true, followers: 2100, policy: 'Exchange within 5 days; jewelry must be unused.' },
+  { id: 4, name: 'Quick Trends', city: 'Sylhet', rating: 3.1, verified: false, fraud: true, premium: false, followers: 90, policy: 'Exchange only for defects.' },
+];
+const CL = ['S', 'M', 'L', 'XL'], SH = ['38', '39', '40', '41'], FR = ['Free'];
+// [name, category, type, gender, color, price, shop, occasion, sizes]
+const raw = [
+  ['Maroon Katan Sari', 'Sari', 'clothing', 'Women', 'maroon', 2300, 1, 'Wedding', FR], ['Cotton Printed Kurti', 'Kurti', 'clothing', 'Women', 'green', 750, 1, 'Casual', CL],
+  ['Embroidered Three-piece', 'Three-piece', 'clothing', 'Women', 'navy', 1700, 1, 'Eid', CL], ['Pleated Midi Skirt', 'Skirt', 'clothing', 'Women', 'pink', 480, 4, 'Casual', CL],
+  ['Slim-fit Formal Shirt', 'Shirt', 'clothing', 'Men', 'white', 900, 2, 'Formal', CL], ['Gabardine Formal Pants', 'Pants', 'clothing', 'Men', 'black', 1100, 2, 'Formal', CL],
+  ['Festive Panjabi', 'Panjabi', 'clothing', 'Men', 'navy', 1450, 2, 'Eid', CL], ['Kids Eid Frock', 'Frock', 'clothing', 'Children', 'pink', 650, 1, 'Eid', ['2Y', '4Y', '6Y']],
+  ['Cotton Fatua for Elders', 'Fatua', 'clothing', 'Elderly', 'white', 520, 2, 'Casual', CL], ['Soft Cotton Sari', 'Sari', 'clothing', 'Elderly', 'brown', 980, 1, 'Casual', FR],
+  ['Block Heels', 'Heels', 'shoes', 'Women', 'black', 900, 3, 'Wedding', SH], ['Leather Oxford', 'Formal shoes', 'shoes', 'Men', 'brown', 1700, 2, 'Formal', SH],
+  ['Flat Sandals', 'Sandals', 'shoes', 'Women', 'gold', 500, 3, 'Casual', SH], ['Gold Jhumka Set', 'Earrings', 'jewelry', 'Women', 'gold', 800, 3, 'Wedding', FR],
+  ['Stone Necklace Set', 'Necklace', 'jewelry', 'Women', 'maroon', 1400, 3, 'Party', FR], ['Classic Steel Watch', 'Watch', 'accessories', 'Men', 'black', 900, 2, 'Formal', FR],
+  ['Beaded Clutch', 'Clutch', 'accessories', 'Women', 'brown', 500, 3, 'Party', FR], ['Cheap Party Dress', 'Dress', 'clothing', 'Women', 'maroon', 400, 4, 'Party', CL],
+];
+export const PRODUCTS = raw.map(([name, cat, type, gender, color, price, shop, occasion, sizes], i) => ({ id: i + 1, name, cat, type, gender, color, price, shop, occasion, sizes, stock: 8 + (i % 5) * 3, desc: `${name} – quality ${type} with careful finishing. Delivery by courier across Bangladesh.` }));
+export const shopOf = (id) => SHOPS.find((s) => s.id === id);
+export const bdt = (n) => Math.round(n).toLocaleString('en-BD') + ' BDT';
+export const commissionRate = (p) => (p < 500 ? 2 : p < 1000 ? 3 : 5);
+export const STATUS = ['Placed', 'Accepted', 'Packed', 'Shipped', 'Delivered'];
+export const DELIVERY = 80;
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\demoShops.js =====
+
+// Demo "login": the seeded sellers from seed.sql. Picking one on the seller page
+// saves its id in the browser, and the Analytics tab uses it.
+// Real login (Supabase Auth) can replace this later without changing the API.
+export const DEMO_SHOPS = [
+  { id: '00000000-0000-4000-9000-000000000001', name: 'Nilima Boutique', plan: 'Premium' },
+  { id: '00000000-0000-4000-9000-000000000003', name: 'Jewel Box BD', plan: 'Premium' },
+  { id: '00000000-0000-4000-9000-000000000002', name: 'Rongdhonu Collection', plan: 'Free' },
+  { id: '00000000-0000-4000-9000-000000000004', name: 'Panjabi Ghor', plan: 'Free' },
+  { id: '00000000-0000-4000-9000-000000000005', name: 'Gentry Formals', plan: 'Free' },
+  { id: '00000000-0000-4000-9000-000000000006', name: 'Step Up Footwear', plan: 'Free' },
+  { id: '00000000-0000-4000-9000-000000000007', name: 'Little Star Kids', plan: 'Free' },
+];
+export const DEMO_SHOP_KEY = 'dokan_demo_shop';
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\i18n.js =====
+
+export const T = {
+  en: { n1:'Platform', n2:'AI Stylist', n3:'For Sellers', n4:'Trust', cta:'Open your shop', toggle:'বাংলা',
+    h1:'A proper shop for every small seller. A personal stylist for every shopper.',
+    lead:'Dokan AI moves fashion sellers from WhatsApp and Facebook chats to a real catalog, protected orders and smart insights – while AI builds complete outfits within your budget.',
+    try:'Try the AI stylist', sell:'Start selling free' },
+  bn: { n1:'প্ল্যাটফর্ম', n2:'এআই স্টাইলিস্ট', n3:'বিক্রেতাদের জন্য', n4:'বিশ্বাস', cta:'দোকান খুলুন', toggle:'English',
+    h1:'প্রতিটি ছোট বিক্রেতার জন্য একটি সত্যিকারের দোকান, প্রতিটি ক্রেতার জন্য একজন ব্যক্তিগত স্টাইলিস্ট।',
+    lead:'Dokan AI আপনার ফেসবুক ও হোয়াটসঅ্যাপের দোকানকে দেয় ক্যাটালগ, সুরক্ষিত অর্ডার ও স্মার্ট ইনসাইট – আর এআই আপনার বাজেটের মধ্যে সাজিয়ে দেয় পুরো পোশাক।',
+    try:'এআই স্টাইলিস্ট ব্যবহার করুন', sell:'বিনামূল্যে বিক্রি শুরু করুন' },
+};
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\stylist.js =====
+
+const o = (a) => a.map(([name, color, price]) => ({ name, color, price }));
+export const CATALOG = {
+  wedding: { label: 'Wedding guest (woman)', items: [
+    { slot: 'Sari', o: o([['Cotton Sari', '#b5446e', 1100], ['Maroon Katan Sari', '#8a1538', 2300], ['Banarasi Silk Sari', '#5a0f2e', 3400]]) },
+    { slot: 'Shoes', o: o([['Flat Sandals', '#2b2b3a', 500], ['Block Heels', '#2b2b3a', 900], ['Embroidered Heels', '#3a2a4a', 1300]]) },
+    { slot: 'Jewelry', o: o([['Stone Earrings', '#c9a227', 350], ['Gold Jhumka Set', '#c9a227', 800], ['Necklace Set', '#d4af37', 1400]]) },
+    { slot: 'Clutch', o: o([['Fabric Clutch', '#7a5a3a', 300], ['Beaded Clutch', '#9a6a3a', 500], ['Zari Clutch', '#b8863a', 700]]) }] },
+  interview: { label: 'Job interview (man)', items: [
+    { slot: 'Formal shirt', o: o([['Cotton Shirt', '#dfe6ee', 600], ['Slim-fit Shirt', '#c8d4e3', 900], ['Premium Shirt', '#b0c2d8', 1300]]) },
+    { slot: 'Formal pants', o: o([['Gabardine Pants', '#2b2b3a', 800], ['Slim Pants', '#222233', 1200], ['Premium Pants', '#1a1a28', 1700]]) },
+    { slot: 'Shoes', o: o([['Basic Oxford', '#4a3222', 1100], ['Leather Oxford', '#3a2518', 1700], ['Premium Oxford', '#2a1a10', 2400]]) },
+    { slot: 'Watch', o: o([['Basic Watch', '#9aa0a6', 500], ['Classic Watch', '#7d848b', 900], ['Steel Watch', '#5f666d', 1400]]) }] },
+  eid: { label: 'Eid (woman)', items: [
+    { slot: 'Kurti / Three-piece', o: o([['Printed Kurti', '#2e7d6b', 900], ['Embroidered Three-piece', '#1f6b5a', 1700], ['Festive Three-piece', '#0f5a4a', 2600]]) },
+    { slot: 'Shoes', o: o([['Flat Sandals', '#2b2b3a', 500], ['Block Heels', '#2b2b3a', 800], ['Party Heels', '#3a2a4a', 1200]]) },
+    { slot: 'Jewelry', o: o([['Stone Earrings', '#c9a227', 350], ['Jhumka Set', '#c9a227', 700], ['Necklace Set', '#d4af37', 1200]]) }] },
+};
+
+export const bdt = (n) => n.toLocaleString('en-BD') + ' BDT';
+export const sum = (key, pick) => pick.reduce((s, t, i) => s + (t < 0 ? 0 : CATALOG[key].items[i].o[t].price), 0);
+
+/** Budget guardrails from the PRD (section 5.3). Swap this for a backend call later. */
+export function buildOutfit(key, budget) {
+  const items = CATALOG[key].items;
+  const lowest = items.reduce((s, i) => s + i.o[0].price, 0);
+  const highest = items.reduce((s, i) => s + i.o[2].price, 0);
+  const mid = Math.round((lowest + highest) / 2);
+  if (!(budget > 0)) return { error: `Please enter a budget in BDT, or choose low / medium / high: ${bdt(lowest)} · ${bdt(mid)} · ${bdt(highest)}.` };
+  if (budget < items[items.length - 1].o[0].price)
+    return { error: `Honestly, a complete outfit for ${bdt(budget)} isn't achievable. The lowest realistic full look is about ${bdt(lowest)}. I can show a single accessory within budget, or you can raise the budget.` };
+  const pick = items.map(() => 0);
+  for (let i = pick.length - 1; i >= 0 && sum(key, pick) > budget; i--) pick[i] = -1;
+  for (let up = true; up; ) {
+    up = false;
+    pick.forEach((t, i) => {
+      if (t < 0 || t > 1 || budget >= highest * 1.25) return;
+      const d = items[i].o[t + 1].price - items[i].o[t].price;
+      if (sum(key, pick) + d <= budget) { pick[i]++; up = true; }
+    });
+  }
+  const note = budget > highest * 1.8 ? `Dokan AI focuses on affordable small-business fashion, so I won't pad the look just to reach ${bdt(budget)}. Here are the best premium-range options we actually have.` : '';
+  return { pick, note };
+}
+
+export function swapItem(key, pick, i, budget) {
+  const n = CATALOG[key].items[i].o.length;
+  for (let k = 1; k <= n; k++) {
+    const next = pick.slice(); next[i] = ((pick[i] < 0 ? 0 : pick[i]) + k) % n;
+    if (sum(key, next) <= budget) return next;
+  }
+  return pick;
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\stylistApi.js =====
+
+// Calls the Dokan AI stylist Edge Function on Supabase.
+// Needs ONE env var in your Next.js project's .env.local:
+//   NEXT_PUBLIC_SUPABASE_URL=https://btkxjvaguppnzdexrlrn.supabase.co
+// (The function was deployed with --no-verify-jwt, so no key is needed for the demo.)
+// Restart `npm run dev` after editing .env.local.
+
+const BASE = process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+export async function askStylist({ message, conversationId }) {
+  if (!BASE) throw new Error('Missing NEXT_PUBLIC_SUPABASE_URL. Add it to .env.local and restart the dev server.');
+  let res;
+  try {
+    res = await fetch(`${BASE}/functions/v1/stylist-chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, conversation_id: conversationId || undefined }),
+    });
+  } catch {
+    throw new Error('Could not reach the stylist. Check your internet connection.');
+  }
+  let json = null;
+  try { json = await res.json(); } catch { /* not JSON */ }
+  if (!res.ok) throw new Error(json?.error?.message || `The stylist returned an error (${res.status}).`);
+  return json.data;
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\supabaseClient.js =====
+
+import { createClient } from '@supabase/supabase-js';
+
+export const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+);
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\lib\track.js =====
+
+import { api } from './api';
+
+// Records a product view or add-to-cart for seller analytics. Never blocks the page.
+export function track(type, product) {
+  if (!product?.uuid) return; // sample data has no database id
+  api('/events', { method: 'POST', body: { type, product_id: product.uuid } }).catch(() => {});
+}
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\docs\complaints-api.md =====
+
+# Complaints API (for the frontend)
+
+All responses are `{ "data": ... }` or `{ "error": { "code", "message" } }`.
+
+**Who is calling:** send `Authorization: Bearer <session.access_token>`. In demo mode only, the header `x-user-id: <user uuid>` still works (it is ignored once a Bearer header is present).
+A bad or expired Bearer token returns 401 and never falls back to the demo header. Set `DISABLE_DEV_USER_HEADER=true` on any deployed site to switch the demo header off.
+Admin endpoints require a user whose `roles` contain `admin`.
+
+## Customer or seller
+
+| Call | Body | Notes |
+|---|---|---|
+| `POST /api/orders/:id/complaints` | `{ reason_code, description, evidence_urls? }` | Only the customer or the shop owner of that order. One per person per order. Max 5 per 24 hours. Returns 201. |
+| `GET /api/complaints/mine` | none | Complaints I filed and complaints against me. Decision note appears only after the decision. |
+| `POST /api/complaints/:id/respond` | `{ response_text, evidence_urls? }` | Only the accused. Only while status is `submitted` (one response). |
+
+Reason codes by role:
+- customer: `not_delivered`, `not_as_described`, `wrong_size`, `other`
+- seller: `refused_delivery`, `false_claim`, `other`
+
+`description` and `response_text` need 10 to 2000 characters. `evidence_urls` is a list of up to 10 `http(s)` links.
+
+## Admin
+
+| Call | Body | Notes |
+|---|---|---|
+| `GET /api/admin/complaints?status=open` | none | `open` = submitted + responded (oldest first). Or one of `submitted`, `responded`, `upheld`, `rejected`, `appealed`. Each row has `response_due_at` and `response_overdue`. |
+| `GET /api/admin/complaints/:id` | none | Both sides, the order, the accused history (`upheld_before`, `has_active_badge`). |
+| `PATCH /api/admin/complaints/:id/decision` | `{ outcome, decision_note, proof_confirmed? }` | `outcome` is `upheld` or `rejected` (there is no "partially upheld"). `decision_note` is required (10+ characters). |
+
+A badge is issued only when the outcome is `upheld`, `proof_confirmed` is `true` **and** the server has `ISSUE_BADGES=true`.
+Badges are switched off by default. The response says what happened in `badge_issued` and `badge_note`.
+
+## Public badge status
+
+`GET /api/users/:id/badge` and `GET /api/shops/:id/badge` return
+`{ has_badge, label, level, roles }`. The label is "Verified complaints". Nothing about the complaint or the other party is exposed.
+
+## Error codes
+
+| HTTP | code | Meaning |
+|---|---|---|
+| 400 | `bad_id`, `invalid_complaint`, `invalid_response`, `invalid_decision`, `bad_status`, `self_order`, `note_required` | Bad input |
+| 401 | `not_signed_in` | Missing or invalid login (bad token, or unknown `x-user-id` in demo mode) |
+| 403 | `not_your_order`, `not_accused`, `admin_only`, `conflict_of_interest` | Not allowed |
+| 404 | `order_not_found`, `complaint_not_found`, `shop_not_found` | Does not exist |
+| 409 | `already_filed`, `order_cancelled`, `not_open_for_response`, `already_decided` | Wrong state |
+| 429 | `too_many_complaints` | Rate limit |
+| 500 | `internal` | Something went wrong (details are only in the server log) |
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\docs\contract.md =====
+
+# Dokan AI: API contract
+
+This is the agreement between Frontend, Backend and AI/Analytics. It follows PRD section 12 and records where the built API differs from it. If you need to change a field, tell the other two first and update this file.
+
+Detailed docs: `products-api.md`, `shops-api.md`, `orders-api.md`, `ledger-api.md`, `complaints-api.md`, `me-api.md`.
+
+## Conventions
+
+- JSON over REST, all paths under `/api`. Success is `{ "data": ... }` (lists add `"meta": { page, limit, total }`). Failure is `{ "error": { "code", "message" } }`.
+- IDs are UUID strings. Money is a whole number of BDT. Timestamps are ISO 8601 in UTC; the app shows them in Asia/Dhaka.
+- Enums are exact lowercase strings (see the PRD, section 12.3). Order status: `placed, accepted, packed, shipped, delivered, cancelled`. Payment status: `pending, paid, held, released, refunded, failed`.
+- List endpoints take `page` (default 1) and `limit` (default 20, max 50).
+
+## Auth (a change from the PRD)
+
+The PRD lists `POST /api/auth/signup` and `/api/auth/login`. They are NOT built. Sign up and log in go straight to Supabase Auth from the browser (`supabase.auth.signUp`, `signInWithPassword`). A database trigger (`scripts/security.sql`) creates the matching `users` row, and only the roles `customer` and `seller` can be chosen at signup. Admins are promoted by hand in SQL.
+
+Every API call sends `Authorization: Bearer <session.access_token>`. `lib/auth/current-user.mjs` is the only place that decides who is calling. The demo header `x-user-id` works only while `DISABLE_DEV_USER_HEADER` is not `true`; set it to `true` on any deployed site.
+
+A bad or expired token returns 401 `not_signed_in` and never falls back to the demo header.
+
+## Endpoints
+
+Who can call: P = public, U = any signed-in user, C = customer, S = seller (shop owner), A = admin.
+
+| Method and path | Who | Purpose |
+|---|---|---|
+| GET `/api/me` | U | Current user, roles and the seller's shop |
+| GET `/api/products` | P | Search and filter. Premium shops sort first. Each search is logged |
+| GET `/api/products/:id` | P | One product |
+| POST `/api/products` | S | Create a product |
+| PATCH `/api/products/:id` | S, A (status only) | Edit, or hide with `status: "hidden"`. There is no delete |
+| POST `/api/shops` | U | Create a shop (starts as pending, grants the seller role) |
+| GET `/api/shops/mine` | U | My shop, or `null` |
+| GET `/api/shops/:id` | P | Shop. Owner and admin see more fields |
+| PATCH `/api/shops/:id` | S | Edit shop (a rejected shop goes back to pending) |
+| POST `/api/shops/:id/premium` | S | Buy Premium for 1, 3 or 6 months (sandbox) |
+| GET `/api/admin/shops` | A | Verification queue |
+| PATCH `/api/admin/shops/:id/verification` | A | Verify, or reject with a reason |
+| POST `/api/events` | P | Record `view` or `add_to_cart`. `purchase` is refused; the payment writes it |
+| POST `/api/orders` | C | Place an order. One shop per order |
+| GET `/api/orders?as=customer\|seller\|admin` | U | List orders |
+| GET `/api/orders/:id` | C, S, A | One order. Others get 404 |
+| PATCH `/api/orders/:id/status` | C, S, A | Move the order along, or cancel |
+| POST `/api/orders/:id/pay` | C | Sandbox payment |
+| POST `/api/admin/orders/:id/refund` | A | Full refund of money still held |
+| POST `/api/admin/payouts/release` | A | Release escrow 48 hours after delivery |
+| POST `/api/orders/:id/complaints` | C, S | File a complaint |
+| GET `/api/complaints/mine` | U | My complaints |
+| POST `/api/complaints/:id/respond` | accused | Respond once |
+| GET `/api/admin/complaints`, GET `/api/admin/complaints/:id` | A | Complaint queue and detail |
+| PATCH `/api/admin/complaints/:id/decision` | A | `upheld` or `rejected`, with a written note |
+| GET `/api/users/:id/badge`, GET `/api/shops/:id/badge` | P | Badge label and level only |
+| GET `/api/seller/analytics` | S, A | Seller dashboard. A seller always gets their own shop. An admin adds `?shop_id=` |
+| GET `/api/seller/ledger` | S | Own shop's payment ledger, JSON or CSV (`?format=csv`) |
+| GET `/api/admin/ledger` | A | All shops' ledger, JSON or CSV. Add `?shop_id=` to narrow |
+| GET `/api/admin/insights` | A | Platform trends and demand versus supply |
+| GET `/api/top-sellers` | P | Top shops |
+
+## Not built or different from the PRD
+
+- `POST /api/auth/signup` and `/login`: replaced by Supabase Auth (above).
+- `POST /api/ai/stylist/chat` and `/cart`: the stylist runs as the Supabase function `stylist-chat`, which the frontend calls directly (`lib/stylistApi.js`).
+- Complaint decisions accept `upheld` and `rejected` only. There is no "partially upheld".
+- Fraud badges are issued only when the server has `ISSUE_BADGES=true`.
+- Not built: partial refunds, scheduled 48-hour payout (an admin calls the release endpoint), the 12-hour seller accept timeout, expiry of unpaid orders, notifications, order chat, reviews, wishlist, image upload, admin two-factor login.
+
+## Rules the code follows
+
+- Prices and totals for an order come from the server. The browser never sends a price. Delivery is 80 BDT.
+- Commission is on the unit price after discount, never on delivery: 2% under 500, 3% under 1,000, 5% from 1,000. It is stored on the order when the payment succeeds.
+- The shop on an event or order comes from the product, never from the client.
+- A seller cannot order from their own shop. Admins cannot place orders or own shops.
+- Escrow is not released while a complaint is submitted, responded, appealed or upheld.
+- Only an admin can create, change or remove a badge. Nothing is automatic.
+- Stock changes and money changes run as database functions, so two buyers cannot take the last item. Only the server's secret key can call them.
+- The sandbox payment outcome (`success`, `failure`, `pending`) is chosen by the caller so the team can demo failures. Remove that before any real launch, and keep the "sandbox" banner visible (PRD PAY-6).
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\docs\ledger-api.md =====
+
+# Payment ledger API (PRD PAY-5)
+
+Send `Authorization: Bearer <session.access_token>`. Errors look like `{ "error": { "code", "message" } }`.
+**Sandbox only: no real money moves. Show the sandbox banner (PAY-6).**
+
+One ledger entry per order whose payment succeeded (`held`, `released` or `refunded`). Pending and failed payments are not in the ledger.
+
+| Endpoint | Who | Notes |
+|---|---|---|
+| `GET /api/seller/ledger` | Seller | Their own shop only. `shop_id` is ignored. A seller with no shop gets an empty ledger. |
+| `GET /api/admin/ledger` | Admin | Every shop. Adds `customer_id` to each entry. `?shop_id=<uuid>` narrows to one shop. |
+
+**Query (both):** `format=json|csv` (default json), `status=held|released|refunded`, `from=YYYY-MM-DD`, `to=YYYY-MM-DD` (both inclusive, Dhaka days, filter on the order's placed date), `page` and `limit` (json only; limit 1 to 200, default 50).
+
+**JSON reply:** `{ data: { entries: [...], summary }, meta: { page, limit, total } }`. The summary covers every matching row, not just the page.
+
+**Entry fields:** `order_id, shop_id, shop_name, payment_method, item_total, delivery_charge, order_total, paid_online, commission_rate, commission_amount, seller_payout, escrow_status, order_status, commission_booked, paid_to_seller, refunded_amount, placed_at, paid_at, delivered_at, released_at, refunded_at` (+ `customer_id` for admin).
+
+- `seller_payout` = `item_total` - `commission_amount` (PAY-3). It is what the seller gets once the money is released.
+- `commission_booked` and `paid_to_seller` are 0 until the escrow is `released`. `refunded_amount` is the amount paid online, once `refunded`.
+- `paid_online` is `order_total`, or only the delivery charge for cash on delivery.
+- Orders paid before the ledger columns were added have `null` for `paid_at`, `released_at` and `refunded_at`.
+
+**Summary fields:** `orders, item_total, in_escrow` (seller payout still held), `commission_booked, paid_to_sellers, refunded, orders_held, orders_released, orders_refunded`.
+
+**CSV download:** `GET /api/seller/ledger?format=csv`. The reply is a file (`Content-Disposition: attachment`), UTF-8 with a BOM so Excel shows Bangla names. Dates are in Dhaka time. The frontend must fetch it with the Bearer header and save the blob; a plain link will not send the token:
+
+```js
+const res = await fetch('/api/seller/ledger?format=csv', { headers: { Authorization: `Bearer ${token}` } });
+const url = URL.createObjectURL(await res.blob());
+Object.assign(document.createElement('a'), { href: url, download: 'ledger.csv' }).click();
+URL.revokeObjectURL(url);
+```
+
+**Limit:** more than 10,000 matching rows returns 413 `too_many_rows`; narrow with `from` and `to`.
+Codes: `seller_only` (403), `admin_only` (403), `not_signed_in` (401), `bad_query` (400), `too_many_rows` (413).
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\docs\me-api.md =====
+
+# GET /api/me
+
+Returns the signed-in user. Send `Authorization: Bearer <Supabase session access_token>`.
+
+Success (200):
+
+```json
+{ "data": {
+  "id": "uuid", "name": "Nilima", "email": "n@x.com", "phone": null,
+  "roles": ["customer", "seller"], "gender": "female", "age_group": "adult",
+  "created_at": "2026-11-01T00:00:00Z",
+  "shop": { "id": "uuid", "name": "Nilima Boutique", "verification_status": "verified", "plan": "premium", "plan_expires_at": null }
+} }
+```
+
+`shop` is `null` for customers and for sellers who have not created a shop. The NID is never returned.
+No token or a bad token returns 401 `not_signed_in`.
+
+Frontend use: after login, get the token with `supabase.auth.getSession()` and send it on every call.
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\docs\orders-api.md =====
+
+# Orders and sandbox payment API
+
+Send `Authorization: Bearer <session.access_token>` (demo mode only: `x-user-id`). Errors look like `{ "error": { "code", "message" } }`.
+**Sandbox only: no real money moves. Show the sandbox banner (PAY-6).**
+
+| Endpoint | Who | Notes |
+|---|---|---|
+| `POST /api/orders` | Customer (not admin) | `{ items: [{ product_id, size, color?, qty }], payment_method?: "sandbox"\|"cod", delivery_address: { name, phone, line1, city, area? } }`. One shop per order: the frontend splits a mixed cart. Prices come from the server (discount applied), delivery is 80 BDT. Returns 201 with status `placed`, payment `pending`. |
+| `POST /api/orders/:id/pay` | The customer | `{ gateway?: "bkash"\|"nagad"\|"card", outcome?: "success"\|"failure"\|"pending" }`. 200 paid (money held in escrow), 402 failed (retry allowed), 202 pending. COD orders pay only the delivery charge online. |
+| `GET /api/orders?as=customer\|seller\|admin&status=&page=&limit=` | Signed in | Default `as=customer`. Seller sees their shop's orders, admin sees all. Returns `{ data, meta }`. |
+| `GET /api/orders/:id` | Customer, shop owner, admin | Others get 404. Commission and seller payout only for seller and admin. |
+| `PATCH /api/orders/:id/status` | See below | `{ status }` |
+| `POST /api/admin/orders/:id/refund` | Admin | Full refund of money still held. |
+| `POST /api/admin/payouts/release` | Admin | Releases escrow for orders delivered 48 hours ago or more, skipping any with an open or upheld complaint. |
+
+**Status rules:** placed → accepted → packed → shipped → delivered. Cancel is possible until shipped.
+Seller and admin do every step; the customer may cancel a `placed` order, or confirm a `shipped` order arrived (this releases the money at once unless a complaint is open).
+Accepting, packing and shipping need a paid order (`payment_status` held or released).
+
+**Payment status:** `pending` → `held` (escrow) → `released` (payout) or `refunded`. A failed payment is `failed` and can be retried.
+**Commission** (on item price after discount, never delivery): 2% under 500, 3% under 1,000, 5% from 1,000 BDT per unit price. Fixed on the order when paid.
+
+Codes to handle: `out_of_stock`, `variant_unavailable`, `color_required`, `multiple_shops`, `own_shop`, `payment_required`, `already_paid`, `customer_cannot`, `bad_transition`, `status_changed`.
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\docs\products-api.md =====
+
+# Products API
+
+All replies are `{ "data": ... }` or `{ "error": { "code", "message" } }`.
+Who is calling comes from `lib/auth/current-user.mjs` only (Bearer token, or the demo header `x-user-id`).
+
+## GET /api/products  (public)
+Query: `q, category, gender, age_group, color, size, occasion, min_price, max_price, shop_id, in_stock, page, limit`
+- `page` default 1, `limit` default 20, max 50.
+- `q` words must ALL match name, category, colour or occasion ("maroon sari" works; numbers like "5k" are ignored).
+- `gender=female` also returns `unisex` items. `size` only matches sizes that have stock.
+- Price filters use the price after discount (`price_now`).
+- Premium (featured) shops sort first, then newest. Unverified shops are included. Rejected shops and hidden products never appear.
+- Out-of-stock products ARE listed with `in_stock: false`; send `in_stock=true` to hide them.
+- Reply: `{ data: [product...], meta: { page, limit, total } }`. List items have no `description`.
+- Each real search (a filter or `q`, page 1 only) is written to `search_logs` with `filters` keys
+  `custom_category`, `color`, `occasion` (read from the text where needed, so "purple lehenga" counts as demand even if nobody sells it).
+
+## GET /api/products/:id  (public)
+Full product with `description`. Hidden products return 404 unless you are the owner or an admin.
+
+## POST /api/products  (seller)
+Body: `name, category, gender, age_group, price, variants` required.
+Optional: `description, custom_category, colors, occasion_tags, image_urls, discount_price, status, shop_id`.
+`shop_id` can be left out if the seller has exactly one shop. `variants`: `[{ size, color, stock }]`.
+Money is whole BDT. `discount_price` must be lower than `price`.
+Errors: 401 not_signed_in, 403 seller_only / not_your_shop / shop_rejected, 409 no_shop, 400 invalid_product.
+
+## PATCH /api/products/:id  (owner, or admin for `status` only)
+Send only the fields to change. A product cannot move to another shop.
+To remove a product from sale, set `status: "hidden"`. There is no delete.
+
+## Product shape
+`id, shop_id, name, description?, category, custom_category, gender, age_group, colors, occasion_tags, image_urls,
+price, discount_price, price_now, variants, in_stock, status, created_at, shop: { id, name, city, verified, featured }`
+
+===== C:\Users\Kashfi\Documents\Dokan\Dokan-AI\docs\shops-api.md =====
+
+# Shops API
+
+Replies are `{ "data": ... }` or `{ "error": { "code", "message" } }`. Identity comes from `lib/auth/current-user.mjs`.
+Run `scripts/shops.sql` once first (adds `shops.rejection_note`).
+
+## POST /api/shops   (any signed-in user)
+Body: `name` (required), `description, city, social_url, nid_number, return_policy`.
+Creates the shop as **pending** and gives the user the `seller` role. One shop per user (409 `shop_exists`). Admins cannot own shops.
+`nid_number` is 10, 13 or 17 digits. It is stored but never sent back (owners get `nid_set: true`).
+
+## GET /api/shops/mine   (signed in)
+The caller's shop, or `{ data: null }` if they have none yet. Use this to decide between "Become a seller" and the seller dashboard.
+
+## GET /api/shops/:id   (public)
+Public view: `id, name, description, city, social_url, return_policy, verified, featured, created_at`.
+Owner and admin also get `verification_status, plan, plan_expires_at, rejection_note`. Admin also gets `owner_id, nid_number`.
+Rejected shops are hidden from everyone except the owner and admins.
+
+## PATCH /api/shops/:id   (owner)
+Editable: `name, description, city, social_url, return_policy, nid_number`.
+`plan`, `verification_status` and `owner_id` are refused. Editing a **rejected** shop sends it back to **pending** (resubmit).
+A verified shop that changes its name or NID also goes back to pending.
+
+## POST /api/shops/:id/premium   (owner, sandbox payment)
+Body: `{ "months": 1 | 3 | 6 }` costs 1,000 / 2,500 / 5,000 BDT. Sets `plan: premium` and `plan_expires_at`.
+Buying while Premium is active extends from the current expiry. Reply: `{ shop, paid, months, sandbox: true }`.
+An expired plan shows as `free` automatically; no data is deleted.
+
+## GET /api/admin/shops?status=pending|verified|rejected&page=&limit=   (admin)
+The review queue, oldest first, including `nid_number` and `owner_id`. Reply has `meta: { page, limit, total }`.
+
+## PATCH /api/admin/shops/:id/verification   (admin)
+Body: `{ "status": "verified" }` or `{ "status": "rejected", "reason": "..." }` (reason 3 to 500 characters, required).
+The reason is saved on the shop (the owner sees it as `rejection_note`) and emailed to the owner if an email exists.
+Reply: `{ shop, emailed }`. Without `RESEND_API_KEY` the email is only logged, so `emailed` is false.
+
+## Not built
+Downgrade by hand, a payment ledger (no record of who paid), the free-plan product cap, logo/cover images, payout account, and image upload.

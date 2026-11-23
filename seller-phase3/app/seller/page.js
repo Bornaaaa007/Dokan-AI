@@ -1,0 +1,139 @@
+'use client';
+import { useCallback, useEffect, useState } from 'react';
+import RequireAuth from '../../components/RequireAuth';
+import { useAuth } from '../../components/AuthProvider';
+import ShopSetup from '../../components/ShopSetup';
+import SellerOrders, { useSellerOrders } from '../../components/SellerOrders';
+import SellerProducts from '../../components/SellerProducts';
+import { api } from '../../lib/api';
+import { bdt } from '../../lib/data';
+
+const pct = (r) => (r == null ? '—' : (r * 100).toFixed(1) + '%');
+const stockOf = (p) => (p.variants || []).reduce((t, v) => t + (v.stock > 0 ? v.stock : 0), 0);
+const VERIFY = { verified: ['✓ Verified', ''], pending: ['Pending review', 'pend'], rejected: ['Rejected', 'bad'] };
+
+// ---------------- the dashboard (only shown once the shop exists) ----------------
+function Dashboard({ shop, setShop }) {
+  const [tab, setTab] = useState('Overview');
+  const { orders, error: oerr, busy, setStatus } = useSellerOrders();
+  const [products, setProducts] = useState(null);
+  const [perr, setPerr] = useState('');
+  const [ledger, setLedger] = useState(null);
+
+  // Analytics: sent with the login token by api(); a seller always gets their own shop.
+  const [data, setData] = useState(null), [aload, setAload] = useState(false), [aerr, setAerr] = useState('');
+  const [previewFree, setPreviewFree] = useState(false);
+
+  useEffect(() => {
+    api('/products/mine').then((r) => setProducts(r.data)).catch((e) => { setPerr(e.message); setProducts([]); });
+    api('/seller/ledger').then((r) => setLedger(r.data.summary)).catch(() => setLedger(null));
+  }, []);
+
+  const loadAnalytics = useCallback(() => {
+    setAload(true); setAerr('');
+    api('/seller/analytics').then((r) => setData(r.data)).catch((e) => { setData(null); setAerr(e.message); }).finally(() => setAload(false));
+  }, []);
+  useEffect(() => { if (tab === 'Analytics' && !data && !aload && !aerr) loadAnalytics(); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const premium = !!data && !data.locked && !previewFree;
+  const [vLabel, vClass] = VERIFY[shop.verification_status] || VERIFY.pending;
+  const newOrders = (orders || []).filter((o) => o.status === 'placed').length;
+  const lowStock = (products || []).filter((p) => p.status === 'active' && stockOf(p) < 10).length;
+
+  return (
+    <div className="wrap page">
+      <div className="rowb">
+        <div><h1>{shop.name}</h1>
+          <span className={`badge ${vClass}`}>{vLabel}</span> <span className="badge">{shop.plan === 'premium' ? 'Premium' : 'Free plan'}</span></div>
+        {tab === 'Analytics' && data && !data.locked && <button className="btn alt" onClick={() => setPreviewFree(!previewFree)}>{previewFree ? 'Back to Premium view' : 'Preview Free plan'}</button>}
+      </div>
+
+      {shop.verification_status === 'pending' && <div className="box">⏳ Your shop is waiting for admin verification. You can add products and manage orders now. Customers see your products in the shop once you are verified.</div>}
+      {shop.verification_status === 'rejected' && <div className="box"><b>Your shop was rejected.</b>{shop.rejection_note ? ` Reason: ${shop.rejection_note}` : ''}<br /><span className="sm">Fix the details in the Shop profile tab and save to send it for review again.</span></div>}
+
+      <div className="tabs">{['Overview', 'Products', 'Orders', 'Analytics', 'Shop profile'].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}{t === 'Orders' && newOrders > 0 ? ` (${newOrders})` : ''}</button>)}</div>
+
+      {tab === 'Overview' && <>
+        <div className="kpis">
+          <div><b>{orders ? orders.length : '…'}</b><span>Orders</span></div>
+          <div><b>{ledger ? bdt(ledger.item_total) : '—'}</b><span>Sales (paid orders)</span></div>
+          <div><b>{ledger ? bdt(ledger.in_escrow) : '—'}</b><span>In escrow (released after delivery)</span></div>
+          <div><b>{ledger ? bdt(ledger.commission_booked) : '—'}</b><span>Platform commission</span></div>
+          <div><b>{ledger ? bdt(ledger.paid_to_sellers) : '—'}</b><span>Paid out to you</span></div>
+        </div>
+        <div className="box"><h3>To do</h3>
+          <p className="sm">{newOrders} new order(s) waiting · {lowStock} low-stock product(s) · {(products || []).filter((p) => p.status === 'hidden').length} hidden product(s)</p>
+        </div>
+        <p className="sm">Sandbox payments only. No real money moves.</p>
+      </>}
+
+      {tab === 'Products' && (products === null ? <div className="box">Loading products…</div> : <>
+        {perr && <p className="err">{perr}</p>}
+        <SellerProducts products={products} setProducts={setProducts} shop={shop} />
+      </>)}
+
+      {tab === 'Orders' && <SellerOrders orders={orders} error={oerr} busy={busy} setStatus={setStatus} />}
+
+      {tab === 'Analytics' && <div>
+        {aload && <div className="box">Loading analytics…</div>}
+        {aerr && <div className="box">⚠ {aerr}</div>}
+        {data && <>
+          {!premium && <div className="box">🔒 Full AI analytics are Premium. Showing basic stats only.</div>}
+          <div className="kpis">
+            <div><b>{data.summary.views_30d.toLocaleString('en-US')}</b><span>Views (30d)</span></div>
+            <div><b>{data.summary.purchases_30d}</b><span>Purchases (30d)</span></div>
+            <div><b>{pct(data.summary.conversion)}</b><span>Conversion</span></div>
+            <div><b>{data.summary.best_seller?.name || '—'}</b><span>Best seller</span></div>
+            {data.shop.top_seller_rank && <div><b>#{data.shop.top_seller_rank}</b><span>Top seller rank</span></div>}
+          </div>
+          {premium && <>
+            <div className="insights box"><h3>AI insights</h3>
+              {data.insights.length === 0
+                ? <p className="sm">Not enough data yet for tips. They appear once your products get views and sales.</p>
+                : <ul>{data.insights.map((x, i) => <li key={i}><b>{x.title}</b> {x.text}</li>)}</ul>}
+            </div>
+            {data.best_products.length > 0 && <div className="box"><h3>Doing well</h3><ul>{data.best_products.map((p) => <li key={p.product_id}>{p.name}: {p.purchases_30d} sales from {p.views_30d} views ({pct(p.conversion)})</li>)}</ul></div>}
+            {data.worst_products.length > 0 && <div className="box"><h3>Needs attention</h3><ul>{data.worst_products.map((p) => <li key={p.product_id}>{p.name}: {p.views_30d} views, {p.purchases_30d} sales</li>)}</ul></div>}
+            {data.platform?.demand_gap?.length > 0 && <div className="box"><h3>What customers are looking for</h3><ul>{data.platform.demand_gap.map((d, i) => <li key={i}>“{d.name}”: {d.searches_30d} searches, {d.listings} in-stock listing{d.listings === 1 ? '' : 's'}</li>)}</ul></div>}
+            {data.platform?.trending_categories?.length > 0 && <div className="box"><h3>Trending this week</h3><ul>{data.platform.trending_categories.map((t) => <li key={t.custom_category}>{t.custom_category}: {t.trending_products} trending product{t.trending_products === 1 ? '' : 's'}</li>)}</ul></div>}
+          </>}
+        </>}
+      </div>}
+
+      {tab === 'Shop profile' && <ShopSetup shop={shop} onSaved={(s) => setShop(s)} />}
+    </div>
+  );
+}
+
+// ---------------- load the shop; if there is none, show the setup form ----------------
+function SellerInner() {
+  const { profile, refreshProfile } = useAuth();
+  const [shop, setShop] = useState(undefined); // undefined = loading, null = no shop yet
+  const [err, setErr] = useState('');
+
+  useEffect(() => {
+    api('/shops/mine').then((r) => setShop(r.data)).catch((e) => { setErr(e.message); setShop(null); });
+  }, []);
+
+  if (shop === undefined) return <div className="wrap page"><p className="sub">Loading your shop…</p></div>;
+  if (profile?.roles?.includes('admin')) return <div className="wrap page"><h1>Seller area</h1><p className="sub">Admin accounts cannot own a shop.</p></div>;
+  if (!shop) {
+    return (
+      <div className="wrap page">
+        <h1>Become a seller</h1>
+        <p className="sub">Open your shop on Dokan AI. It takes a minute.</p>
+        {err && <p className="err">{err}</p>}
+        <ShopSetup shop={null} onSaved={(s) => { setShop(s); refreshProfile && refreshProfile(); }} />
+      </div>
+    );
+  }
+  return <Dashboard shop={shop} setShop={setShop} />;
+}
+
+export default function Seller() {
+  return (
+    <RequireAuth>
+      <SellerInner />
+    </RequireAuth>
+  );
+}

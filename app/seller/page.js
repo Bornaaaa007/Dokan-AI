@@ -1,76 +1,79 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { PRODUCTS, SHOPS, bdt, commissionRate, STATUS, DELIVERY } from '../../lib/data';
-import { useStore, itemsTotal } from '../../components/Store';
-import { DEMO_SHOPS, DEMO_SHOP_KEY } from '../../lib/demoShops';
+import { useCallback, useEffect, useState } from 'react';
 import RequireAuth from '../../components/RequireAuth';
+import { useAuth } from '../../components/AuthProvider';
+import ShopSetup from '../../components/ShopSetup';
+import SellerOrders, { useSellerOrders } from '../../components/SellerOrders';
+import SellerProducts from '../../components/SellerProducts';
+import { api } from '../../lib/api';
+import { bdt } from '../../lib/data';
 
-const NEXT = { Placed: 'Accepted', Accepted: 'Packed', Packed: 'Shipped' };
 const pct = (r) => (r == null ? '—' : (r * 100).toFixed(1) + '%');
+const stockOf = (p) => (p.variants || []).reduce((t, v) => t + (v.stock > 0 ? v.stock : 0), 0);
+const VERIFY = { verified: ['✓ Verified', ''], pending: ['Pending review', 'pend'], rejected: ['Rejected', 'bad'] };
 
-function SellerInner() {
-  const shop = SHOPS[0], { orders, setStatus } = useStore();
-  const [tab, setTab] = useState('Overview'), [mine, setMine] = useState(PRODUCTS.filter((p) => p.shop === 1));
-  const [f, setF] = useState({ name: '', cat: '', price: '', stock: '' });
-  const my = orders.filter((o) => o.shopId === 1), gross = my.reduce((s, o) => s + itemsTotal(o.items), 0);
-  const fee = my.reduce((s, o) => s + itemsTotal(o.items) * commissionRate(itemsTotal(o.items)) / 100, 0);
-  const add = (e) => { e.preventDefault(); setMine([{ id: Date.now(), name: f.name, cat: f.cat, price: +f.price, stock: +f.stock }, ...mine]); setF({ name: '', cat: '', price: '', stock: '' }); };
+// ---------------- the dashboard (only shown once the shop exists) ----------------
+function Dashboard({ shop, setShop }) {
+  const [tab, setTab] = useState('Overview');
+  const { orders, error: oerr, busy, setStatus } = useSellerOrders();
+  const [products, setProducts] = useState(null);
+  const [perr, setPerr] = useState('');
+  const [ledger, setLedger] = useState(null);
 
-  // ---- Demo seller login + real analytics ----
-  const [shopId, setShopId] = useState('');
-  const [data, setData] = useState(null);
-  const [aload, setAload] = useState(false);
-  const [aerr, setAerr] = useState('');
+  // Analytics: sent with the login token by api(); a seller always gets their own shop.
+  const [data, setData] = useState(null), [aload, setAload] = useState(false), [aerr, setAerr] = useState('');
   const [previewFree, setPreviewFree] = useState(false);
 
   useEffect(() => {
-    let saved = '';
-    try { saved = localStorage.getItem(DEMO_SHOP_KEY) || ''; } catch { /* storage blocked */ }
-    setShopId(DEMO_SHOPS.some((s) => s.id === saved) ? saved : DEMO_SHOPS[0].id);
+    api('/products/mine').then((r) => setProducts(r.data)).catch((e) => { setPerr(e.message); setProducts([]); });
+    api('/seller/ledger').then((r) => setLedger(r.data.summary)).catch(() => setLedger(null));
   }, []);
 
-  useEffect(() => {
-    if (!shopId) return;
-    let off = false;
+  const loadAnalytics = useCallback(() => {
     setAload(true); setAerr('');
-    fetch('/api/seller/analytics?shop_id=' + shopId)
-      .then(async (r) => {
-        const j = await r.json().catch(() => null);
-        if (!r.ok) throw new Error(j?.error?.message || 'Analytics request failed (' + r.status + ')');
-        return j.data;
-      })
-      .then((d) => { if (!off) setData(d); })
-      .catch((e) => { if (!off) { setData(null); setAerr(e.message); } })
-      .finally(() => { if (!off) setAload(false); });
-    return () => { off = true; };
-  }, [shopId]);
+    api('/seller/analytics').then((r) => setData(r.data)).catch((e) => { setData(null); setAerr(e.message); }).finally(() => setAload(false));
+  }, []);
+  useEffect(() => { if (tab === 'Analytics' && !data && !aload && !aerr) loadAnalytics(); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const pick = (id) => {
-    setShopId(id); setPreviewFree(false); setData(null);
-    try { localStorage.setItem(DEMO_SHOP_KEY, id); } catch { /* ignore */ }
-  };
   const premium = !!data && !data.locked && !previewFree;
-  const shopName = data?.shop?.name || DEMO_SHOPS.find((s) => s.id === shopId)?.name || shop.name;
+  const [vLabel, vClass] = VERIFY[shop.verification_status] || VERIFY.pending;
+  const newOrders = (orders || []).filter((o) => o.status === 'placed').length;
+  const lowStock = (products || []).filter((p) => p.status === 'active' && stockOf(p) < 10).length;
 
   return (
-    <div className="wrap page"><div className="rowb"><div><h1>{shopName}</h1><span className="badge">✓ Verified</span> <span className="badge">{data ? (premium ? 'Premium' : 'Free plan') : '…'}</span></div>
-      <div>
-        <label className="sm">Demo seller login{' '}
-          <select value={shopId} onChange={(e) => pick(e.target.value)}>
-            {DEMO_SHOPS.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.plan})</option>)}
-          </select>
-        </label>{' '}
-        {data && !data.locked && <button className="btn alt" onClick={() => setPreviewFree(!previewFree)}>{previewFree ? 'Back to Premium view' : 'Preview Free plan'}</button>}
-      </div></div>
-      <div className="tabs">{['Overview', 'Products', 'Orders', 'Analytics', 'Shop profile'].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}</button>)}</div>
-      {tab === 'Overview' && <><div className="kpis"><div><b>{my.length}</b><span>Orders</span></div><div><b>{bdt(gross)}</b><span>Gross sales</span></div><div><b>{bdt(fee)}</b><span>Platform commission</span></div><div><b>{bdt(gross - fee)}</b><span>Net payout (escrow released on delivery)</span></div><div><b>★ {shop.rating}</b><span>Shop rating</span></div></div>
-        <div className="box"><h3>To do</h3><p className="sm">{my.filter((o) => o.status === 'Placed').length} new order(s) waiting · {mine.filter((p) => p.stock < 10).length} low-stock product(s)</p></div></>}
-      {tab === 'Products' && <div className="two"><div className="tbl-w"><table className="tbl"><thead><tr><th>Product</th><th>Category</th><th>Price</th><th>Stock</th></tr></thead><tbody>{mine.map((p) => <tr key={p.id}><td>{p.name}</td><td>{p.cat}</td><td>{bdt(p.price)}</td><td>{p.stock}</td></tr>)}</tbody></table></div>
-        <form className="box form wide" onSubmit={add}><h3>Add product</h3><input required placeholder="Product name" value={f.name} onChange={(e) => setF({ ...f, name: e.target.value })} /><input required placeholder="Custom category (e.g. Kurti)" value={f.cat} onChange={(e) => setF({ ...f, cat: e.target.value })} />
-          <div className="f2"><input required type="number" placeholder="Price BDT" value={f.price} onChange={(e) => setF({ ...f, price: e.target.value })} /><input required type="number" placeholder="Stock" value={f.stock} onChange={(e) => setF({ ...f, stock: e.target.value })} /></div>
-          <label>Photos (up to 5)<input type="file" multiple accept="image/*" /></label>
-          {f.price && <p className="sm">Commission {commissionRate(+f.price)}% · you receive {bdt(f.price * (1 - commissionRate(+f.price) / 100))}</p>}<button className="btn">Publish product</button></form></div>}
-      {tab === 'Orders' && (my.length ? my.map((o) => <div className="box rowb" key={o.id}><div><b>#{o.id}</b> · {o.customer} · {o.method}<br /><span className="sm">{o.items.length} item(s) · {bdt(itemsTotal(o.items) + DELIVERY)} · {o.status}</span></div>{NEXT[o.status] ? <button className="btn sm2" onClick={() => setStatus(o.id, NEXT[o.status])}>Mark {NEXT[o.status]}</button> : <span className="badge">{o.status}</span>}</div>) : <div className="box">No orders yet.</div>)}
+    <div className="wrap page">
+      <div className="rowb">
+        <div><h1>{shop.name}</h1>
+          <span className={`badge ${vClass}`}>{vLabel}</span> <span className="badge">{shop.plan === 'premium' ? 'Premium' : 'Free plan'}</span></div>
+        {tab === 'Analytics' && data && !data.locked && <button className="btn alt" onClick={() => setPreviewFree(!previewFree)}>{previewFree ? 'Back to Premium view' : 'Preview Free plan'}</button>}
+      </div>
+
+      {shop.verification_status === 'pending' && <div className="box">⏳ Your shop is waiting for admin verification. You can add products and manage orders now. Customers see your products in the shop once you are verified.</div>}
+      {shop.verification_status === 'rejected' && <div className="box"><b>Your shop was rejected.</b>{shop.rejection_note ? ` Reason: ${shop.rejection_note}` : ''}<br /><span className="sm">Fix the details in the Shop profile tab and save to send it for review again.</span></div>}
+
+      <div className="tabs">{['Overview', 'Products', 'Orders', 'Analytics', 'Shop profile'].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}{t === 'Orders' && newOrders > 0 ? ` (${newOrders})` : ''}</button>)}</div>
+
+      {tab === 'Overview' && <>
+        <div className="kpis">
+          <div><b>{orders ? orders.length : '…'}</b><span>Orders</span></div>
+          <div><b>{ledger ? bdt(ledger.item_total) : '—'}</b><span>Sales (paid orders)</span></div>
+          <div><b>{ledger ? bdt(ledger.in_escrow) : '—'}</b><span>In escrow (released after delivery)</span></div>
+          <div><b>{ledger ? bdt(ledger.commission_booked) : '—'}</b><span>Platform commission</span></div>
+          <div><b>{ledger ? bdt(ledger.paid_to_sellers) : '—'}</b><span>Paid out to you</span></div>
+        </div>
+        <div className="box"><h3>To do</h3>
+          <p className="sm">{newOrders} new order(s) waiting · {lowStock} low-stock product(s) · {(products || []).filter((p) => p.status === 'hidden').length} hidden product(s)</p>
+        </div>
+        <p className="sm">Sandbox payments only. No real money moves.</p>
+      </>}
+
+      {tab === 'Products' && (products === null ? <div className="box">Loading products…</div> : <>
+        {perr && <p className="err">{perr}</p>}
+        <SellerProducts products={products} setProducts={setProducts} shop={shop} />
+      </>)}
+
+      {tab === 'Orders' && <SellerOrders orders={orders} error={oerr} busy={busy} setStatus={setStatus} />}
+
       {tab === 'Analytics' && <div>
         {aload && <div className="box">Loading analytics…</div>}
         {aerr && <div className="box">⚠ {aerr}</div>}
@@ -96,14 +99,51 @@ function SellerInner() {
           </>}
         </>}
       </div>}
-      {tab === 'Shop profile' && <form className="form box wide"><input defaultValue={shop.name} /><input defaultValue="@nusrat.boutique (Facebook)" /><textarea defaultValue={shop.policy} /><p className="sm">Verification: NID ✓ · Social page ✓ · Payout account (bKash) ✓</p><button className="btn" type="button">Save profile</button></form>}
+
+      {tab === 'Shop profile' && <ShopSetup shop={shop} onSaved={(s) => setShop(s)} />}
     </div>
   );
 }
 
+// ---------------- load the shop; if there is none, show the setup form ----------------
+function SellerInner() {
+  const { profile, refreshProfile } = useAuth();
+  const [shop, setShop] = useState(undefined); // undefined = loading, null = no shop yet, 'error' = could not load
+  const [err, setErr] = useState('');
+
+  const load = useCallback(() => {
+    setErr(''); setShop(undefined);
+    (async () => {
+      const mine = await api('/shops/mine');
+      if (mine.data) return mine.data;
+      // Second opinion: /me also knows the user's shop.
+      const me = await api('/me');
+      return me.data?.shop ? (await api(`/shops/${me.data.shop.id}`)).data : null;
+    })().then(setShop).catch((e) => { setErr(e.message); setShop('error'); });
+  }, []);
+  useEffect(() => { load(); }, [load]);
+
+  if (shop === undefined) return <div className="wrap page"><p className="sub">Loading your shop…</p></div>;
+  if (shop === 'error') {
+    // Never show "Become a seller" just because loading failed: the shop may exist.
+    return <div className="wrap page"><h1>Seller Hub</h1><p className="err">Could not load your shop: {err}</p><button className="btn" onClick={load}>Try again</button></div>;
+  }
+  if (profile?.roles?.includes('admin')) return <div className="wrap page"><h1>Seller area</h1><p className="sub">Admin accounts cannot own a shop.</p></div>;
+  if (!shop) {
+    return (
+      <div className="wrap page">
+        <h1>Become a seller</h1>
+        <p className="sub">Open your shop on Dokan AI. It takes a minute.</p>
+        <ShopSetup shop={null} onSaved={(s) => { setShop(s); refreshProfile && refreshProfile(); }} />
+      </div>
+    );
+  }
+  return <Dashboard shop={shop} setShop={setShop} />;
+}
+
 export default function Seller() {
   return (
-    <RequireAuth role="seller">
+    <RequireAuth>
       <SellerInner />
     </RequireAuth>
   );
