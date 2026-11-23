@@ -5,6 +5,8 @@ import { useAuth } from '../../components/AuthProvider';
 import ShopSetup from '../../components/ShopSetup';
 import SellerOrders, { useSellerOrders } from '../../components/SellerOrders';
 import SellerProducts from '../../components/SellerProducts';
+import LedgerPanel from '../../components/LedgerPanel';
+import PremiumPanel from '../../components/PremiumPanel';
 import { api } from '../../lib/api';
 import { bdt } from '../../lib/data';
 
@@ -51,7 +53,7 @@ function Dashboard({ shop, setShop }) {
       {shop.verification_status === 'pending' && <div className="box">⏳ Your shop is waiting for admin verification. You can add products and manage orders now. Customers see your products in the shop once you are verified.</div>}
       {shop.verification_status === 'rejected' && <div className="box"><b>Your shop was rejected.</b>{shop.rejection_note ? ` Reason: ${shop.rejection_note}` : ''}<br /><span className="sm">Fix the details in the Shop profile tab and save to send it for review again.</span></div>}
 
-      <div className="tabs">{['Overview', 'Products', 'Orders', 'Analytics', 'Shop profile'].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}{t === 'Orders' && newOrders > 0 ? ` (${newOrders})` : ''}</button>)}</div>
+      <div className="tabs">{['Overview', 'Products', 'Orders', 'Earnings', 'Analytics', 'Premium', 'Shop profile'].map((t) => <button key={t} className={tab === t ? 'on' : ''} onClick={() => setTab(t)}>{t}{t === 'Orders' && newOrders > 0 ? ` (${newOrders})` : ''}</button>)}</div>
 
       {tab === 'Overview' && <>
         <div className="kpis">
@@ -73,7 +75,9 @@ function Dashboard({ shop, setShop }) {
       </>)}
 
       {tab === 'Orders' && <SellerOrders orders={orders} error={oerr} busy={busy} setStatus={setStatus} />}
+      {tab === 'Earnings' && <LedgerPanel base="/seller/ledger" title="My earnings" />}
 
+      {tab === 'Premium' && <PremiumPanel shop={shop} onSaved={(s) => setShop(s)} />}
       {tab === 'Analytics' && <div>
         {aload && <div className="box">Loading analytics…</div>}
         {aerr && <div className="box">⚠ {aerr}</div>}
