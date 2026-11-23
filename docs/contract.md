@@ -63,7 +63,7 @@ Who can call: P = public, U = any signed-in user, C = customer, S = seller (shop
 - `POST /api/ai/stylist/chat` and `/cart`: the stylist runs as the Supabase function `stylist-chat`, which the frontend calls directly (`lib/stylistApi.js`).
 - Complaint decisions accept `upheld` and `rejected` only. There is no "partially upheld".
 - Fraud badges are issued only when the server has `ISSUE_BADGES=true`.
-- Not built: partial refunds, scheduled 48-hour payout (an admin calls the release endpoint), the 12-hour seller accept timeout, expiry of unpaid orders, notifications, order chat, product reviews (platform reviews are built, see `reviews-api.md`), wishlist, image upload, admin two-factor login.
+- Not built: partial refunds, scheduled 48-hour payout (an admin calls the release endpoint), the 12-hour seller accept timeout, expiry of unpaid orders, notifications, order chat, editing or deleting a product review (product reviews and platform reviews are built, see `product-reviews-api.md` and `reviews-api.md`), wishlist, image upload, admin two-factor login.
 
 ## Rules the code follows
 
