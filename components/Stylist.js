@@ -37,7 +37,7 @@ export default function Stylist() {
   const [conv, setConv] = useState(null);      // conversation id (the AI remembers earlier messages)
   const [alt, setAlt] = useState(0);           // which look is shown (0 = main, 1+ = alternatives)
   const [added, setAdded] = useState(false);
-    const { add } = useStore();
+  const { add } = useStore();
   const [missing, setMissing] = useState(0);
 
   // Puts every item of the shown look into the real cart (matched by database id).

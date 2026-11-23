@@ -26,14 +26,14 @@ export default function Product() {
             <button className="btn alt" disabled={!size} onClick={() => { add(p.id, size); track('add_to_cart', p); }}>Add &amp; keep shopping</button>
           </div>
           <div className="box" style={{ marginTop: 20 }}>
-            <h3>{s.name} <ShopBadge shop={s} /></h3><p className="sm">★ {s.rating} · {s.followers} followers · {s.city}</p>
+            <h3>{s.name} <ShopBadge shop={s} /></h3><p className="sm">{s.city}</p>
             {s.fraud && <p className="sm" style={{ color: '#b3261e' }}>⚠ This seller has an admin-verified complaint. Review before buying.</p>}
             <p className="sm"><b>Return &amp; exchange:</b> {s.policy}</p><p className="sm"><b>Delivery:</b> Courier, 2–5 days · 80 BDT</p>
           </div>
         </div>
       </div>
       <h3 style={{ margin: '34px 0 12px' }}>Reviews</h3>
-      <div className="box"><b>★★★★★</b> Exactly as pictured, fast delivery. <span className="sm">– Verified purchase</span></div>
+      <div className="box"><p className="sm">No reviews yet. Reviews for delivered orders are coming soon.</p></div>
       <h3 style={{ margin: '30px 0 12px' }}>More from this shop</h3>
       <div className="pgrid">{PRODUCTS.filter((x) => x.shop === p.shop && x.id !== p.id).slice(0, 4).map((x) => <ProductCard key={x.id} p={x} />)}</div>
     </div>
