@@ -11,6 +11,7 @@ const REASONS = {
 };
 const reasonLabel = (code) => [...REASONS.customer, ...REASONS.seller].find(([c]) => c === code)?.[1] || code;
 const STATUS = { submitted: ['Waiting for response', 'pend'], responded: ['Under admin review', 'pend'], upheld: ['Upheld', ''], rejected: ['Rejected', 'bad'], appealed: ['Appealed', 'pend'] };
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const links = (t) => t.split(/\s+/).filter(Boolean);
 const day = (iso) => new Date(iso).toLocaleDateString('en-GB', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'short', year: 'numeric' });
 
@@ -28,7 +29,16 @@ function FileForm({ onFiled }) {
   const submit = async (e) => {
     e.preventDefault(); setErr(''); setBusy(true);
     try {
-      await api(`/orders/${orderId.trim()}/complaints`, { method: 'POST', body: { reason_code: reason, description: text.trim(), evidence_urls: links(ev) } });
+      // The Orders page shows only the first 8 characters of an order id. Accept that short code too.
+      let id = orderId.trim();
+      if (!UUID.test(id)) {
+        const code = id.toLowerCase();
+        const mine = (await api(`/orders?as=${role}&limit=50`)).data || [];
+        const hits = code.length >= 6 ? mine.filter((o) => o.id.toLowerCase().startsWith(code)) : [];
+        if (hits.length !== 1) throw new Error(hits.length > 1 ? 'That short code matches more than one order. Paste the full order id.' : 'We could not find that order. Use the Report a problem button on the Orders page, or paste the full order id.');
+        id = hits[0].id;
+      }
+      await api(`/orders/${id}/complaints`, { method: 'POST', body: { reason_code: reason, description: text.trim(), evidence_urls: links(ev) } });
       setDone(true); onFiled && onFiled();
     } catch (x) { setErr(x.message); }
     setBusy(false);
@@ -38,7 +48,7 @@ function FileForm({ onFiled }) {
   return (
     <form className="form" onSubmit={submit}>
       {both && <select value={role} onChange={(e) => pickRole(e.target.value)}><option value="customer">I am the buyer</option><option value="seller">I am the seller</option></select>}
-      <input required placeholder="Order ID (full id from My orders)" value={orderId} onChange={(e) => setOrderId(e.target.value)} />
+      <input required placeholder="Order ID (the code shown on My orders, e.g. E7821724)" value={orderId} onChange={(e) => setOrderId(e.target.value)} />
       <select value={reason} onChange={(e) => setReason(e.target.value)}>{REASONS[role].map(([c, l]) => <option key={c} value={c}>{l}</option>)}</select>
       <textarea required minLength={10} maxLength={2000} placeholder="Describe what happened (at least 10 characters)" value={text} onChange={(e) => setText(e.target.value)} />
       <textarea placeholder="Evidence links, one per line (photos, video, chat screenshots). Optional." value={ev} onChange={(e) => setEv(e.target.value)} />

@@ -95,3 +95,9 @@ Requires Node.js 18.17+.
 ## Backend
 API docs are in docs/. SQL to run once in Supabase: scripts/shops.sql, scripts/orders.sql, scripts/security.sql (plus the ledger and analytics SQL). Never re-run schema.sql or seed.sql (they wipe the data).
 On the deployed site set SUPABASE_URL, SUPABASE_SECRET_KEY, the two NEXT_PUBLIC_ Supabase keys and DISABLE_DEV_USER_HEADER=true.
+
+## Newer AI features
+- **Shop the Look on the home page** (`components/HomeShopTheLook.js`) links to `/look`. The AI Stylist section and Shop the Look are fully Bangla/English (use the বাংলা toggle).
+- **Seller AI tips in Bangla** (`lib/ai/analyzeShop.mjs`, `lib/ai/bnTips.mjs`): exactly 3 tips built from the shop's own numbers (demand gaps, restocks, underperformers, trends). If Gemini is busy, 3 rule-based tips are returned instead (`source: "rules"`).
+- **Complaint triage** (`POST /api/admin/complaints/:id/triage`, admin only): Gemini summarises the thread and suggests uphold / reject / need more info with reasons. It writes nothing; the admin still records the decision via `PATCH .../decision`. Gemini sees roles and facts only, never names, ids or contact details.
+- Needs `GEMINI_API_KEY` on the server. `npm test` sets `ENABLE_DEV_USER_HEADER=true` itself (lib/test-setup.cjs).

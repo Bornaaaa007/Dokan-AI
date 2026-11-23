@@ -4,6 +4,7 @@ import { api } from '../../lib/api';
 import RequireAuth from '../../components/RequireAuth';
 import LedgerPanel from '../../components/LedgerPanel';
 import AdminReviews from '../../components/AdminReviews';
+import { useLang } from '../../components/LangProvider';
 
 const day = (iso) => new Date(iso).toLocaleDateString('en-GB', { timeZone: 'Asia/Dhaka', day: 'numeric', month: 'short', year: 'numeric' });
 const REASON = { not_delivered: 'Not delivered', not_as_described: 'Not as described', wrong_size: 'Wrong size', refused_delivery: 'Refused delivery', false_claim: 'False claim', other: 'Other' };
@@ -88,9 +89,30 @@ function Shops() {
 }
 
 // ---------------- Complaints ----------------
+
+// AI triage panel text. The AI only suggests: the admin writes and records the decision.
+const TRI = {
+  en: { btn: '✨ AI review of this complaint', busy: '✨ Reading the thread…', again: '✨ Review again', head: 'AI suggestion (advisory only)',
+    note: 'AI can be wrong and cannot open evidence links. You make the decision.', filer: 'Filer says', accused: 'Accused says', missing: 'Still to check', why: 'Why', conf: 'confidence', use: 'Use as my note (you can edit it)',
+    sug: { uphold: 'Suggests: uphold', reject: 'Suggests: reject', need_more_info: 'Suggests: need more information' }, lv: { low: 'low', medium: 'medium', high: 'high' } },
+  bn: { btn: '✨ এআই দিয়ে অভিযোগটি দেখুন', busy: '✨ অভিযোগ পড়া হচ্ছে…', again: '✨ আবার দেখুন', head: 'এআই-এর পরামর্শ (শুধু সহায়তা)',
+    note: 'এআই ভুল করতে পারে এবং প্রমাণের লিংক খুলতে পারে না। সিদ্ধান্ত আপনার।', filer: 'অভিযোগকারী বলছেন', accused: 'অভিযুক্ত বলছেন', missing: 'আরও যা দেখা দরকার', why: 'কারণ', conf: 'নিশ্চয়তা', use: 'আমার নোট হিসেবে নিন (বদলাতে পারবেন)',
+    sug: { uphold: 'পরামর্শ: অভিযোগ বহাল রাখুন', reject: 'পরামর্শ: অভিযোগ খারিজ করুন', need_more_info: 'পরামর্শ: আরও তথ্য দরকার' }, lv: { low: 'কম', medium: 'মাঝারি', high: 'বেশি' } },
+};
+
 function Decide({ id, onDone }) {
   const [d, setD] = useState(null), [note, setNote] = useState(''), [proof, setProof] = useState(false);
   const [busy, setBusy] = useState(false), [err, setErr] = useState(''), [res, setRes] = useState(null);
+  const { lang } = useLang();
+  const X = TRI[lang] ?? TRI.en;
+  const [tri, setTri] = useState(null), [triBusy, setTriBusy] = useState(false), [triErr, setTriErr] = useState('');
+  useEffect(() => { setTri(null); }, [lang]);   // the review is written in one language
+  const runTriage = async () => {
+    setTriBusy(true); setTriErr('');
+    try { setTri((await api(`/admin/complaints/${id}/triage`, { method: 'POST', body: { language: lang } })).data); }
+    catch (e) { setTriErr(e.message); }
+    setTriBusy(false);
+  };
   useEffect(() => { api(`/admin/complaints/${id}`).then((r) => setD(r.data)).catch((e) => setErr(e.message)); }, [id]);
 
   const decide = async (outcome) => {
@@ -110,9 +132,24 @@ function Decide({ id, onDone }) {
       <p>{c.description}</p>
       {c.evidence_urls.length > 0 && <p className="sm">Evidence: {c.evidence_urls.map((u, i) => <a key={i} href={u} target="_blank" rel="noreferrer">[{i + 1}] </a>)}</p>}
       {c.response_text && <p className="sm"><b>Response{d.responded_late ? ' (late)' : ''}:</b> {c.response_text}</p>}
-      {d.order && <p className="sm">Order total {d.order.total} BDT · payment {d.order.payment_status} · status {d.order.status}</p>}
+      {d.order && <p className="sm">Order total {d.order.item_total ?? d.order.total} BDT · payment {d.order.payment_status} · status {d.order.status}</p>}
       <p className="sm">Accused has {d.accused_history.upheld_before} earlier upheld complaint(s){d.accused_history.has_active_badge ? ' and an active badge' : ''}.</p>
       {decided ? <p className="sm"><b>Decision ({c.status}):</b> {c.decision_note}</p> : res ? <p className="sm">Recorded. {res.badge_note || ''}</p> : <>
+        <div style={{ border: '2px solid var(--pri)', borderRadius: 14, padding: 14, margin: '12px 0', background: 'linear-gradient(135deg, var(--tint), var(--card))' }}>
+          {tri && <>
+            <p style={{ margin: '0 0 6px' }}><b>{X.head}</b></p>
+            <p style={{ margin: '0 0 8px' }}>{tri.summary}</p>
+            <p style={{ margin: '0 0 8px' }}><span className={`badge ${tri.suggestion === 'uphold' ? 'bad' : tri.suggestion === 'reject' ? '' : 'pend'}`}>{X.sug[tri.suggestion]}</span> <span className="sm">{X.conf}: {X.lv[tri.confidence]}</span></p>
+            {tri.filer_points.length > 0 && <p className="sm" style={{ margin: '0 0 4px' }}><b>{X.filer}:</b> {tri.filer_points.join(' · ')}</p>}
+            {tri.accused_points.length > 0 && <p className="sm" style={{ margin: '0 0 4px' }}><b>{X.accused}:</b> {tri.accused_points.join(' · ')}</p>}
+            {tri.missing_evidence.length > 0 && <p className="sm" style={{ margin: '0 0 4px' }}><b>{X.missing}:</b> {tri.missing_evidence.join(' · ')}</p>}
+            <p className="sm" style={{ margin: '0 0 8px' }}><b>{X.why}:</b> {tri.reasoning}</p>
+            {tri.draft_note && <button type="button" className="btn alt sm2" style={{ marginBottom: 8 }} onClick={() => setNote(tri.draft_note)}>{X.use}</button>}
+          </>}
+          <button type="button" className="btn sm2" disabled={triBusy} style={{ opacity: triBusy ? 0.6 : 1 }} onClick={runTriage}>{triBusy ? X.busy : tri ? X.again : X.btn}</button>
+          {triErr && <p className="err" style={{ margin: '8px 0 0' }}>{triErr}</p>}
+          <p className="sm" style={{ margin: '8px 0 0' }}>{X.note}</p>
+        </div>
         <textarea placeholder="Written reasoning (required)" value={note} onChange={(e) => setNote(e.target.value)} />
         <label className="sm"><input type="checkbox" checked={proof} onChange={(e) => setProof(e.target.checked)} /> I verified the evidence (needed if a badge may be issued)</label>
         {err && <p className="err">{err}</p>}
