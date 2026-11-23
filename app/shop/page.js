@@ -1,13 +1,23 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PRODUCTS, shopOf } from '../../lib/data';
+import { loadCatalog } from '../../lib/catalog';
 import { ProductCard } from '../../components/ui';
 
 export default function Shop() {
-  const [q, setQ] = useState(''), [g, setG] = useState(''), [t, setT] = useState(''), [max, setMax] = useState(''), [sort, setSort] = useState('feat');
+  const [q, setQ] = useState(''), [g, setG] = useState(''), [t, setT] = useState(''), [max, setMax] = useState(''), [sort, setSort] = useState('def');
+  const [, setTick] = useState(0);
+  // Fetch the newest products from the database every time the shop page opens.
+  useEffect(() => { loadCatalog(true).then((ok) => { if (ok) setTick((n) => n + 1); }); }, []);
   let list = PRODUCTS.filter((p) => (!q || (p.name + p.cat + p.color + p.occasion + (p.tags || []).join(' ')).toLowerCase().includes(q.toLowerCase())) && (!g || p.gender === g || p.unisex) && (!t || p.type === t) && (!max || p.price <= +max));
-  const rank = (p) => (shopOf(p.shop)?.premium ? 0 : 1) + (shopOf(p.shop)?.fraud ? 5 : 0);
-  list = [...list].sort((a, b) => (sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : rank(a) - rank(b)));
+  const fraud = (p) => (shopOf(p.shop)?.fraud ? 5 : 0);
+  const premium = (p) => (shopOf(p.shop)?.premium ? 0 : 1);
+  // PRODUCTS is loaded oldest first, so a higher id means a newer product (shown at the bottom).
+  list = [...list].sort((a, b) =>
+    sort === 'low' ? a.price - b.price
+    : sort === 'high' ? b.price - a.price
+    : sort === 'feat' ? (premium(a) + fraud(a)) - (premium(b) + fraud(b)) || a.id - b.id
+    : fraud(a) - fraud(b) || a.id - b.id);
   return (
     <div className="wrap page"><h1>Shop</h1><p className="sub">Affordable fashion from verified small sellers.</p>
       <div className="toolbar">
@@ -15,7 +25,7 @@ export default function Shop() {
         <select value={g} onChange={(e) => setG(e.target.value)}><option value="">All shoppers</option>{['Women', 'Men', 'Children', 'Elderly'].map((x) => <option key={x}>{x}</option>)}</select>
         <select value={t} onChange={(e) => setT(e.target.value)}><option value="">All types</option>{['clothing', 'jewelry', 'shoes', 'accessories'].map((x) => <option key={x}>{x}</option>)}</select>
         <input type="number" placeholder="Max price" value={max} onChange={(e) => setMax(e.target.value)} />
-        <select value={sort} onChange={(e) => setSort(e.target.value)}><option value="feat">Featured</option><option value="low">Price: low</option><option value="high">Price: high</option></select>
+        <select value={sort} onChange={(e) => setSort(e.target.value)}><option value="def">Default</option><option value="feat">Premium first</option><option value="low">Price: low</option><option value="high">Price: high</option></select>
       </div>
       {list.length ? <div className="pgrid">{list.map((p) => <ProductCard key={p.id} p={p} />)}</div> : <div className="box">No match found. Try the <a href="/stylist">AI stylist</a>.</div>}
     </div>
