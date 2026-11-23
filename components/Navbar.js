@@ -31,6 +31,7 @@ export default function Navbar() {
           <Link href="/shop">Shop</Link>
           <Link href="/stylist">AI Stylist</Link>
           {canSeeOrders && <Link href="/orders">Orders</Link>}
+          {canSeeOrders && <Link href="/complaint">Complaints</Link>}
           {isSeller && <Link href="/seller">Seller Hub</Link>}
           {isAdmin && <Link href="/admin">Admin</Link>}
         </nav>
