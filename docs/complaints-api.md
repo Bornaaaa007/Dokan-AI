@@ -2,9 +2,9 @@
 
 All responses are `{ "data": ... }` or `{ "error": { "code", "message" } }`.
 
-**Who is calling (demo mode):** send the signed-in user's id in the header `x-user-id: <user uuid>`.
-There is no token check yet, so these endpoints trust that header. Admin endpoints require a user whose `roles` contain `admin`
-(seed user "Test Admin").
+**Who is calling:** send `Authorization: Bearer <session.access_token>`. In demo mode only, the header `x-user-id: <user uuid>` still works (it is ignored once a Bearer header is present).
+A bad or expired Bearer token returns 401 and never falls back to the demo header. Set `DISABLE_DEV_USER_HEADER=true` on any deployed site to switch the demo header off.
+Admin endpoints require a user whose `roles` contain `admin`.
 
 ## Customer or seller
 
@@ -41,7 +41,7 @@ Badges are switched off by default. The response says what happened in `badge_is
 | HTTP | code | Meaning |
 |---|---|---|
 | 400 | `bad_id`, `invalid_complaint`, `invalid_response`, `invalid_decision`, `bad_status`, `self_order`, `note_required` | Bad input |
-| 401 | `not_signed_in` | Missing or unknown `x-user-id` |
+| 401 | `not_signed_in` | Missing or invalid login (bad token, or unknown `x-user-id` in demo mode) |
 | 403 | `not_your_order`, `not_accused`, `admin_only`, `conflict_of_interest` | Not allowed |
 | 404 | `order_not_found`, `complaint_not_found`, `shop_not_found` | Does not exist |
 | 409 | `already_filed`, `order_cancelled`, `not_open_for_response`, `already_decided` | Wrong state |

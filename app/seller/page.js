@@ -3,11 +3,10 @@ import { useState, useEffect } from 'react';
 import { PRODUCTS, SHOPS, bdt, commissionRate, STATUS, DELIVERY } from '../../lib/data';
 import { useStore, itemsTotal } from '../../components/Store';
 import { DEMO_SHOPS, DEMO_SHOP_KEY } from '../../lib/demoShops';
+import RequireAuth from '../../components/RequireAuth';
 
 const NEXT = { Placed: 'Accepted', Accepted: 'Packed', Packed: 'Shipped' };
 const pct = (r) => (r == null ? '—' : (r * 100).toFixed(1) + '%');
-
-import RequireAuth from '../../components/RequireAuth';
 
 function SellerInner() {
   const shop = SHOPS[0], { orders, setStatus } = useStore();
@@ -101,6 +100,11 @@ function SellerInner() {
     </div>
   );
 }
+
 export default function Seller() {
-  return <RequireAuth role="seller"><SellerInner /></RequireAuth>;
+  return (
+    <RequireAuth role="seller">
+      <SellerInner />
+    </RequireAuth>
+  );
 }

@@ -5,4 +5,5 @@ node_modules/
 .env.*
 !.env.example
 
-scripts/seed-ids.jsongit rm --cached .env.local
+scripts/seed-ids.json
+supabase/.temp/
