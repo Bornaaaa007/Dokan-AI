@@ -30,6 +30,7 @@ export default function Navbar() {
         <nav>
           <Link href="/shop">Shop</Link>
           <Link href="/stylist">AI Stylist</Link>
+           <Link href="/look">Shop the Look</Link>
           {canSeeOrders && <Link href="/orders">Orders</Link>}
           {canSeeOrders && <Link href="/complaint">Complaints</Link>}
           {isSeller && <Link href="/seller">Seller Hub</Link>}
