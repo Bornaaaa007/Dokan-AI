@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { api } from '../../lib/api';
-import { bdt } from '../../lib/data';
+import { bdt, PRODUCTS } from '../../lib/data';
 import { useAuth } from '../../components/AuthProvider';
 import RequireAuth from '../../components/RequireAuth';
 import SellerOrders, { useSellerOrders } from '../../components/SellerOrders';
@@ -47,7 +47,10 @@ function CustomerOrders() {
             <p className="sm">Placed {day(o.placed_at)} · {PAY[o.payment_status] || o.payment_status}</p>
             {!cancelled && <div className="trk">{STEPS.map((s, i) => <i key={s} className={i <= step ? 'd' : ''} title={cap(s)} />)}</div>}
             {!cancelled && <p className="sm">{STEPS.map(cap).join(' → ')}</p>}
-            {o.items.map((i, k) => <div key={k} className="sm">{i.name} ({i.size}{i.color ? `, ${i.color}` : ''}) ×{i.qty} · {bdt(i.unit_price * i.qty)}</div>)}
+            {o.items.map((i, k) => {
+              const listed = o.status === 'delivered' ? PRODUCTS.find((p) => p.uuid === i.product_id) : null;   // reviews open after delivery
+              return <div key={k} className="sm">{i.name} ({i.size}{i.color ? `, ${i.color}` : ''}) ×{i.qty} · {bdt(i.unit_price * i.qty)}{listed && <> · <Link href={`/product/${listed.id}#reviews`}>Review this product</Link></>}</div>;
+            })}
             <div className="rowb" style={{ marginTop: 12 }}>
               <b>{bdt(o.total)} · {o.payment_method === 'cod' ? 'Cash on Delivery' : 'Online payment'}</b>
               <span className="row g">
