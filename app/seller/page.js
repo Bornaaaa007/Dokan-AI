@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import RequireAuth from '../../components/RequireAuth';
 import { useAuth } from '../../components/AuthProvider';
+import { useLang } from '../../components/LangProvider';
 import ShopSetup from '../../components/ShopSetup';
 import SellerOrders, { useSellerOrders } from '../../components/SellerOrders';
 import SellerProducts from '../../components/SellerProducts';
@@ -25,6 +26,18 @@ function Dashboard({ shop, setShop }) {
   // Analytics: sent with the login token by api(); a seller always gets their own shop.
   const [data, setData] = useState(null), [aload, setAload] = useState(false), [aerr, setAerr] = useState('');
   const [previewFree, setPreviewFree] = useState(false);
+
+  // AI analysis: Gemini reads this shop's numbers (rebuilt on the server) and writes a short coaching note.
+  const { lang } = useLang();
+  const [ai, setAi] = useState(null), [aiBusy, setAiBusy] = useState(false), [aiErr, setAiErr] = useState('');
+  const generateAi = async () => {
+    setAiBusy(true); setAiErr('');
+    try {
+      const r = await api('/seller/analytics/ai', { method: 'POST', body: { language: lang } });
+      setAi(r.data);
+    } catch (e) { setAiErr(e.message); }
+    setAiBusy(false);
+  };
 
   useEffect(() => {
     api('/products/mine').then((r) => setProducts(r.data)).catch((e) => { setPerr(e.message); setProducts([]); });
@@ -91,7 +104,32 @@ function Dashboard({ shop, setShop }) {
             {data.shop.top_seller_rank && <div><b>#{data.shop.top_seller_rank}</b><span>Top seller rank</span></div>}
           </div>
           {premium && <>
-            <div className="insights box"><h3>AI insights</h3>
+            <div style={{ border: '2px solid var(--pri)', borderRadius: 16, padding: 18, marginBottom: 16, background: 'linear-gradient(135deg, var(--tint), var(--card))', boxShadow: '0 4px 16px rgba(122, 31, 69, 0.15)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                <strong style={{ fontSize: 17 }}>✨ AI analysis of your shop</strong>
+                <span className="badge pend">NEW</span>
+              </div>
+              {!ai && <p className="sm" style={{ margin: '0 0 12px' }}>AI reads your last 30 days (views, carts, sales, stock and what customers search for) and tells you what to do this week.</p>}
+              {ai && <>
+                <p style={{ fontWeight: 700, fontSize: 17, margin: '0 0 6px' }}>{ai.headline}</p>
+                <p style={{ margin: '0 0 12px' }}>{ai.summary}</p>
+                <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 12px', display: 'grid', gap: 10 }}>
+                  {ai.actions.map((a, i) => (
+                    <li key={i} style={{ background: 'var(--card)', border: '1px solid var(--line)', borderRadius: 12, padding: '12px 14px' }}>
+                      <span className={`badge ${a.priority === 'high' ? 'bad' : a.priority === 'medium' ? 'pend' : ''}`}>{a.priority}</span> <b>{a.title}</b>
+                      <div style={{ marginTop: 4, fontSize: 14.5 }}>{a.text}</div>
+                    </li>
+                  ))}
+                </ul>
+                {ai.watch_out && <p className="sm" style={{ margin: '0 0 12px' }}>⚠ {ai.watch_out}</p>}
+              </>}
+              <button className="btn" style={{ width: '100%', fontSize: 16, opacity: aiBusy ? 0.6 : 1 }} disabled={aiBusy} onClick={generateAi}>
+                {aiBusy ? '✨ AI is analysing your shop…' : ai ? '✨ Analyse again' : '✨ Generate AI analysis'}
+              </button>
+              {aiErr && <p className="err" style={{ margin: '8px 0 0' }}>{aiErr}</p>}
+              <p className="sm" style={{ margin: '8px 0 0' }}>AI can make mistakes. Check the advice against what you know about your shop.</p>
+            </div>
+            <div className="insights box"><h3>Quick tips</h3>
               {data.insights.length === 0
                 ? <p className="sm">Not enough data yet for tips. They appear once your products get views and sales.</p>
                 : <ul>{data.insights.map((x, i) => <li key={i}><b>{x.title}</b> {x.text}</li>)}</ul>}
