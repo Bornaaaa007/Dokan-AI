@@ -12,7 +12,7 @@
 | **Event** | CoU AI Hackathon 2026 (Comilla University) |
 | **Domain** | Business and Industry (primary) · FinTech / Accessibility (secondary: escrow payments, Bangla-first UI) |
 | **Live link** | https://dokan-ai-murex.vercel.app/ |
-| **Demo video (max 3 min)** | TODO: `<video-url>` |
+| **Demo video (max 3 min)** | https://drive.google.com/file/d/1iCsns7FKlzQ2c47NmCfRbyxF_DZQ4j6S/view?usp=sharing |
 
 ## Test credentials
 
