@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Link from 'next/link';
 import { useStore } from './Store';
 import { PRODUCTS } from '../lib/data';
@@ -7,6 +7,7 @@ import { track } from '../lib/track';
 import { bdt } from '../lib/stylist';
 import { askStylist, recheckLook } from '../lib/stylistApi';
 import { useLang } from './LangProvider';
+import useSpeechInput from '../lib/useSpeechInput';
 
 const OCCASIONS = [
   ['wedding', 'Wedding'],
@@ -42,6 +43,16 @@ const TXT = {
     checking: 'Checking stock…', changed: 'Stock changed. Please review the updated look, then add it to your cart.',
     rebuild: 'Rebuild my look', checkFailed: 'Could not re-check stock, so nothing was added. Please try again.',
     starting: 'Cheapest complete look in our shop', answer: 'Answer the stylist here…', change: 'Ask for changes, e.g. "make it maroon" or "my budget is 8000"', send: 'Send',
+    voiceTap: 'Tap the mic and speak', voiceHint: 'For example: \"wedding outfit for a woman, budget 5000 taka\"',
+    voiceListening: 'Listening… speak now (tap to stop)', voiceHeard: 'You said',
+    voiceErr: {
+      'not-allowed': 'Microphone is blocked. Allow the microphone in your browser, then try again.',
+      'service-not-allowed': 'Microphone is blocked. Allow the microphone in your browser, then try again.',
+      'no-speech': 'I did not hear anything. Tap the mic and try again.',
+      'audio-capture': 'No microphone was found on this device.',
+      network: 'Voice needs an internet connection. Please try again.',
+      failed: 'Voice did not work this time. You can type instead.',
+    },
     occasions: { wedding: 'Wedding', interview: 'Interview / formal', eid: 'Eid', party: 'Party', casual: 'Casual' },
     audiences: { 'a young woman': 'Woman', 'a man': 'Man', 'a girl (child)': 'Girl (child)', 'a boy (child)': 'Boy (child)', 'an elderly woman': 'Elderly woman', 'an elderly man': 'Elderly man' },
   },
@@ -61,6 +72,16 @@ const TXT = {
     checking: 'স্টক দেখা হচ্ছে…', changed: 'স্টক বদলে গেছে। আপডেট করা লুকটি দেখে নিয়ে কার্টে যোগ করুন।',
     rebuild: 'আবার লুক সাজান', checkFailed: 'স্টক যাচাই করা যায়নি, তাই কিছু যোগ হয়নি। আবার চেষ্টা করুন।',
     starting: 'আমাদের দোকানে সবচেয়ে কম দামের পূর্ণ লুক', answer: 'এখানে স্টাইলিস্টকে উত্তর দিন…', change: 'বদলাতে বলুন, যেমন "মেরুন রঙ চাই" বা "বাজেট ৮০০০"', send: 'পাঠান',
+    voiceTap: 'মাইক চেপে বলুন', voiceHint: 'যেমন: \"বিয়ের জন্য নারীর পোশাক, বাজেট ৫০০০ টাকা\"',
+    voiceListening: 'শুনছি… এখন বলুন (থামাতে আবার চাপুন)', voiceHeard: 'আপনি বলেছেন',
+    voiceErr: {
+      'not-allowed': 'মাইক বন্ধ আছে। ব্রাউজারে মাইকের অনুমতি দিয়ে আবার চেষ্টা করুন।',
+      'service-not-allowed': 'মাইক বন্ধ আছে। ব্রাউজারে মাইকের অনুমতি দিয়ে আবার চেষ্টা করুন।',
+      'no-speech': 'কিছু শুনতে পাইনি। মাইক চেপে আবার বলুন।',
+      'audio-capture': 'এই ডিভাইসে কোনো মাইক পাওয়া যায়নি।',
+      network: 'ভয়েসের জন্য ইন্টারনেট দরকার। আবার চেষ্টা করুন।',
+      failed: 'এবার ভয়েস কাজ করেনি। আপনি লিখেও জানাতে পারেন।',
+    },
     occasions: { wedding: 'বিয়ে', interview: 'ইন্টারভিউ / ফরমাল', eid: 'ঈদ', party: 'পার্টি', casual: 'প্রতিদিনের' },
     audiences: { 'a young woman': 'নারী', 'a man': 'পুরুষ', 'a girl (child)': 'মেয়ে শিশু', 'a boy (child)': 'ছেলে শিশু', 'an elderly woman': 'বয়স্ক নারী', 'an elderly man': 'বয়স্ক পুরুষ' },
   },
@@ -158,6 +179,22 @@ export default function Stylist() {
     send(m, conv);
   };
 
+  // Voice: the top mic starts a NEW look from what you say; the mic next to the follow-up box continues the same chat.
+  const voiceTarget = useRef('new');
+  const [heard, setHeard] = useState('');
+  const voice = useSpeechInput({
+    lang: lang === 'bn' ? 'bn-BD' : 'en-US',
+    onFinal: (text) => {
+      setHeard(text);
+      if (voiceTarget.current === 'follow' && conv) send(text, conv);
+      else send(text, null);
+    },
+  });
+  const toggleMic = (target) => {
+    if (voice.listening) { voice.stop(); return; }
+    voiceTarget.current = target; setHeard(''); voice.start();
+  };
+
   const bundle = data?.bundle;
   const baseLooks = bundle
     ? [{ items: bundle.items, total: bundle.total, remaining: bundle.remaining }, ...(bundle.alternatives || [])]
@@ -177,6 +214,18 @@ export default function Stylist() {
       <p className="lead" style={{ marginTop: -12, marginBottom: 28, fontSize: 16 }}>{t.about}</p>
       <div className="demo grid2">
         <form className="panel" onSubmit={(e) => { e.preventDefault(); run(); }}>
+          {voice.supported && (
+            <div className="voice">
+              <button type="button" className={'mic' + (voice.listening && voiceTarget.current === 'new' ? ' on' : '')}
+                onClick={() => toggleMic('new')} disabled={loading} aria-label={t.voiceTap}>🎤</button>
+              <div>
+                <b>{voice.listening && voiceTarget.current === 'new' ? t.voiceListening : t.voiceTap}</b>
+                <small>{voice.listening && voiceTarget.current === 'new' && voice.interim ? voice.interim : t.voiceHint}</small>
+              </div>
+            </div>
+          )}
+          {voice.error && <div className="msg warn" role="alert">{t.voiceErr[voice.error] ?? t.voiceErr.failed} ({voice.error})</div>}
+          {heard && !voice.listening && <div className="msg">{t.voiceHeard}: “{heard}”</div>}
           <label>{t.occasion}
             <select value={occ} onChange={(e) => setOcc(e.target.value)}>
               {OCCASIONS.map(([k, label]) => <option key={k} value={k}>{t.occasions[k] ?? label}</option>)}
@@ -272,6 +321,10 @@ export default function Stylist() {
                 placeholder={data.ask ? t.answer : t.change}
                 style={{ flex: 1 }}
               />
+              {voice.supported && (
+                <button type="button" className={'mic sm' + (voice.listening && voiceTarget.current === 'follow' ? ' on' : '')}
+                  onClick={() => toggleMic('follow')} disabled={loading} aria-label={t.voiceTap}>🎤</button>
+              )}
               <button className="btn" type="submit" disabled={loading || !chat.trim()}>{t.send}</button>
             </form>
           )}

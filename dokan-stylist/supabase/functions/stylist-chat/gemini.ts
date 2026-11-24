@@ -76,11 +76,29 @@ async function generate(apiKey: string, model: string, body: unknown): Promise<s
       if (!text) throw new Error("Gemini returned an empty answer");
       return text;
     }
-    lastErr = `Gemini ${res.status}: ${(await res.text()).slice(0, 300)}`;
-    if (![429, 500, 503].includes(res.status)) break;      // only retry temporary errors
+    lastErr = `Gemini ${model} ${res.status}: ${(await res.text()).slice(0, 300)}`;
+    if (![500, 503].includes(res.status)) break;           // retry the same model only for 500/503. A 429 (quota) will not clear in 1 second: move on to the next model.
     await new Promise((r) => setTimeout(r, 800));
   }
   throw new Error(lastErr);
+}
+
+// Tries each model in order and returns the first answer. One model being out of quota (429), overloaded (503),
+// or misnamed (404) no longer stops the stylist: the next model in the list takes over.
+export const DEFAULT_MODELS = ["gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-3.6-flash", "gemini-2.5-flash"];
+
+async function generateAny(apiKey: string, models: string[], body: unknown): Promise<string> {
+  const errors: string[] = [];
+  for (const model of models) {
+    try {
+      const text = await generate(apiKey, model, body);
+      if (errors.length) console.warn(`Gemini fallback: ${model} answered after: ${errors.join(" | ")}`);
+      return text;
+    } catch (e) {
+      errors.push(e instanceof Error ? e.message : String(e));
+    }
+  }
+  throw new Error(`All Gemini models failed: ${errors.join(" | ")}`.slice(0, 900));
 }
 
 // ---------- 1. Extraction ----------
@@ -203,11 +221,12 @@ export function allowedNumbers(f: Facts): Set<number> {
   return s;
 }
 
-export function createGemini(apiKey: string, model = "gemini-2.5-flash"): Ai {
+export function createGemini(apiKey: string, modelOrModels: string | string[] = DEFAULT_MODELS): Ai {
+  const models = (Array.isArray(modelOrModels) ? modelOrModels : [modelOrModels]).filter(Boolean);
   return {
     async extract(input) {
       const prompt = `KNOWN_SO_FAR: ${JSON.stringify(input.known)}\nRECENT_CHAT: ${JSON.stringify(input.recent)}\nLATEST_MESSAGE: ${JSON.stringify(input.message)}`;
-      const text = await generate(apiKey, model, {
+      const text = await generateAny(apiKey, models, {
         systemInstruction: { parts: [{ text: EXTRACT_SYSTEM }] },
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: { temperature: 0, responseMimeType: "application/json", responseSchema: EXTRACT_SCHEMA },
@@ -216,7 +235,7 @@ export function createGemini(apiKey: string, model = "gemini-2.5-flash"): Ai {
     },
     async reply(facts) {
       try {
-        const text = (await generate(apiKey, model, {
+        const text = (await generateAny(apiKey, models, {
           systemInstruction: { parts: [{ text: REPLY_SYSTEM }] },
           contents: [{ role: "user", parts: [{ text: `FACTS: ${JSON.stringify(facts)}` }] }],
           generationConfig: { temperature: 0.5 },

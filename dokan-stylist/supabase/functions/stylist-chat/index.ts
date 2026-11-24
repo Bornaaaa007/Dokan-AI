@@ -1,7 +1,7 @@
 // Supabase Edge Function entry point: POST /functions/v1/stylist-chat
 // Body: { "message": "...", "conversation_id"?: "<uuid>", "user_id"?: "<uuid>" }
 import { createHandler } from "./handler.ts";
-import { createGemini } from "./gemini.ts";
+import { createGemini, DEFAULT_MODELS } from "./gemini.ts";
 import { createSupabaseDb } from "./db.ts";
 
 const env = (name: string) => Deno.env.get(name) || undefined;
@@ -20,7 +20,11 @@ Deno.serve((req) => {
       return new Response(JSON.stringify({ error: { code: "missing_config", message: `Missing secrets: ${missing.join(", ")}` } }),
         { status: 500, headers: { "Content-Type": "application/json" } });
     }
-    handler = createHandler(createSupabaseDb(url!, secret!), createGemini(gemini!, env("GEMINI_MODEL") ?? "gemini-2.5-flash"));
+    // GEMINI_MODELS="modelA,modelB,modelC" = try in this order. GEMINI_MODEL (one name) still works and goes first.
+    const listed = (env("GEMINI_MODELS") ?? "").split(",").map((m) => m.trim()).filter(Boolean);
+    const first = env("GEMINI_MODEL");
+    const models = [...new Set([...(first ? [first] : []), ...(listed.length ? listed : DEFAULT_MODELS)])];
+    handler = createHandler(createSupabaseDb(url!, secret!), createGemini(gemini!, models));
   }
   return handler(req);
 });
