@@ -10,6 +10,7 @@ import LedgerPanel from '../../components/LedgerPanel';
 import PremiumPanel from '../../components/PremiumPanel';
 import { api } from '../../lib/api';
 import { bdt } from '../../lib/data';
+import MessageUpdate from '../../components/MessageUpdate';
 
 const pct = (r) => (r == null ? '—' : (r * 100).toFixed(1) + '%');
 const stockOf = (p) => (p.variants || []).reduce((t, v) => t + (v.stock > 0 ? v.stock : 0), 0);
@@ -86,6 +87,11 @@ function Dashboard({ shop, setShop }) {
 
       {tab === 'Products' && (products === null ? <div className="box">Loading products…</div> : <>
         {perr && <p className="err">{perr}</p>}
+        {tab === 'Products' && (products === null ? <div className="box">Loading products…</div> : <>
+  {perr && <p className="err">{perr}</p>}
+  <MessageUpdate products={products} setProducts={setProducts} />
+  <SellerProducts products={products} setProducts={setProducts} shop={shop} />
+</>)}
         <SellerProducts products={products} setProducts={setProducts} shop={shop} />
       </>)}
 
