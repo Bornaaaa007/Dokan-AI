@@ -41,6 +41,8 @@
 | --- | --- | --- | --- |
 | **AI Personal Stylist** | `dokan-stylist/` (Supabase Edge Function), `/stylist` | Gemini extracts occasion, who it is for, budget and colours from free text (English, Bangla or Banglish), then writes the friendly reply | Searches real products, applies guardrails, builds the bundle and totals the price. Replies that mention numbers we did not supply are rejected |
 | **Shop the Look** | `lib/visual/`, `/look` | Gemini lists the separate fashion pieces visible in an outfit photo (never the person) | `match.mjs` matches each piece to real in-stock products |
+| **Message to update** | `lib/ai/parseSellerMessage.mjs`, `lib/ai/messageUpdate.mjs`, `components/MessageUpdate.js` | Gemini only extracts product name, price, sizes and stock from a pasted chat message | Plain code matches the seller's own products, validates numbers, asks to confirm weak matches; nothing is saved until the seller confirms, and it can be undone. Sellers paste the text; direct Messenger needs a Meta app review |
+| **Honest bundle solver** | `dokan-stylist/supabase/functions/stylist-chat/logic.ts` (`buildBundle`, `repairBundle`) | Gemini writes the wording from facts | Missing slots are named and the partial total is true; a too-low budget returns the cheapest real complete look plus real single items; sold-out items are re-checked on screen and at Add to cart, then replaced from the same slot inside the budget or reported |
 | **Photo to listing** | `lib/ai/describePhoto.mjs` | Gemini suggests name, category, colours, occasions and description from a product photo | Seller always reviews; the AI never sets price or stock |
 | **Seller AI tips (Bangla/English)** | `lib/ai/analyzeShop.mjs`, `lib/ai/bnTips.mjs` | Gemini writes exactly 3 coaching tips from the shop's own 30-day numbers | Numbers come from our database. If Gemini is busy, 3 rule-based tips are returned (`source: "rules"`) |
 | **Complaint triage** | `lib/ai/triageComplaint.mjs`, `POST /api/admin/complaints/:id/triage` | Gemini summarises the thread and suggests uphold / reject / need more info | Admin only; writes nothing; the admin records the decision. Gemini sees roles and facts only, never names, ids or contact details |
@@ -59,7 +61,7 @@
 - **APIs:** Google Gemini API, Supabase API, Resend (optional transactional email), internal REST API (documented in `docs/`)
 - **Datasets:** our own structured product catalog (about 80 sample products with photos), sample shops, orders, complaints and marketplace activity logs (`dokan-stylist/seed.sql`, `scripts/*.sql`, `scripts/seed-logs.mjs`). All sample data was created by the team.
 - **Training:** no custom model training; LLM plus rule-based recommendation logic.
-- **Tests:** 273 backend unit tests (`npm test`, Node's built-in test runner) and Deno tests for the stylist function.
+- **Tests:** 294 backend unit tests (`npm test`, Node's built-in test runner) and 47 stylist tests (`npm run test:stylist`: solver plus the full request flow). `npm run test:all` runs both.
 
 ## 4. AI Tools Used (and for what)
 

@@ -33,9 +33,18 @@ export interface Facts {
   items?: { label: string; name: string; price: number; original_price: number | null; shop: string; seller_flagged: boolean }[];
   total?: number;
   remaining?: number;
-  left_out?: string[];            // slots left out (budget or not in catalog)
+  left_out?: string[];            // slots left out because of the budget
+  missing?: string[];             // slots with NO product in the shop right now (thin catalog)
   min_required_total?: number;
   min_full_total?: number;
+  affordable?: { label: string; name: string; price: number; shop: string }[];  // too_low: real single items that fit
+  recheck?: {                     // a bundle on screen was re-checked against live stock
+    gone: { label: string; name: string; reason: string }[];
+    replaced: { label: string; old_name: string; name: string; price: number; shop: string }[];
+    unfilled: string[];
+    price_changes: { name: string; from: number; to: number }[];
+    rebuilt: boolean;
+  };
 }
 export interface Ai {
   extract(input: ExtractInput): Promise<Extracted>;
@@ -135,10 +144,27 @@ Write the reply to the shopper using ONLY the FACTS JSON. Rules:
 - status "need_info": ask ONLY the one question named in "ask" (occasion / audience / budget / budget_number meaning "please give the budget as a number"). One short question.
 - status "off_topic": politely say you only help with fashion shopping, and invite them to describe an occasion and budget.
 - If an item has seller_flagged true, add a short caution that this seller has a verified-complaint badge.
-- If left_out lists items that are simply not in the catalog, say we do not have those right now.`;
+- If "missing" is not empty, say plainly which pieces we have no product for right now (for example "no shoes in stock for this look"). Never suggest or describe a product for a missing piece. The total you show is the true total of the items shown, not of a full look.
+- If "left_out" is not empty, those pieces were left out only because of the budget.
+- status "too_low" with "affordable" items: after saying the budget is not enough, offer those real single items as a partial alternative, each with its price. Say the cheapest complete look is min_required_total.
+- If "recheck" is present: say what changed. Items in recheck.gone are no longer available (sold out or removed). Name the replacements (recheck.replaced) with their prices, or say no replacement fits the budget (recheck.unfilled) and offer to rebuild the look. If recheck.price_changes is not empty, say the seller changed that price. Never claim an item is still available if it is in recheck.gone.`;
 
 export function fallbackReply(f: Facts): string {
   const money = (n: number) => `${n.toLocaleString("en-US")} BDT`;
+  const reasonText = (r: string) => (r === "sold_out" ? "sold out" : r === "shop_unavailable" ? "no longer offered by a verified shop" : "no longer available");
+  if (f.recheck) {
+    const r = f.recheck;
+    const parts: string[] = [];
+    for (const g of r.gone) parts.push(`${g.name} (${g.label}) is ${reasonText(g.reason)}.`);
+    for (const x of r.replaced) parts.push(`${x.label}: replaced ${x.old_name} with ${x.name}, ${money(x.price)} (${x.shop}).`);
+    if (r.unfilled.length) parts.push(`No replacement fits your budget for: ${r.unfilled.join(", ")}.`);
+    for (const c of r.price_changes) parts.push(`${c.name} changed from ${money(c.from)} to ${money(c.to)}.`);
+    if (r.rebuilt) parts.push("Prices changed, so I rebuilt the look to stay inside your budget.");
+    if (!f.items?.length) parts.push("Nothing is left of this look. Please build a new one.");
+    else parts.push(`Total ${money(f.total ?? 0)}, ${money(f.remaining ?? 0)} left.`);
+    return parts.join("\n");
+  }
+  const missingText = f.missing?.length ? `We have no ${f.missing.join(", ").toLowerCase()} in stock for this look right now.` : "";
   switch (f.status) {
     case "need_info":
       return f.ask === "occasion" ? "What is the occasion (for example wedding, interview, Eid, party or casual)?"
@@ -150,13 +176,19 @@ export function fallbackReply(f: Facts): string {
     case "unsupported":
       return `We do not have looks for that occasion yet. Try: ${(f.supported_occasions ?? []).join(", ")}.`;
     case "no_match":
-      return "We do not have matching items for this right now.";
-    case "too_low":
-      return `${f.budget ? money(f.budget) : "That budget"} is not enough for this look. A realistic starting point is ${money(f.min_required_total ?? 0)}.`;
+      return missingText ? `${missingText} I cannot build this look right now.` : "We do not have matching items for this right now.";
+    case "too_low": {
+      const head = `${f.budget ? money(f.budget) : "That budget"} is not enough for this look. The cheapest complete look in our shop is ${money(f.min_required_total ?? 0)}.`;
+      const alts = (f.affordable ?? []).map((i) => `- ${i.label}: ${i.name}, ${money(i.price)} (${i.shop})`);
+      return [head, missingText, alts.length ? `Within your budget we have these single items:\n${alts.join("\n")}` : ""].filter(Boolean).join("\n");
+    }
     default: {
       const lines = (f.items ?? []).map((i) => `- ${i.label}: ${i.name}, ${money(i.price)} (${i.shop})${i.seller_flagged ? " - caution: seller has a verified-complaint badge" : ""}`);
-      const head = f.status === "partial" ? `A full look needs about ${money(f.min_required_total ?? 0)}. Here is what fits:` : "Here is your look:";
-      return `${head}\n${lines.join("\n")}\nTotal ${money(f.total ?? 0)}, ${money(f.remaining ?? 0)} left.`;
+      const head = f.status === "partial"
+        ? (f.missing?.length ? "This is a partial look." : `A full look needs about ${money(f.min_required_total ?? 0)}. Here is what fits:`)
+        : "Here is your look:";
+      const left = f.left_out?.length ? `Left out to stay in budget: ${f.left_out.join(", ")}.` : "";
+      return [head, missingText, lines.join("\n"), left, `Total ${money(f.total ?? 0)}, ${money(f.remaining ?? 0)} left.`].filter(Boolean).join("\n");
     }
   }
 }
@@ -165,6 +197,9 @@ export function allowedNumbers(f: Facts): Set<number> {
   const s = new Set<number>();
   for (const n of [f.budget, f.total, f.remaining, f.min_required_total, f.min_full_total]) if (typeof n === "number") s.add(n);
   for (const i of f.items ?? []) { s.add(i.price); if (i.original_price) s.add(i.original_price); }
+  for (const i of f.affordable ?? []) s.add(i.price);
+  for (const x of f.recheck?.replaced ?? []) s.add(x.price);
+  for (const c of f.recheck?.price_changes ?? []) { s.add(c.from); s.add(c.to); }
   return s;
 }
 

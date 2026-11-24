@@ -5,7 +5,7 @@ import { useStore } from './Store';
 import { PRODUCTS } from '../lib/data';
 import { track } from '../lib/track';
 import { bdt } from '../lib/stylist';
-import { askStylist } from '../lib/stylistApi';
+import { askStylist, recheckLook } from '../lib/stylistApi';
 import { useLang } from './LangProvider';
 
 const OCCASIONS = [
@@ -38,7 +38,10 @@ const TXT = {
     left: 'Left out', total: 'Bundle total', remaining: 'Remaining', another: 'Show another look',
     addBundle: 'Add bundle to cart', added: 'Added ✓ View cart', splits: (n) => `(splits into ${n} order${n === 1 ? '' : 's'}, one per seller)`,
     missing: (n) => `${n} item(s) could not be added because they are not in the live shop.`,
-    starting: 'Realistic starting price', answer: 'Answer the stylist here…', change: 'Ask for changes, e.g. "make it maroon" or "my budget is 8000"', send: 'Send',
+    noStock: 'Not in stock right now', affordable: 'Within your budget we have these single items',
+    checking: 'Checking stock…', changed: 'Stock changed. Please review the updated look, then add it to your cart.',
+    rebuild: 'Rebuild my look', checkFailed: 'Could not re-check stock, so nothing was added. Please try again.',
+    starting: 'Cheapest complete look in our shop', answer: 'Answer the stylist here…', change: 'Ask for changes, e.g. "make it maroon" or "my budget is 8000"', send: 'Send',
     occasions: { wedding: 'Wedding', interview: 'Interview / formal', eid: 'Eid', party: 'Party', casual: 'Casual' },
     audiences: { 'a young woman': 'Woman', 'a man': 'Man', 'a girl (child)': 'Girl (child)', 'a boy (child)': 'Boy (child)', 'an elderly woman': 'Elderly woman', 'an elderly man': 'Elderly man' },
   },
@@ -54,7 +57,10 @@ const TXT = {
     left: 'বাদ পড়েছে', total: 'মোট দাম', remaining: 'বাকি থাকল', another: 'আরেকটি লুক দেখুন',
     addBundle: 'পুরো লুক কার্টে যোগ করুন', added: 'যোগ হয়েছে ✓ কার্ট দেখুন', splits: (n) => `(${n}টি অর্ডারে ভাগ হবে, প্রতি বিক্রেতার একটি)`,
     missing: (n) => `${n}টি পণ্য কার্টে যোগ করা যায়নি, কারণ সেগুলো এখন দোকানে নেই।`,
-    starting: 'বাস্তবসম্মত ন্যূনতম দাম', answer: 'এখানে স্টাইলিস্টকে উত্তর দিন…', change: 'বদলাতে বলুন, যেমন "মেরুন রঙ চাই" বা "বাজেট ৮০০০"', send: 'পাঠান',
+    noStock: 'এখন স্টকে নেই', affordable: 'আপনার বাজেটে এই আলাদা পণ্যগুলো আছে',
+    checking: 'স্টক দেখা হচ্ছে…', changed: 'স্টক বদলে গেছে। আপডেট করা লুকটি দেখে নিয়ে কার্টে যোগ করুন।',
+    rebuild: 'আবার লুক সাজান', checkFailed: 'স্টক যাচাই করা যায়নি, তাই কিছু যোগ হয়নি। আবার চেষ্টা করুন।',
+    starting: 'আমাদের দোকানে সবচেয়ে কম দামের পূর্ণ লুক', answer: 'এখানে স্টাইলিস্টকে উত্তর দিন…', change: 'বদলাতে বলুন, যেমন "মেরুন রঙ চাই" বা "বাজেট ৮০০০"', send: 'পাঠান',
     occasions: { wedding: 'বিয়ে', interview: 'ইন্টারভিউ / ফরমাল', eid: 'ঈদ', party: 'পার্টি', casual: 'প্রতিদিনের' },
     audiences: { 'a young woman': 'নারী', 'a man': 'পুরুষ', 'a girl (child)': 'মেয়ে শিশু', 'a boy (child)': 'ছেলে শিশু', 'an elderly woman': 'বয়স্ক নারী', 'an elderly man': 'বয়স্ক পুরুষ' },
   },
@@ -81,8 +87,35 @@ export default function Stylist() {
   const { add } = useStore();
   const [missing, setMissing] = useState(0);
 
-  // Puts every item of the shown look into the real cart (matched by database id).
-  const addBundle = () => {
+  const [fix, setFix] = useState({});          // looks repaired after a live stock re-check, keyed by look index
+  const [notice, setNotice] = useState('');      // honest message about what changed
+  const [checking, setChecking] = useState(false);
+
+  // Asks the stylist to re-check a look against live stock. Returns true if nothing changed.
+  const checkLook = async (idx, items) => {
+    const st = data?.state;
+    if (!st?.audience || !st?.occasion || !bundle || !items?.length) return true;
+    setChecking(true);
+    try {
+      const r = await recheckLook({ items, audience: st.audience, occasion: st.occasion, budget: bundle.budget });
+      if (!r.changed) return true;
+      const b = r.bundle;
+      setFix((f) => ({ ...f, [idx]: b ? { items: b.items, total: b.total, remaining: b.remaining, missing: b.missing || [], leftOut: b.left_out || [] } : { items: [], total: 0, remaining: bundle.budget, missing: [], leftOut: [] } }));
+      setNotice(r.reply || t.changed);
+      setAdded(false);
+      return false;
+    } catch {
+      setNotice(t.checkFailed);
+      return false;
+    } finally {
+      setChecking(false);
+    }
+  };
+
+  // Puts every item of the shown look into the real cart (matched by database id), after re-checking stock.
+  const addBundle = async () => {
+    if (!look) return;
+    if (!(await checkLook(alt % looks.length, look.items))) return;   // gone items are shown to the shopper first
     let skipped = 0;
     look.items.forEach((it) => {
       const p = PRODUCTS.find((x) => x.uuid === it.product_id);
@@ -98,7 +131,7 @@ export default function Stylist() {
   const [chat, setChat] = useState('');
 
   const send = async (message, conversationId) => {
-    setLoading(true); setError(''); setAdded(false);
+    setLoading(true); setError(''); setAdded(false); setFix({}); setNotice('');
     try {
       const d = await askStylist({ message, conversationId });
       setData(d); setConv(d.conversation_id); setAlt(0);
@@ -126,12 +159,15 @@ export default function Stylist() {
   };
 
   const bundle = data?.bundle;
-  const looks = bundle
+  const baseLooks = bundle
     ? [{ items: bundle.items, total: bundle.total, remaining: bundle.remaining }, ...(bundle.alternatives || [])]
     : [];
-  const look = looks.length ? looks[alt % looks.length] : null;
+  const looks = baseLooks.map((l, i) => (fix[i] ? { ...l, ...fix[i] } : l));
+  const look = looks.length ? looks[alt % looks.length] : (fix[0] ?? null);
   const sellers = look ? new Set(look.items.map((i) => i.shop_id)).size : 0;
-  const leftOut = bundle?.left_out || [];
+  const leftOut = (look && fix[alt % (looks.length || 1)]?.leftOut) || bundle?.left_out || [];
+  const missingSlots = (look && fix[alt % (looks.length || 1)]?.missing) || bundle?.missing || data?.missing || [];
+  const affordable = data?.affordable || [];
   const replyClass = data && !GOOD_STATUS.includes(data.status) ? 'msg warn' : 'msg';
 
   return (
@@ -187,6 +223,12 @@ export default function Stylist() {
               </div>
             ))}
 
+            {notice && <div className="msg warn" style={{ whiteSpace: 'pre-line' }}>{notice}</div>}
+            {checking && <div className="msg">{t.checking}</div>}
+
+            {look && missingSlots.length > 0 && (
+              <div className="msg warn">{t.noStock}: {missingSlots.join(', ')}.</div>
+            )}
             {look && leftOut.length > 0 && alt === 0 && (
               <div className="msg warn">{t.left}: {leftOut.join(', ')}.</div>
             )}
@@ -195,19 +237,32 @@ export default function Stylist() {
               <div className="tot"><span>{t.total}</span><span>{bdt(look.total)}</span></div>
               <div className="tot ok" style={{ border: 0, padding: 0 }}><span>{t.remaining}</span><span>{bdt(look.remaining)}</span></div>
               {looks.length > 1 && (
-                <button type="button" className="chip b" onClick={() => { setAlt((alt + 1) % looks.length); setAdded(false); }}>
+                <button type="button" className="chip b" onClick={() => { const n = (alt + 1) % looks.length; setAlt(n); setAdded(false); setNotice(''); checkLook(n, looks[n].items); }}>
                   {t.another} ({(alt % looks.length) + 1}/{looks.length})
                 </button>
               )}
-                            {added
+                            {look.items.length > 0 && (added
                 ? <Link className="btn" href="/cart">{t.added} {t.splits(sellers)}</Link>
-                : <button className="btn" type="button" onClick={addBundle}>{t.addBundle}</button>}
+                : <button className="btn" type="button" onClick={addBundle} disabled={checking}>{checking ? t.checking : t.addBundle}</button>)}
               {added && missing > 0 && <div className="msg warn">{t.missing(missing)}</div>}
             </>}
 
             {!look && data.min_required_total ? (
               <div className="tot"><span>{t.starting}</span><span>{bdt(data.min_required_total)}</span></div>
             ) : null}
+            {!look && affordable.length > 0 && <>
+              <div className="msg">{t.affordable}:</div>
+              {affordable.map((it) => (
+                <div className="item" key={it.product_id}>
+                  <i style={{ background: swatch(it.colors) }} />
+                  <div><b style={{ whiteSpace: 'normal' }}>{it.name}</b><small>{it.label} · {it.shop_name}</small></div>
+                  <b>{bdt(it.price)}</b>
+                </div>
+              ))}
+            </>}
+            {look && look.items.length === 0 && bundle && (
+              <button className="btn" type="button" onClick={() => run(bundle.budget)} disabled={loading}>{t.rebuild}</button>
+            )}
           </>}
 
           {data && (

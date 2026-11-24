@@ -62,7 +62,12 @@ function CartInner() {
       });
       if (!created.ok) {
         if (created.json?.error?.code === 'color_required') setAskColor(true);
-        done.push({ shop: shop.name, status: 'error', message: errMsg(created, 'This order could not be placed.') });
+        const code = created.json?.error?.code;
+        const gone = ['out_of_stock', 'product_not_found', 'variant_unavailable'].includes(code);
+        done.push({
+          shop: shop.name, status: 'error',
+          message: errMsg(created, 'This order could not be placed.') + (gone ? ' Nothing was charged. Remove that item or pick another size, then try again. The AI Stylist can rebuild your look with items that are still in stock.' : ''),
+        });
         continue;                                                   // these items stay in the cart
       }
       const order = created.json.data;

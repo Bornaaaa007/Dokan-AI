@@ -4,10 +4,11 @@
 //        -> guardrails + product search + bundle maths (plain code) -> Gemini writes the reply from facts -> save.
 
 import type { Audience, Occasion } from "./rules.ts";
-import { AUDIENCE_FILTER, RULES } from "./rules.ts";
-import { buildBundle, parseBudget } from "./logic.ts";
-import type { BundleItem, BundleResult, DbProduct, ShopInfo } from "./logic.ts";
+import { AUDIENCES, AUDIENCE_FILTER, OCCASIONS, RULES } from "./rules.ts";
+import { buildBundle, parseBudget, repairBundle } from "./logic.ts";
+import type { BundleItem, BundleRef, BundleResult, DbProduct, ShopInfo } from "./logic.ts";
 import type { Ai, Facts, Language } from "./gemini.ts";
+import { fallbackReply } from "./gemini.ts";
 
 export interface Msg { role: "user" | "assistant"; text: string; created_at: string; meta?: Record<string, unknown> }
 export interface State { occasion: Occasion | null; audience: Audience | null; budget: number | null; colors: string[] }
@@ -42,13 +43,76 @@ function toAudience(gender: string | null, age: string | null): Audience | null 
 const itemFacts = (items: BundleItem[]) =>
   items.map((i) => ({ label: i.label, name: i.name, price: i.price, original_price: i.original_price, shop: i.shop_name, seller_flagged: i.seller_flagged }));
 
+// Re-checks a bundle that is already on the shopper's screen against live stock (used when a look is shown,
+// when another look is picked, and right before "Add to cart"). Plain code only: no Gemini, nothing invented.
+async function recheck(db: Db, body: { items?: unknown; audience?: unknown; occasion?: unknown; budget?: unknown }): Promise<Response> {
+  const audience = AUDIENCES.find((a) => a === body.audience);
+  const occasion = OCCASIONS.find((o) => o === body.occasion);
+  const budget = typeof body.budget === "number" && Number.isFinite(body.budget) && body.budget > 0 ? Math.round(body.budget) : null;
+  if (!audience || !occasion || budget === null) return fail(400, "bad_recheck", "Send audience, occasion and a positive budget.");
+  const rules = RULES[audience][occasion];
+  if (!rules) return fail(400, "bad_recheck", "No looks for this occasion.");
+  if (!Array.isArray(body.items) || body.items.length === 0 || body.items.length > 12) return fail(400, "bad_recheck", "Send 1 to 12 items.");
+  const current: BundleRef[] = [];
+  for (const raw of body.items as Record<string, unknown>[]) {
+    if (!raw || typeof raw.product_id !== "string" || !/^[\w-]{1,64}$/.test(raw.product_id) || typeof raw.slot !== "string") {
+      return fail(400, "bad_recheck", "Each item needs product_id and slot.");
+    }
+    current.push({
+      product_id: raw.product_id, slot: raw.slot,
+      name: typeof raw.name === "string" ? raw.name.slice(0, 80) : "This item",
+      price: typeof raw.price === "number" && Number.isFinite(raw.price) ? raw.price : undefined,
+    });
+  }
+
+  try {
+    const all = await db.getProducts(audience);
+    const shops = await db.getShops([...new Set(all.map((p) => p.shop_id))]);
+    const verified = new Map([...shops].filter(([, s]) => s.verified));
+    const live = all.filter((p) => verified.has(p.shop_id));
+    const flagged = await db.getFlaggedOwnerIds([...new Set([...verified.values()].map((s) => s.owner_id))]);
+    const ctx = { audience, budget, colors: [] as string[], shops: verified, flaggedOwnerIds: flagged };
+
+    let fix = repairBundle(rules, current, live, ctx);
+    let items = fix.items, total = fix.total, rebuilt = false;
+    let leftOut: string[] = [], missing: string[] = fix.unfilled;
+    if (fix.status === "over_budget") {
+      // Prices rose: never go over the budget silently. Build a fresh look from live data instead.
+      const fresh = buildBundle(rules, live, ctx);
+      items = fresh.items; total = fresh.total; rebuilt = true; leftOut = fresh.dropped; missing = fresh.unavailable;
+    }
+    const changed = fix.status !== "unchanged" || fix.price_changes.length > 0;
+    const facts: Facts = {
+      status: rebuilt ? (items.length ? "partial" : "no_match") : fix.status === "unchanged" ? "ok" : fix.status === "empty" ? "no_match" : "partial",
+      language: "en", occasion, audience, budget,
+      items: itemFacts(items), total, remaining: budget - total, left_out: leftOut, missing,
+      recheck: {
+        gone: fix.gone.map((g) => ({ label: g.label, name: g.name, reason: g.reason })),
+        replaced: fix.replacements.map((r) => ({ label: r.label, old_name: r.old_name, name: r.item.name, price: r.item.price, shop: r.item.shop_name })),
+        unfilled: fix.unfilled, price_changes: fix.price_changes, rebuilt,
+      },
+    };
+    return json(200, {
+      data: {
+        status: fix.status === "over_budget" ? "rebuilt" : fix.status, changed, reply: changed ? fallbackReply(facts) : "",
+        gone: fix.gone, replacements: fix.replacements, unfilled: fix.unfilled, price_changes: fix.price_changes,
+        bundle: items.length ? { items, total, budget, remaining: budget - total, left_out: leftOut, missing, alternatives: [] } : null,
+      },
+    });
+  } catch (e) {
+    console.error("stylist recheck error:", e);
+    return fail(500, "internal", "Could not re-check stock. Please try again.");
+  }
+}
+
 export function createHandler(db: Db, ai: Ai) {
   return async (req: Request): Promise<Response> => {
     if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
     if (req.method !== "POST") return fail(405, "method_not_allowed", "Use POST.");
 
-    let body: { message?: unknown; conversation_id?: unknown; user_id?: unknown };
+    let body: { message?: unknown; conversation_id?: unknown; user_id?: unknown; action?: unknown; items?: unknown; audience?: unknown; occasion?: unknown; budget?: unknown };
     try { body = await req.json(); } catch { return fail(400, "bad_json", "Body must be JSON."); }
+    if (body.action === "recheck") return recheck(db, body);
     const message = typeof body.message === "string" ? body.message.trim() : "";
     if (!message) return fail(400, "empty_message", "Send a non-empty 'message'.");
     if (message.length > 500) return fail(400, "message_too_long", "Keep messages under 500 characters.");
@@ -130,8 +194,9 @@ export function createHandler(db: Db, ai: Ai) {
           facts = {
             status: result.status, language, occasion, audience, budget,
             items: itemFacts(result.items), total: result.total, remaining: budget - result.total,
-            left_out: [...result.dropped, ...result.unavailable],
+            left_out: result.dropped, missing: result.unavailable,
             min_required_total: result.minRequired, min_full_total: result.minFull,
+            affordable: result.affordable.map((i) => ({ label: i.label, name: i.name, price: i.price, shop: i.shop_name })),
           };
         }
       }
@@ -154,7 +219,7 @@ export function createHandler(db: Db, ai: Ai) {
       const bundle = result && result.items.length
         ? {
           items: result.items, total: result.total, budget: budget!, remaining: budget! - result.total,
-          left_out: [...result.dropped, ...result.unavailable], alternatives,
+          left_out: result.dropped, missing: result.unavailable, alternatives,
         }
         : null;
       return json(200, {
@@ -162,6 +227,8 @@ export function createHandler(db: Db, ai: Ai) {
           conversation_id: id, status: facts.status, reply: reply.text, reply_source: reply.source,
           state, ask: facts.ask ?? null, bundle,
           min_required_total: result ? result.minRequired : null,
+          missing: result ? result.unavailable : [],
+          affordable: result ? result.affordable : [],
         },
       });
     } catch (e) {

@@ -14,7 +14,7 @@ const CUSTOMER = "00000000-0000-4000-8000-000000000009";
 const products = catalog.products as unknown as DbProduct[];
 const shopEntries = Object.entries(catalog.shops as Record<string, { name: string; owner_id: string }>);
 
-function makeDb(opts: { unverified?: string[]; flaggedOwners?: string[]; profile?: { gender: string; age_group: string } } = {}) {
+function makeDb(opts: { unverified?: string[]; flaggedOwners?: string[]; profile?: { gender: string; age_group: string }; catalog?: () => DbProduct[] } = {}) {
   const convs = new Map<string, { id: string; messages: Msg[]; budget: number | null; bundle: unknown }>();
   let n = 0;
   const db: Db = {
@@ -27,7 +27,7 @@ function makeDb(opts: { unverified?: string[]; flaggedOwners?: string[]; profile
     async getProfile() { return opts.profile ?? null; },
     async getProducts(aud) {
       const f = AUDIENCE_FILTER[aud];
-      return products.filter((p) => p.status === "active" && p.age_group === f.age && f.genders.includes(p.gender));
+      return (opts.catalog ? opts.catalog() : products).filter((p) => p.status === "active" && p.age_group === f.age && f.genders.includes(p.gender));
     },
     async getShops(ids) {
       const m = new Map<string, ShopRow>();
@@ -156,6 +156,105 @@ await test("fraud-badged seller is flagged when they are the only option", async
   const r = await call(createHandler(db, fakeAi()), { message: "interview outfit for a man, 5k" });
   assert.ok(r.json.data.bundle.items.some((i: { seller_flagged: boolean }) => i.seller_flagged));
   assert.match(r.json.data.reply, /caution/);
+});
+
+// ---------- Challenge 2: honest bundle ----------
+const WOMAN = "wedding outfit for a young woman, ";
+
+await test("thin catalog: no shoes in the shop -> partial look, says which piece is missing, true total", async () => {
+  const { db } = makeDb({ catalog: () => products.filter((p) => p.category !== "shoes") });
+  const r = await call(createHandler(db, fakeAi()), { message: WOMAN + "5000 taka" });
+  const d = r.json.data;
+  assert.equal(d.status, "partial");
+  assert.deepEqual(d.bundle.missing, ["Shoes"]);
+  assert.ok(d.bundle.items.length > 0 && d.bundle.items.every((i: { slot: string }) => i.slot !== "shoes"));
+  assert.equal(d.bundle.total, d.bundle.items.reduce((t: number, i: { price: number }) => t + i.price, 0));
+  assert.match(d.reply, /no shoes in stock for this look/i);
+  assert.ok(d.bundle.total <= 5000);
+});
+
+await test("budget below the minimum: too_low gives the cheapest complete total and real single items, no bundle", async () => {
+  const { db } = makeDb();
+  const r = await call(createHandler(db, fakeAi()), { message: WOMAN + "800 taka" });
+  const d = r.json.data;
+  assert.equal(d.status, "too_low");
+  assert.equal(d.bundle, null);
+  assert.equal(d.min_required_total, 2750);
+  assert.ok(d.affordable.length > 0 && d.affordable.every((i: { price: number }) => i.price <= 800));
+  assert.match(d.reply, /cheapest complete look in our shop is 2,750 BDT/);
+  assert.match(d.reply, /single items/);
+});
+
+const lookFor = async (db: Db, budget = "5000 taka") => {
+  const r = await call(createHandler(db, fakeAi()), { message: WOMAN + budget });
+  return r.json.data;
+};
+const recheckBody = (d: { bundle: { items: { product_id: string; slot: string; name: string; price: number }[] }; state: { audience: string; occasion: string } }, budget = 5000) => ({
+  action: "recheck", audience: d.state.audience, occasion: d.state.occasion, budget,
+  items: d.bundle.items.map((i) => ({ product_id: i.product_id, slot: i.slot, name: i.name, price: i.price })),
+});
+
+await test("recheck: nothing changed -> unchanged, no message", async () => {
+  const { db } = makeDb();
+  const d = await lookFor(db);
+  const r = await call(createHandler(db, fakeAi()), recheckBody(d));
+  assert.equal(r.status, 200);
+  assert.equal(r.json.data.status, "unchanged");
+  assert.equal(r.json.data.changed, false);
+});
+
+await test("recheck: item sold out after the bundle was built -> says so and offers a replacement within budget", async () => {
+  let soldOut: string | null = null;
+  const { db } = makeDb({ catalog: () => products.map((p) => (p.id === soldOut ? { ...p, variants: p.variants.map((v) => ({ ...v, stock: 0 })) } : p)) });
+  const d = await lookFor(db);
+  soldOut = d.bundle.items.find((i: { slot: string }) => i.slot === "outfit").product_id;     // sells out while the shopper is looking
+  const r = await call(createHandler(db, fakeAi()), recheckBody(d));
+  const x = r.json.data;
+  assert.equal(x.status, "repaired");
+  assert.equal(x.changed, true);
+  assert.equal(x.gone[0].product_id, soldOut);
+  assert.equal(x.gone[0].reason, "sold_out");
+  assert.equal(x.replacements.length, 1);
+  assert.notEqual(x.replacements[0].item.product_id, soldOut);
+  assert.ok(x.bundle.total <= 5000);
+  assert.ok(x.bundle.items.every((i: { product_id: string }) => i.product_id !== soldOut));
+  assert.match(x.reply, /sold out/);
+  assert.match(x.reply, /replaced/);
+});
+
+await test("recheck: the product was deleted and nothing else fits -> reported, bundle shrinks, never faked", async () => {
+  let hide: (p: DbProduct) => boolean = () => false;
+  const { db } = makeDb({ catalog: () => products.filter((p) => !hide(p)) });
+  const d = await lookFor(db);
+  hide = (p) => p.category === "clothing" && ["sari", "three-piece"].includes(p.custom_category ?? "");
+  const r = await call(createHandler(db, fakeAi()), recheckBody(d));
+  const x = r.json.data;
+  assert.equal(x.status, "partial");
+  assert.deepEqual(x.unfilled, ["Sari / outfit"]);
+  assert.ok(x.bundle.items.every((i: { slot: string }) => i.slot !== "outfit"));
+  assert.match(x.reply, /No replacement fits your budget/);
+});
+
+await test("recheck: a seller raised the price over budget -> look is rebuilt inside the budget, never over", async () => {
+  let bump = 0;
+  const { db } = makeDb({ catalog: () => products.map((p) => ({ ...p, price: p.price + bump, discount_price: p.discount_price === null ? null : p.discount_price + bump })) });
+  const d = await lookFor(db);
+  bump = 1500;
+  const r = await call(createHandler(db, fakeAi()), recheckBody(d));
+  const x = r.json.data;
+  assert.equal(x.status, "rebuilt");
+  assert.ok(x.price_changes.length > 0);
+  assert.ok(x.bundle === null || x.bundle.total <= 5000);
+  assert.match(x.reply, /changed from/);
+});
+
+await test("recheck: bad input is rejected", async () => {
+  const { db } = makeDb();
+  const h = createHandler(db, fakeAi());
+  assert.equal((await call(h, { action: "recheck" })).status, 400);
+  assert.equal((await call(h, { action: "recheck", audience: "female_adult", occasion: "wedding", budget: -5, items: [{ product_id: "p001", slot: "outfit" }] })).status, 400);
+  assert.equal((await call(h, { action: "recheck", audience: "female_adult", occasion: "wedding", budget: 5000, items: [{ product_id: "../x", slot: "outfit" }] })).status, 400);
+  assert.equal((await call(h, { action: "recheck", audience: "female_adult", occasion: "wedding", budget: 5000, items: [] })).status, 400);
 });
 
 await test("bad requests", async () => {

@@ -50,6 +50,7 @@ export interface BundleResult {
   minRequired: number;     // cheapest total of the required slots
   minFull: number;         // cheapest total including optional slots
   maxPossible: number;     // most expensive possible look
+  affordable: BundleItem[]; // too_low only: the cheapest real item per slot that fits the budget on its own
 }
 
 interface Candidate { p: DbProduct; price: number; flagged: boolean; shopName: string }
@@ -122,6 +123,29 @@ function pickHighest(cands: Candidate[], cap: number, colors: string[]): Candida
   return list[list.length - 1]; // cands are sorted ascending, so last = most expensive
 }
 
+function makeItem(slot: SlotRule, c: Candidate): BundleItem {
+  return {
+    slot: slot.slot, label: slot.label, product_id: c.p.id, name: c.p.name, price: c.price,
+    original_price: c.p.discount_price !== null && c.p.discount_price < c.p.price ? c.p.price : null,
+    shop_id: c.p.shop_id, shop_name: c.shopName, seller_flagged: c.flagged,
+    image_url: c.p.image_urls?.[0] ?? null, sizes: sizesInStock(c.p), colors: c.p.colors,
+  };
+}
+
+function candidatesFor(slot: SlotRule, products: DbProduct[], ctx: BuildContext, exclude: Set<string>): Candidate[] {
+  return products
+    .filter((p) => p.status === "active" && isInStock(p) && !exclude.has(p.id) && ctx.shops.has(p.shop_id)
+      && matchesAudience(p, ctx.audience) && matchesSlot(p, slot))
+    .map((p) => {
+      const shop = ctx.shops.get(p.shop_id);
+      return {
+        p, price: productPrice(p), shopName: shop?.name ?? "Unknown shop",
+        flagged: shop ? ctx.flaggedOwnerIds.has(shop.owner_id) : false,
+      };
+    })
+    .sort((a, b) => a.price - b.price);
+}
+
 // ---------- Bundle builder ----------
 export interface BuildContext {
   audience: Audience;             // who the look is for: only products for this audience are used
@@ -136,7 +160,7 @@ export function buildBundle(slots: SlotRule[], products: DbProduct[], ctx: Build
   const exclude = ctx.excludeIds ?? new Set<string>();
   const empty: BundleResult = {
     status: "no_match", items: [], total: 0, unavailable: [], dropped: [],
-    minRequired: 0, minFull: 0, maxPossible: 0,
+    minRequired: 0, minFull: 0, maxPossible: 0, affordable: [],
   };
 
   // 1. Candidates per slot (in stock, active, matching, sorted cheapest first)
@@ -188,7 +212,12 @@ export function buildBundle(slots: SlotRule[], products: DbProduct[], ctx: Build
   }
   if (total > ctx.budget) {
     // Not even the first (most important) slot fits
-    return { ...empty, ...base, status: "too_low", dropped: [...dropped, ...required.slice(0, 1).map((s) => s.label)] };
+    // Partial alternatives: the cheapest REAL item of each slot that fits the budget on its own (never a fake item).
+    const affordable = active
+      .map((s) => ({ s, c: cheapest(s) }))
+      .filter(({ c }) => c.price <= ctx.budget)
+      .map(({ s, c }) => makeItem(s, c));
+    return { ...empty, ...base, status: "too_low", affordable, dropped: [...dropped, ...required.slice(0, 1).map((s) => s.label)] };
   }
 
   // 3. Add optional slots, in priority order, while the cheapest option still fits.
@@ -213,17 +242,89 @@ export function buildBundle(slots: SlotRule[], products: DbProduct[], ctx: Build
   }
 
   // 5. Output
-  const items: BundleItem[] = keptSlots.map((s) => {
-    const c = chosen.get(s.slot)!;
-    return {
-      slot: s.slot, label: s.label, product_id: c.p.id, name: c.p.name, price: c.price,
-      original_price: c.p.discount_price !== null && c.p.discount_price < c.p.price ? c.p.price : null,
-      shop_id: c.p.shop_id, shop_name: c.shopName, seller_flagged: c.flagged,
-      image_url: c.p.image_urls?.[0] ?? null, sizes: sizesInStock(c.p), colors: c.p.colors,
-    };
-  });
-  const status: BundleStatus = partial ? "partial" : ctx.budget > maxPossible * TOO_HIGH_FACTOR ? "too_high" : "ok";
-  return { ...base, status, items, total, dropped };
+  const items: BundleItem[] = keptSlots.map((s) => makeItem(s, chosen.get(s.slot)!));
+  // A look with a slot that has no product in the shop is never "ok": the missing piece is reported (partial).
+  const status: BundleStatus = partial || unavailable.length > 0 ? "partial"
+    : ctx.budget > maxPossible * TOO_HIGH_FACTOR ? "too_high" : "ok";
+  return { ...base, status, items, total, dropped, affordable: [] };
+}
+
+// ---------- Re-checking a bundle that is already on screen ----------
+export type GoneReason = "sold_out" | "inactive" | "removed" | "shop_unavailable";
+export interface BundleRef { product_id: string; slot: string; name: string; price?: number }
+export interface RepairResult {
+  status: "unchanged" | "repaired" | "partial" | "empty" | "over_budget";   // price_changes alone do not change the status unless the total goes over budget
+  gone: { product_id: string; slot: string; label: string; name: string; reason: GoneReason }[];
+  items: BundleItem[];
+  replacements: { slot: string; label: string; old_name: string; item: BundleItem }[];
+  unfilled: string[];                                            // labels of slots left empty (no replacement within budget)
+  price_changes: { name: string; from: number; to: number }[];   // a seller changed a price since the bundle was built
+  total: number;
+  within_budget: boolean;
+}
+
+/**
+ * Checks every item of a shown bundle against LIVE products (stock, active status, verified shop, price).
+ * A gone item is replaced from the same slot, inside the budget, or reported as unfilled. Nothing is invented.
+ * If prices rose so that the look no longer fits, status is "over_budget" and the caller must re-run buildBundle.
+ */
+export function repairBundle(slots: SlotRule[], current: BundleRef[], live: DbProduct[], ctx: BuildContext): RepairResult {
+  const liveById = new Map(live.map((p) => [p.id, p]));
+  const slotOf = new Map(slots.map((s) => [s.slot, s]));
+  const kept: BundleItem[] = [];
+  const gone: RepairResult["gone"] = [];
+  const price_changes: RepairResult["price_changes"] = [];
+  const goneRefs: { ref: BundleRef; slot: SlotRule }[] = [];
+
+  for (const ref of current) {
+    const slot = slotOf.get(ref.slot);
+    if (!slot) continue;                      // unknown slot: ignore, never trust the client
+    const p = liveById.get(ref.product_id);
+    let reason: GoneReason | null = null;
+    if (!p) reason = "removed";
+    else if (p.status !== "active") reason = "inactive";
+    else if (!isInStock(p)) reason = "sold_out";
+    else if (!ctx.shops.has(p.shop_id)) reason = "shop_unavailable";
+    if (reason || !p) {
+      gone.push({ product_id: ref.product_id, slot: slot.slot, label: slot.label, name: ref.name, reason: reason ?? "removed" });
+      goneRefs.push({ ref, slot });
+      continue;
+    }
+    const shop = ctx.shops.get(p.shop_id)!;
+    const item = makeItem(slot, { p, price: productPrice(p), shopName: shop.name, flagged: ctx.flaggedOwnerIds.has(shop.owner_id) });
+    if (typeof ref.price === "number" && ref.price !== item.price) price_changes.push({ name: item.name, from: ref.price, to: item.price });
+    kept.push(item);
+  }
+
+  const total = () => kept.reduce((t, i) => t + i.price, 0);
+  const replacements: RepairResult["replacements"] = [];
+  const unfilled: string[] = [];
+  const goneIds = new Set(gone.map((g) => g.product_id));
+
+  for (const { ref, slot } of goneRefs) {
+    const remaining = ctx.budget - total();
+    const taken = new Set([...goneIds, ...kept.map((i) => i.product_id)]);
+    const cands = pool(candidatesFor(slot, live, ctx, taken)).filter((c) => c.price <= remaining);
+    if (!cands.length) { unfilled.push(slot.label); continue; }
+    // Closest to this slot's usual share of the budget, never above what is left of the budget.
+    const target = ctx.budget * slot.share;
+    const best = cands.reduce((a, b) => (Math.abs(b.price - target) < Math.abs(a.price - target) ? b : a));
+    const item = makeItem(slot, best);
+    kept.push(item);
+    replacements.push({ slot: slot.slot, label: slot.label, old_name: ref.name, item });
+  }
+
+  // Keep the original slot order
+  const slotIndex = new Map(slots.map((s, i) => [s.slot, i]));
+  kept.sort((a, b) => (slotIndex.get(a.slot) ?? 0) - (slotIndex.get(b.slot) ?? 0));
+
+  const t = total();
+  const within = t <= ctx.budget;
+  const status: RepairResult["status"] = !within ? "over_budget"
+    : kept.length === 0 ? "empty"
+    : unfilled.length > 0 ? "partial"
+    : gone.length > 0 ? "repaired" : "unchanged";
+  return { status, gone, items: kept, replacements, unfilled, price_changes, total: t, within_budget: within };
 }
 
 // ---------- Guard for AI-written text ----------
